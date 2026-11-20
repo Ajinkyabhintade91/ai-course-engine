@@ -109,3 +109,7 @@ Two writing rules for readings: `$...$` is parsed as LaTeX, so write currency as
 ## Tech stack
 
 Next.js 16, React 19, TypeScript, Tailwind CSS, Monaco Editor, react-markdown with KaTeX math and highlight.js code highlighting.
+
+## License
+
+Released under the [MIT License](LICENSE). Linked videos, courses and cited sources belong to their respective owners.
