@@ -6,3 +6,6 @@ next-env.d.ts
 
 # Local-only Claude Code settings
 .claude/settings.local.json
+
+# Syllabus images are third-party material: kept locally, not published
+/syllabus/

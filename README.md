@@ -32,7 +32,7 @@ The whole course has about 633,000 words of reading, 575 videos and 161 labs. Ev
 | 12. 30 Day AI Mastery Roadmap | 3 |
 | 13. Bonus Resources | 8 |
 
-The units follow the syllabus images in [`syllabus/`](syllabus).
+The course plan in [`content/blueprint.json`](content/blueprint.json) was built from a set of syllabus images. Those images are kept locally in `syllabus/` and are not published in this repository.
 
 ## Getting started
 
@@ -75,7 +75,7 @@ content/
   src/<slug>.md          module sources (edit these)
   modules/<slug>.json    compiled modules (generated, do not hand-edit)
 scripts/                 build and verification tools
-syllabus/                the original syllabus images
+syllabus/                syllabus images (local only, not in the repo)
 ```
 
 ## Editing or adding modules
