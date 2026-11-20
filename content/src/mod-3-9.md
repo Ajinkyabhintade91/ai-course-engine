@@ -1,0 +1,831 @@
+@@meta
+{
+  "moduleId": "MOD-3.9",
+  "slug": "mod-3-9",
+  "unitId": "UNIT-3",
+  "unitTitle": "Unit 3: Mastering Claude & Gemini",
+  "title": "Practical Claude Workflows",
+  "difficulty": "Intermediate",
+  "estimatedMinutes": 100,
+  "citations": [
+    { "title": "Prompting best practices (long context prompting)", "source": "Anthropic Docs", "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices" },
+    { "title": "Building effective agents", "source": "Anthropic Research", "url": "https://www.anthropic.com/research/building-effective-agents" },
+    { "title": "Reduce hallucinations", "source": "Anthropic Docs", "url": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations" },
+    { "title": "Claude is providing incorrect or misleading responses. What's going on?", "source": "Claude Help Center", "url": "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses" },
+    { "title": "Claude can now connect to your world", "source": "Anthropic Blog", "url": "https://claude.com/blog/integrations" },
+    { "title": "Search results content blocks", "source": "Anthropic Docs", "url": "https://platform.claude.com/docs/en/build-with-claude/search-results" }
+  ],
+  "videoLibrary": [
+    {
+      "id": "VID-3.9-1",
+      "title": "Master Claude for Researchers | Step-by-step Tutorial",
+      "creator": "WiseUp Communications",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=bANtRh9qIWM",
+      "timingInstruction": "Watch after reading Section 2 (the five workflow patterns)",
+      "keyTakeaway": "A research workflow in Claude, from sources to a written summary."
+    },
+    {
+      "id": "VID-3.9-2",
+      "title": "Learn 80% of Claude in Under 20 Minutes",
+      "creator": "Jeff Su",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=z9rdrNrkvDY",
+      "timingInstruction": "Watch after Section 1 for the argument that iteration beats a single prompt",
+      "keyTakeaway": "The Claude features that matter most for everyday work."
+    },
+    {
+      "id": "VID-3.9-3",
+      "title": "Claude Cowork - Full Course for Beginners",
+      "creator": "Tech With Tim",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=tf_KmDNZXzI",
+      "timingInstruction": "Optional recap of the app features this chapter combines",
+      "keyTakeaway": "Delegating multi-step desktop tasks to Claude Cowork."
+    },
+    {
+      "id": "VID-3.9-4",
+      "title": "Building with the Claude API",
+      "creator": "Anthropic",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/building-with-the-claude-api",
+      "timingInstruction": "Take after the lab if you want to run these workflows in code",
+      "keyTakeaway": "Covers the developer versions of this chapter's techniques: structured prompts, citations, retrieval, and chaining requests."
+    }
+  ],
+  "lab": {
+    "labTitle": "Hands-On Lab: A Long-Document Workflow with Quote Checks and a Quality Gate",
+    "context": "A consultancy reviews long client documents every week and wants a dependable routine that does not rely on anyone remembering the right prompt. You will build the parts of that routine: a document wrapper that follows the recommended structure, a checker that confirms every quoted passage really appears in the source, a cost comparison for splitting a document into chunks, a reusable template with required fields, and a quality gate for the final draft.",
+    "language": "python"
+  }
+}
+
+@@reading
+# Practical Claude Workflows
+
+The earlier modules in this unit each introduced one part: projects, artifacts, Claude Code, skills, connectors. Knowing the parts is different from getting work done with them. People who gain the most from an assistant are rarely the ones with the cleverest prompts. They are the ones who have turned their recurring tasks into **workflows**: fixed sequences of steps, with checks, that produce a reliable result every time.
+
+This chapter covers three things. First, how to work with long documents, where most knowledge work begins. Second, how to combine the parts of Claude into a workflow for writing and research. Third, how to build quality control into the workflow so that it does not depend on your vigilance. The techniques are from Anthropic's documentation and its published guidance on agents, as of November 2026.
+
+## 1. First-Principles Mental Model & Intuition
+
+### A recipe, not a conversation
+
+Compare two cooks. One improvises every evening: sometimes brilliant, sometimes not, never the same twice. The other follows a recipe: listed ingredients, ordered steps, a point at which to taste and adjust. The second cook's results are consistent, can be handed to someone else, and improve over time, because when a dish fails there is a specific step to change.
+
+An ad hoc chat is improvisation. A workflow is a recipe.
+
+```text
+   AD HOC                                    WORKFLOW
+
+   "Summarise this report."                  1. GATHER    the right documents, labelled
+        |                                    2. EXTRACT   the relevant quotes, word for word
+        v                                    3. DRAFT     only from those quotes
+   an answer, of unknown quality             4. CHECK     quotes exist; draft meets the checklist
+                                             5. DELIVER   in the agreed format
+                                                  |
+                                                  v
+                                             a result you can defend, repeat, and delegate
+```
+
+The rule of thumb for when a recipe is worth writing is the third repetition. The first time you do a task, explore. The second time, notice what you repeated. The third time, write it down.
+
+### The analyst and the office
+
+Picture Claude as a sharp analyst who arrives each morning to an empty desk. The parts of the product are the office around that desk.
+
+| Part | The office equivalent | What it contributes to a workflow |
+|---|---|---|
+| Project (Module 3.2) | The filing cabinet and the brief on the wall | Standing context: who the client is, the house style, reference documents |
+| Connector (Module 3.6) | The mail room | Fetches the current files, messages, and calendar from where they live |
+| Skill (Module 3.5) | A laminated procedure | The method for a recurring task, loaded when needed |
+| Artifact (Module 3.3) | The deliverable on the desk | The finished document, in a form you can revise and export |
+| Research mode | A trip to the library | A multi-step search of the web and connected sources, returning a cited report |
+| Claude Code (Module 3.4) | A workshop with tools | Work across many files, with the ability to run and verify |
+
+A workflow chooses among these. Most do not need all of them. The discipline that runs through this chapter is to start with the simplest arrangement that works and add a part only when it removes a real problem.
+
+## 2. Core Theory, Mathematical Foundations & Architecture Internals
+
+### Long documents: three rules from the documentation
+
+Anthropic's prompting guidance has a short section on long inputs, which it defines as roughly 20,000 tokens and more. It makes three recommendations.
+
+**Rule 1. Put the documents first and the question last.** Place long material at the top of the prompt, above the instructions and the question. The documentation states that a query at the end can improve response quality by up to 30 percent in its tests, especially with several documents. The likely reason follows from Module 1.9: with the question last, the model reads the documents and then meets the task immediately before it begins to write.
+
+**Rule 2. Label each document.** When there is more than one, wrap each in tags that mark where it starts and ends and give its source. The recommended form is:
+
+```text
+<documents>
+  <document index="1">
+    <source>annual-report-2025.pdf</source>
+    <document_content>
+    Revenue for 2025 was 4.2 million, up 6 percent on the year before.
+    </document_content>
+  </document>
+  <document index="2">
+    <source>board-minutes-march.docx</source>
+    <document_content>
+    The board noted 2025 revenue of 4.4 million and approved the budget.
+    </document_content>
+  </document>
+</documents>
+
+Compare the revenue figures in the two documents and list any that disagree.
+```
+
+The tags do two jobs. They stop the model from confusing one document's text with another's or with your instructions. And they give it a name to cite: "according to board-minutes-march.docx".
+
+**Rule 3. Ask for quotes first.** For a task over long documents, ask the model to pull out the relevant passages word for word, inside quote tags, before it does the task, and then to work from those quotes. This focuses it on the relevant content, and it has a second benefit that the next section develops: quotes can be checked.
+
+In the chat app you apply these rules by attaching the files, naming them clearly, and writing the request so that the question comes at the end and asks for supporting quotes.
+
+### Quotes can be verified, and should be
+
+A summary is hard to check without rereading the source. A direct quotation is easy to check: either those words appear in the document or they do not. A workflow that requires quotes turns an unverifiable output into a verifiable one.
+
+If the model returns $k$ quotes and $v$ of them are found in the source, the verification rate is
+
+$$
+\text{rate} = \frac{v}{k}
+$$
+
+The rate is less important than the list of failures. Anthropic's own help pages warn that Claude can present quotations that look authoritative and are not in the source. A quote that cannot be found is either a paraphrase presented as a quotation or an invention, and in both cases the claim resting on it needs a human look.
+
+Comparison needs a little care. A model may reproduce a sentence with a line break in a different place or with typographic quotation marks where the source had plain ones. So both texts are **normalised** before comparing: runs of whitespace become single spaces, and curly quotation marks become straight ones. After that, the test is exact.
+
+Verification has a limit that must be stated plainly. A quote that is found proves the words exist. It does not prove they support the conclusion drawn from them. "The supplier may terminate with 60 days' notice" is a real quote that does not support the claim "either party may terminate". Checking existence is automatic. Checking relevance is still reading.
+
+### One pass, or split and combine
+
+With a context window of a million tokens, most documents fit in a single request. That is the **single-pass** approach: the whole document and one question. Its cost in input tokens, for a document of $D$ tokens and instructions of $p$ tokens, is
+
+$$
+T_{\text{single}} = D + p
+$$
+
+The alternative is **map-reduce**. Split the document into $n$ chunks of $c$ tokens. In the map stage, ask the same question of each chunk separately and receive a short result of $s$ tokens from each. In the reduce stage, combine the $n$ results into one answer. The input cost is
+
+$$
+T_{\text{map-reduce}} = \underbrace{D + n \cdot p}_{\text{map}} + \underbrace{n \cdot s + p}_{\text{reduce}} \qquad \text{where } n = \left\lceil \frac{D}{c} \right\rceil
+$$
+
+For a 200,000-token document in chunks of 10,000, with 500 tokens of instructions and 400-token chunk summaries, $n = 20$. The map stage reads $200{,}000 + 10{,}000 = 210{,}000$ tokens and the reduce stage reads $8{,}000 + 500 = 8{,}500$. The total is 218,500 against 200,500 for a single pass, about 9 percent more.
+
+So map-reduce is not cheaper. Its advantages are elsewhere, and so are its costs.
+
+| | Single pass | Map-reduce |
+|---|---|---|
+| Sees connections across the whole document | Yes | No. Each chunk is read alone |
+| Attention to detail in each part | Thinner as the input grows | Strong. Every chunk gets a full reading |
+| Works when the material exceeds the window | No | Yes |
+| Speed | One long request | Chunks can run at the same time |
+| Typical failure | A detail in the middle is overlooked | A point that spans two chunks is lost |
+
+Use a single pass when the question is about relationships: contradictions, themes, how one section bears on another. Use map-reduce when the question is the same for every part and completeness matters: "list every deadline", "extract every named supplier". For very large collections where only a few passages matter, the retrieval approach of Module 3.2 is the third option.
+
+### Five patterns for workflows
+
+In December 2024 Anthropic published a guide, "Building effective agents", which describes a small set of patterns that most successful systems are built from. They apply to work done by hand in the chat app as well as to software.
+
+| Pattern | What it is | A knowledge-work example |
+|---|---|---|
+| **Prompt chaining** | A fixed sequence, each step using the last step's output | Outline, then draft, then edit |
+| **Routing** | Classify the input, then send it to the right specialised step | Decide whether a message is a complaint, a question, or an order, and use the matching template |
+| **Parallelisation** | Run several steps at once and combine: split a task into sections, or ask the same question several times and compare | Summarise each chapter separately. Or get three independent reviews of a draft |
+| **Orchestrator and workers** | One step plans and hands sub-tasks to others, then assembles the results | Research a topic across many sources. This is what Research mode does for you |
+| **Evaluator and optimiser** | One step produces, another critiques against criteria, and the loop repeats | Draft, check against a list, revise |
+
+The guide's main advice is restraint: find the simplest solution that works, and add complexity only when it demonstrably improves results. Each additional step is a place where an error can enter. If each of $n$ chained steps is right with probability $p$, the chain is right with probability $p^{n}$, as in Module 2.12. Additional steps are justified when they are checks that catch more errors than they introduce.
+
+### Quality gates
+
+A **quality gate** is a check that a draft must pass before it moves on. Good gates are specific and mechanical: "contains a summary of at most 150 words", "every figure is followed by a source", "every quote was found in the document". "Is good" is not a gate.
+
+If each of $m$ independent checks catches a fraction $r$ of the errors that reach it, the fraction that slips through all of them is
+
+$$
+(1 - r)^{m}
+$$
+
+Two checks that each catch 70 percent let through 9 percent. In practice checks are not independent. Two reviews by the same model with similar instructions tend to miss the same things. So choose gates of different kinds: a mechanical check, a second model pass with a different brief, and a human read of whatever matters most.
+
+### Templates
+
+The last ingredient of a repeatable workflow is a **template**: a prompt written once, with named gaps for what changes each time.
+
+```text
+Summarise {document} for {audience}. Focus on {focus}. Limit: {limit} words.
+```
+
+A template with required fields does for a prompt what a form does for a request: it stops you from sending it incomplete. A skill, from Module 3.5, is the packaged form of a template with its supporting files.
+
+### Research mode and connectors
+
+Two product features carry out multi-step workflows on your behalf. **Research mode** runs many searches, across the web and whatever sources you have connected, over several minutes, and returns a report with citations. It is the orchestrator pattern as a product, and it uses your allowance much faster than ordinary chat. **Connectors** bring current material from services such as your documents, mail, and calendar into a conversation, subject to what you and your organisation's administrators have enabled. Availability and limits depend on the plan and change often.
+
+Both return citations, and the same rule applies as for quotes: a citation tells you where to look. It does not relieve you of looking.
+
+### Complexity
+
+Wrapping documents and checking quotes are linear in the size of the text. Map-reduce makes $n + 1$ requests where a single pass makes one. A draft-and-check loop of $k$ rounds costs $k$ times one round.
+
+## 3. Production-Grade Implementation & Annotated Walkthrough
+
+Each technique in Section 2 can be written in a few lines. First, the document wrapper.
+
+```python
+from xml.sax.saxutils import escape
+
+def wrap_documents(docs, question):
+    parts = ["<documents>"]
+    for index, (source, text) in enumerate(docs, start=1):
+        parts.append(f'  <document index="{index}">')
+        parts.append(f"    <source>{escape(source)}</source>")
+        parts.append(f"    <document_content>\n{escape(text)}\n    </document_content>")
+        parts.append("  </document>")
+    parts.append("</documents>")
+    return "\n".join(parts) + "\n\n" + question
+
+prompt = wrap_documents(
+    [("contract.txt", "Either party may terminate with 60 days' notice."),
+     ("email.txt", "We agreed fees < 5,000 & no penalties.")],
+    "First quote the passages about termination. Then state the notice period.",
+)
+print(prompt)
+```
+
+- **The documents come first and the question last.** The function builds the labelled block and appends the question after a blank line, which is the order the documentation recommends.
+- **Each document is numbered and named.** The index and the source give the model something precise to cite, and give you a way to trace a claim back.
+- **`escape` protects the structure.** The second document contains a less-than sign and an ampersand. Left as they are, they could be read as part of the markup. Escaped, they are unmistakably content. This is the same defence as `html.escape` in Module 3.3.
+- **The question asks for quotes before the answer.** Rule 3 is applied in the wording of the request.
+
+Next, checking that quoted passages exist.
+
+```python
+import re
+
+SOURCE = ("Section 4. Either party may terminate this agreement with 60 days' written notice. "
+          "Fees are payable within 30 days of invoice. Late payments accrue interest at 1.5% per month.\n"
+          "Section 5. The supplier's total liability is limited to the fees paid in the preceding 12 months.")
+
+RESPONSE = """<quotes>
+<quote>Either party may terminate this agreement with 60 days\u2019 written notice.</quote>
+<quote>Fees are payable within 30 days
+of invoice.</quote>
+<quote>The supplier is liable for all indirect losses.</quote>
+</quotes>
+The notice period is 60 days, fees are due in 30 days, and the supplier bears indirect losses."""
+
+def normalise(text):
+    for curly, straight in (("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"')):
+        text = text.replace(curly, straight)
+    return " ".join(text.split())
+
+def extract_quotes(response):
+    return [quote.strip() for quote in re.findall(r"<quote>(.*?)</quote>", response, re.S)]
+
+def verify_quotes(response, source):
+    clean_source = normalise(source)
+    found, missing = [], []
+    for quote in extract_quotes(response):
+        clean = normalise(quote)
+        (found if clean and clean in clean_source else missing).append(quote)
+    return found, missing
+
+found, missing = verify_quotes(RESPONSE, SOURCE)
+print(f"{len(found)} of {len(found) + len(missing)} quotes found")
+print("not in the source:", missing)
+```
+
+- **`normalise` removes differences that do not matter.** The first quote uses a typographic apostrophe where the source has a plain one. The second has a line break in the middle. Both are faithful quotations, and after normalising both match.
+- **The comparison is then exact.** There is no fuzzy matching and no "close enough". A quotation is either in the text or not, and a checker that accepted near-misses would accept paraphrases.
+- **The third quote is not in the document.** It reads like contract language, and the summary below it repeats the claim confidently. The source says the opposite: liability is limited. This is the failure the check exists to catch.
+- **An empty quote counts as missing.** An empty string is technically found inside any text. Treating it as a failure prevents a trivially passing result.
+- **The function returns the lists.** The reviewer needs to see which quotes failed, since each one marks a claim to re-examine.
+
+Then, the cost comparison, the template, and the gate.
+
+```python
+import math
+import string
+
+def map_reduce_cost(doc_tokens, chunk_tokens, prompt_tokens, summary_tokens):
+    chunks = math.ceil(doc_tokens / chunk_tokens)
+    single_pass = doc_tokens + prompt_tokens
+    split = (doc_tokens + chunks * prompt_tokens) + (chunks * summary_tokens + prompt_tokens)
+    return single_pass, split
+
+def render_template(template, fields):
+    needed = {name for _, name, _, _ in string.Formatter().parse(template) if name}
+    missing = sorted(name for name in needed if not str(fields.get(name, "")).strip())
+    if missing:
+        raise ValueError("missing fields: " + ", ".join(missing))
+    return template.format(**fields)
+
+def quality_gate(draft, checks):
+    failed = []
+    for name, check in checks:
+        try:
+            passed = bool(check(draft))
+        except Exception:
+            passed = False
+        if not passed:
+            failed.append(name)
+    return failed
+
+BRIEF = "Summarise {document} for {audience}. Focus on {focus}. Limit: {limit} words."
+CHECKS = [
+    ("has-summary", lambda draft: draft.lstrip().lower().startswith("summary")),
+    ("within-150-words", lambda draft: len(draft.split()) <= 150),
+    ("names-a-source", lambda draft: "[source:" in draft.lower()),
+    ("no-filler", lambda draft: "as an ai" not in draft.lower()),
+]
+
+single, split = map_reduce_cost(200_000, 10_000, 500, 400)
+print(f"single pass {single:,}  map-reduce {split:,}  ratio {split / single:.3f}")
+print(render_template(BRIEF, {"document": "the Q3 report", "audience": "the board", "focus": "risks", "limit": 150}))
+try:
+    render_template(BRIEF, {"document": "the Q3 report", "focus": "risks", "audience": " "})
+except ValueError as problem:
+    print(problem)
+print(quality_gate("As an AI, I think revenue rose.", CHECKS))
+print(quality_gate("Summary: revenue rose 4 percent [source: q3-report.pdf].", CHECKS))
+```
+
+- **`map_reduce_cost` returns both totals.** The two bracketed terms are the map and reduce stages from the formula. The ratio of about 1.09 confirms that splitting costs slightly more. You choose it for coverage, not for savings.
+- **`render_template` finds the template's own fields.** `string.Formatter().parse` lists every named gap, so the set of required fields comes from the template itself and cannot fall out of step with it.
+- **A blank value counts as missing.** The second call supplies the audience as a single space. The error names both "audience" and "limit", in sorted order, so the person filling in the template sees everything that is wrong at once.
+- **`quality_gate` runs every check and reports every failure.** A check that crashes is treated as a failure. A gate must never pass a draft because a check could not run.
+- **The first draft fails three checks and the second passes all four.** Each check is a plain rule a person could apply. Their value comes from being applied every time.
+
+Finally, the evaluator and optimiser pattern, with a stand-in for the model.
+
+```python
+def revise_until_pass(draft, revise, checks, max_rounds=3):
+    for round_number in range(max_rounds + 1):
+        failed = quality_gate(draft, checks)
+        if not failed or round_number == max_rounds:
+            return draft, failed, round_number
+        draft = revise(draft, failed)
+
+def stub_reviser(draft, failed):
+    if "no-filler" in failed:
+        return draft.replace("As an AI, ", "")
+    if "has-summary" in failed:
+        return "Summary: " + draft
+    if "names-a-source" in failed:
+        return draft + " [source: q3-report.pdf]"
+    return draft
+
+print(revise_until_pass("As an AI, I think revenue rose.", stub_reviser, CHECKS))
+```
+
+- **The loop alternates checking and revising.** The checker's list of failures is handed to the reviser, which is the important design point: the revision is told exactly what was wrong.
+- **The loop is bounded.** After `max_rounds` revisions it returns whatever it has, together with the failures that remain. An unbounded loop that never satisfies its checker would run indefinitely.
+- **Three rounds fix three faults.** The stand-in reviser fixes one fault per round, so the draft passes on the third. A real model usually fixes several at once, and occasionally introduces a new one, which is why the gate runs again after every revision.
+
+**Complexity.** Every function here is linear in the length of the text it handles. `revise_until_pass` runs the gate at most `max_rounds + 1` times.
+
+### Three workflow recipes
+
+**Reviewing a long document.**
+
+```text
+SETUP     A project for the client, with instructions on tone and audience.
+STEP 1    Attach the document. Ask: "Quote every passage that concerns {topic},
+          word for word, each with its section number. Do not summarise yet."
+STEP 2    Check a sample of the quotes against the document yourself.
+STEP 3    "Using only the quotes above, write a summary of at most {limit} words.
+          After each point give the section number it rests on."
+STEP 4    "List anything in the document on {topic} that the summary leaves out."
+GATE      Every point has a section number. Every quote checked was found.
+```
+
+**A weekly research brief.**
+
+```text
+SETUP     A skill holding the brief's format and the list of sources you trust.
+STEP 1    Use Research mode with the question and the date range. Name preferred sources.
+STEP 2    Ask for the five claims the conclusion depends on, each with its source.
+STEP 3    Open those five sources and confirm each says what is claimed.
+STEP 4    Produce the brief as an artifact in the standard format.
+GATE      Five key claims verified by a person. Dates on every source.
+```
+
+**Writing in your own voice.**
+
+```text
+SETUP     A project containing three samples of your writing and a short style note.
+STEP 1    Give the points to be made as a list. Ask for an outline only.
+STEP 2    Approve or change the outline. Then ask for a draft.
+STEP 3    In a fresh chat, ask for a critique of the draft against your style note.
+STEP 4    Revise. Read the final version aloud before sending.
+GATE      No claim you cannot support. Nothing you would not say in person.
+```
+
+Each recipe has the same form: standing context set up once, a small number of steps, and a gate that names what must be true before the result is used.
+
+## 4. Practitioner Wisdom & Edge Cases (Reddit / HN / Stack Overflow Synthesis)
+
+**Summaries drop the numbers and the exceptions.** A summary is a compression, and what gets compressed away is the qualification, the exception, and the precise figure, which are often the point. When details matter, ask for extraction, "list every deadline with its date", before asking for a summary.
+
+**Quotes that are not in the document.** Users regularly find that a quotation attributed to their own file is a paraphrase or was never there. Anthropic's help pages acknowledge the risk. Checking takes seconds with a text search. For anything you will repeat to someone else, do it.
+
+**Long chats go stale.** In a conversation that has run for hours, early instructions and early documents receive less attention, and the allowance is consumed faster because the whole history is re-sent on every turn. Start a new chat for each stage of a workflow, carrying forward only the output of the previous stage.
+
+**Decisions made in one chat are unknown to the next.** People expect a new conversation in the same project to know what was settled yesterday. As Module 3.2 explained, it knows only what is in the project's instructions and files. Record decisions there.
+
+**Connectors fetch the wrong file.** A search of a shared drive for "Q3 report" may return a draft, last year's version, or a colleague's copy. Name the exact file, ask the assistant to state which file and version it used, and check.
+
+**Over-built setups.** A dozen connectors, twenty skills, and three pages of project instructions make results worse: more context to wade through, more tools to choose wrongly between, more rules to contradict each other. The effective setups described by experienced users are small.
+
+**Asking one prompt to do everything.** "Read these five reports, find the trends, draft a strategy, and format it as slides" invites a shallow pass at each part. Chaining the steps, with a look at the output between them, takes a little longer and produces much better work.
+
+**Two reviews by the same model are not independent.** Asking the same model to "check your work" in the same chat tends to confirm the work. A critique is more useful in a fresh conversation, with a specific brief ("find unsupported claims") and without the reasoning that led to the draft.
+
+**The gate that is always passed.** A checklist that every draft passes is not checking anything. If a gate has never failed, tighten it or replace it.
+
+**Research reports feel authoritative.** A twenty-page report with sixty citations looks finished. The citations show where the model looked. Identify the handful of claims your decision rests on and verify those at their sources.
+
+**Templates fossilise.** A template written six months ago encodes what you knew then. When you find yourself editing the output in the same way every time, change the template.
+
+**Sensitive material in the wrong place.** A workflow that pulls client documents through a connector into a shared project, or publishes an artifact containing them, moves data further than intended. Decide where each kind of material may go before automating its movement.
+
+## 5. Active Recall Check & Synthesis Summary
+
+**Summary.** A workflow is a fixed sequence of steps with checks, and it is what turns an assistant from an occasional help into a dependable method. For long documents, three rules from Anthropic's documentation apply: documents first and the question last, each document labelled with its source, and relevant quotes extracted before the task. Quotes matter because they can be verified mechanically after normalising whitespace and quotation marks, though a quote that exists may still not support the claim made from it. A whole document in one pass preserves connections across it. Splitting and combining gives every part a full reading at a slightly higher token cost and loses what spans the splits. Workflows are built from a few patterns, chaining, routing, parallel steps, an orchestrator with workers, and an evaluator with an optimiser, and the governing advice is to use the simplest that works. Quality gates should be specific, mechanical where possible, and of different kinds. Templates with required fields make a good request repeatable.
+
+**Question 1.** An archive of 600,000 tokens is to be searched for every contractual deadline. Compare the input tokens for a single pass with those for map-reduce using 20,000-token chunks, 800 tokens of instructions, and 500-token results per chunk. The archive fits in the context window. Which approach suits this task, and why?
+
+<details>
+<summary>View Answer</summary>
+
+A single pass reads the archive and the instructions once: 600,000 plus 800 is 600,800 tokens. For map-reduce there are 600,000 divided by 20,000, which is 30 chunks. The map stage reads the whole archive plus the instructions thirty times: 600,000 plus 24,000 is 624,000. The reduce stage reads thirty results of 500 tokens plus the instructions: 15,000 plus 800 is 15,800. The total is 639,800 tokens, about 6.5 percent more than the single pass. Cost therefore does not decide it. The nature of the task does. Finding every deadline is the same question asked of every part, and what matters is completeness. In a single pass over 600,000 tokens, attention is spread thinly and a deadline buried in the middle is easily missed, with nothing in the answer to show the omission. In map-reduce each 20,000-token chunk gets a full reading, and the chunks can be processed at the same time. The weakness of map-reduce is that it loses points spanning two chunks, which matters little for deadlines, each of which sits in one clause. Map-reduce is the better choice here, with chunks split at section boundaries. A question about how the contracts relate to each other would favour the single pass.
+
+</details>
+
+**Question 2.** A model's answer about a 90-page policy includes 25 direct quotations. After normalising, a check finds 22 of them in the document. State the verification rate, explain what should be done about the other three, and explain what the check does not establish about the 22.
+
+<details>
+<summary>View Answer</summary>
+
+The verification rate is 22 out of 25, or 88 percent. The three quotations that were not found are the important output. Each is either a paraphrase presented inside quotation marks or text the model produced that is not in the policy at all. Each should be looked up by hand: search the document for its key terms, see what the policy actually says on that point, and correct or remove the claim that rested on it. Because an answer usually builds conclusions on its quotations, the conclusions connected to those three need re-examining too. It would be a mistake to treat 88 percent as a pass mark. The purpose of the check is to find the specific failures, and a single invented quotation in a policy summary can be the one that matters. For the 22 that were found, the check establishes only that those words appear in the document. It does not establish that they were quoted in context, that they are the most relevant passages, that nothing contradicting them appears elsewhere, or that they support the conclusion drawn. A sentence can be quoted accurately and still be used to justify a claim it does not make. That judgement requires reading the quotations against the claims.
+
+</details>
+
+**Question 3.** A manager produces a monthly board report from three sources: a finance spreadsheet in a shared drive, the minutes of four meetings, and last month's report. It takes a day and the format varies. Design a workflow using the parts of Claude described in this unit. State what each part is for, the steps, and two quality gates of different kinds.
+
+<details>
+<summary>View Answer</summary>
+
+Use a project for standing context: instructions naming the audience as the board, the required tone, and the rule that every figure must carry its source, together with last month's report as a reference for continuity. Use a skill to hold the method and the report template, so that the format is the same every month and the procedure does not live in anyone's memory. Use a connector to fetch the current spreadsheet and minutes from the shared drive, naming the exact files and asking the assistant to confirm which versions it read. Produce the report as an artifact, so that it can be revised in place and exported. The steps form a chain. First, extract: from the spreadsheet, the agreed list of figures with their cell references, and from the minutes, every decision and action as direct quotes with the meeting date. Second, the manager reviews the extraction, which is far quicker than reviewing a finished report. Third, draft the report from the extraction only. Fourth, in a fresh conversation, ask for a critique against the checklist. For gates, one should be mechanical: every figure in the report matches the extracted figure and names its source, and every quoted decision is found in the minutes. The other should be human: the manager reads the three or four statements the board will act on and checks each against the original spreadsheet and minutes. The two gates are of different kinds, so they are unlikely to miss the same error.
+
+</details>
+
+@@starter
+"""
+Lab: A Long-Document Workflow with Quote Checks and a Quality Gate
+Standard library only. Complete the TODO in each step, then press "Run & Verify Step".
+"""
+import math
+import re
+import string
+from xml.sax.saxutils import escape
+
+SOURCE = ("Section 4. Either party may terminate this agreement with 60 days' written notice. "
+          "Fees are payable within 30 days of invoice. Late payments accrue interest at 1.5% per month.\n"
+          "Section 5. The supplier's total liability is limited to the fees paid in the preceding 12 months.")
+
+RESPONSE = """<quotes>
+<quote>Either party may terminate this agreement with 60 days\u2019 written notice.</quote>
+<quote>Fees are payable within 30 days
+of invoice.</quote>
+<quote>The supplier is liable for all indirect losses.</quote>
+</quotes>
+The notice period is 60 days, fees are due in 30 days, and the supplier bears indirect losses."""
+
+BRIEF = "Summarise {document} for {audience}. Focus on {focus}. Limit: {limit} words."
+
+CHECKS = [
+    ("has-summary", lambda draft: draft.lstrip().lower().startswith("summary")),
+    ("within-150-words", lambda draft: len(draft.split()) <= 150),
+    ("names-a-source", lambda draft: "[source:" in draft.lower()),
+    ("no-filler", lambda draft: "as an ai" not in draft.lower()),
+]
+
+
+def normalise(text):
+    """Provided helper: straighten curly quotation marks and collapse all whitespace."""
+    for curly, straight in (("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"')):
+        text = text.replace(curly, straight)
+    return " ".join(text.split())
+
+
+def extract_quotes(response):
+    """Provided helper: the text inside every <quote>...</quote> pair, stripped."""
+    return [quote.strip() for quote in re.findall(r"<quote>(.*?)</quote>", response, re.S)]
+
+
+# ---------------------------------------------------------------- Step 1
+def wrap_documents(docs, question):
+    """docs is a list of (source, text) pairs. Build these lines, joined with "\\n":
+         <documents>
+           <document index="1">                      (two spaces of indent; index counts from 1)
+             <source>ESCAPED SOURCE</source>         (four spaces of indent)
+             <document_content>                      (four spaces of indent)
+         ESCAPED TEXT                                (no indent)
+             </document_content>                     (four spaces of indent)
+           </document>                               (two spaces of indent)
+         </documents>
+       Then add a blank line and the question, so the prompt ENDS with the question.
+       Escape the source and the text with escape()."""
+    # TODO Step 1
+    return None
+
+
+# ---------------------------------------------------------------- Step 2
+def verify_quotes(response, source):
+    """Return (found, missing): two lists of the quotes in the response, in order.
+    A quote is found if its normalise()d form is not empty and appears inside the
+    normalise()d source. Use extract_quotes(response) to get the quotes.
+    The lists hold the quotes as extracted, not their normalised forms."""
+    # TODO Step 2
+    return None
+
+
+# ---------------------------------------------------------------- Step 3
+def map_reduce_cost(doc_tokens, chunk_tokens, prompt_tokens, summary_tokens):
+    """Return (single_pass, split) input-token totals.
+         chunks      = doc_tokens / chunk_tokens, rounded UP
+         single_pass = doc_tokens + prompt_tokens
+         split       = (doc_tokens + chunks * prompt_tokens)          the map stage
+                     + (chunks * summary_tokens + prompt_tokens)      the reduce stage"""
+    # TODO Step 3
+    return None
+
+
+# ---------------------------------------------------------------- Step 4
+def render_template(template, fields):
+    """Fill a template such as "Summarise {document} for {audience}." from the fields dict.
+    The needed names are those in the template:
+        {name for _, name, _, _ in string.Formatter().parse(template) if name}
+    A name is missing if it is not in fields or its value, as a string, is blank.
+    If any are missing, raise ValueError("missing fields: " + the missing names, sorted,
+    joined with ", "). Otherwise return template.format(**fields)."""
+    # TODO Step 4
+    return None
+
+
+# ---------------------------------------------------------------- Step 5
+def quality_gate(draft, checks):
+    """checks is a list of (name, function) pairs. Call each function with the draft.
+    Return the names, in order, of the checks whose function returns a false value
+    OR raises an exception. An empty list means the draft passed every check."""
+    # TODO Step 5
+    return None
+
+
+if __name__ == "__main__":
+    print(wrap_documents([("contract.txt", "Either party may terminate with 60 days' notice.")], "What is the notice period?"))
+    print("quotes   :", verify_quotes(RESPONSE, SOURCE))
+    print("cost     :", map_reduce_cost(200_000, 10_000, 500, 400))
+    print("template :", render_template(BRIEF, {"document": "the Q3 report", "audience": "the board", "focus": "risks", "limit": 150}))
+    print("gate     :", quality_gate("As an AI, I think revenue rose.", CHECKS))
+
+@@solution
+"""
+Lab solution: A Long-Document Workflow with Quote Checks and a Quality Gate
+Standard library only.
+"""
+import math
+import re
+import string
+from xml.sax.saxutils import escape
+
+SOURCE = ("Section 4. Either party may terminate this agreement with 60 days' written notice. "
+          "Fees are payable within 30 days of invoice. Late payments accrue interest at 1.5% per month.\n"
+          "Section 5. The supplier's total liability is limited to the fees paid in the preceding 12 months.")
+
+RESPONSE = """<quotes>
+<quote>Either party may terminate this agreement with 60 days\u2019 written notice.</quote>
+<quote>Fees are payable within 30 days
+of invoice.</quote>
+<quote>The supplier is liable for all indirect losses.</quote>
+</quotes>
+The notice period is 60 days, fees are due in 30 days, and the supplier bears indirect losses."""
+
+BRIEF = "Summarise {document} for {audience}. Focus on {focus}. Limit: {limit} words."
+
+CHECKS = [
+    ("has-summary", lambda draft: draft.lstrip().lower().startswith("summary")),
+    ("within-150-words", lambda draft: len(draft.split()) <= 150),
+    ("names-a-source", lambda draft: "[source:" in draft.lower()),
+    ("no-filler", lambda draft: "as an ai" not in draft.lower()),
+]
+
+
+def normalise(text):
+    """Provided helper: straighten curly quotation marks and collapse all whitespace."""
+    for curly, straight in (("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"')):
+        text = text.replace(curly, straight)
+    return " ".join(text.split())
+
+
+def extract_quotes(response):
+    """Provided helper: the text inside every <quote>...</quote> pair, stripped."""
+    return [quote.strip() for quote in re.findall(r"<quote>(.*?)</quote>", response, re.S)]
+
+
+# ---------------------------------------------------------------- Step 1
+def wrap_documents(docs, question):
+    """Documents first, question last. Each document is numbered and named so the model
+    can cite it, and its content is escaped so it cannot be mistaken for markup."""
+    parts = ["<documents>"]
+    for index, (source, text) in enumerate(docs, start=1):
+        parts.append(f'  <document index="{index}">')
+        parts.append(f"    <source>{escape(source)}</source>")
+        parts.append(f"    <document_content>\n{escape(text)}\n    </document_content>")
+        parts.append("  </document>")
+    parts.append("</documents>")
+    return "\n".join(parts) + "\n\n" + question
+
+
+# ---------------------------------------------------------------- Step 2
+def verify_quotes(response, source):
+    """Normalise away differences that do not matter, then compare exactly. A found quote
+    proves the words exist. It does not prove they support the claim made from them."""
+    clean_source = normalise(source)
+    found, missing = [], []
+    for quote in extract_quotes(response):
+        clean = normalise(quote)
+        (found if clean and clean in clean_source else missing).append(quote)
+    return found, missing
+
+
+# ---------------------------------------------------------------- Step 3
+def map_reduce_cost(doc_tokens, chunk_tokens, prompt_tokens, summary_tokens):
+    """Splitting costs slightly MORE: the instructions are repeated for every chunk and
+    the summaries are read again. It is chosen for coverage, not for savings."""
+    chunks = math.ceil(doc_tokens / chunk_tokens)
+    single_pass = doc_tokens + prompt_tokens
+    split = (doc_tokens + chunks * prompt_tokens) + (chunks * summary_tokens + prompt_tokens)
+    return single_pass, split
+
+
+# ---------------------------------------------------------------- Step 4
+def render_template(template, fields):
+    """The required fields come from the template itself, so they cannot fall out of step
+    with it. Every missing field is named, so the form can be completed in one go."""
+    needed = {name for _, name, _, _ in string.Formatter().parse(template) if name}
+    missing = sorted(name for name in needed if not str(fields.get(name, "")).strip())
+    if missing:
+        raise ValueError("missing fields: " + ", ".join(missing))
+    return template.format(**fields)
+
+
+# ---------------------------------------------------------------- Step 5
+def quality_gate(draft, checks):
+    """Every check runs and every failure is reported. A check that crashes is a failure:
+    a gate must never pass a draft because a check could not run."""
+    failed = []
+    for name, check in checks:
+        try:
+            passed = bool(check(draft))
+        except Exception:
+            passed = False
+        if not passed:
+            failed.append(name)
+    return failed
+
+
+if __name__ == "__main__":
+    print(wrap_documents(
+        [("contract.txt", "Either party may terminate with 60 days' notice."),
+         ("email.txt", "We agreed fees < 5,000 & no penalties.")],
+        "First quote the passages about termination. Then state the notice period."))
+
+    found, missing = verify_quotes(RESPONSE, SOURCE)
+    print(f"{len(found)} of {len(found) + len(missing)} quotes found")
+    print("not in the source:", missing)
+
+    single, split = map_reduce_cost(200_000, 10_000, 500, 400)
+    print(f"single pass {single:,}  map-reduce {split:,}  ratio {split / single:.3f}")
+    single, split = map_reduce_cost(600_000, 20_000, 800, 500)
+    print(f"recall question 1: single pass {single:,}  map-reduce {split:,}  ratio {split / single:.3f}")
+
+    print(render_template(BRIEF, {"document": "the Q3 report", "audience": "the board", "focus": "risks", "limit": 150}))
+    try:
+        render_template(BRIEF, {"document": "the Q3 report", "focus": "risks", "audience": " "})
+    except ValueError as problem:
+        print(problem)
+
+    print(quality_gate("As an AI, I think revenue rose.", CHECKS))
+    print(quality_gate("Summary: revenue rose 4 percent [source: q3-report.pdf].", CHECKS))
+
+@@step
+{
+  "stepNumber": 1,
+  "title": "Wrap documents the recommended way",
+  "instruction": "Implement wrap_documents(docs, question). docs is a list of (source, text) pairs. Build a list of lines: first the opening documents tag; then for each document, counting from 1, a document tag carrying index=\"N\" indented by two spaces, a source element holding the escaped source indented by four spaces, a document_content element indented by four spaces whose content is the escaped text on its own line, and the closing document tag indented by two spaces; and finally the closing documents tag. Join the lines with newlines, then add a blank line and the question. The exact layout is shown in the function's docstring. Use escape() on the source and the text. This applies Rules 1 and 2 from Section 2: documents first with their sources labelled, and the question last. [MOD-3.9]",
+  "hintConceptual": "Put each document in a labelled envelope with its name on it, stack the envelopes, and only then write the question underneath. Anything inside an envelope must be made safe so it cannot be mistaken for the envelope itself.",
+  "hintSyntax": "parts = [\"<documents>\"]\nfor index, (source, text) in enumerate(docs, start=1):\n    parts.append(f'  <document index=\"{index}\">')\n    parts.append(f\"    <source>{escape(source)}</source>\")\n    parts.append(f\"    <document_content>\\n{escape(text)}\\n    </document_content>\")\n    parts.append(\"  </document>\")\nparts.append(\"</documents>\")\nreturn \"\\n\".join(parts) + \"\\n\\n\" + question"
+}
+@@assert
+_prompt = wrap_documents([("contract.txt", "Either party may terminate."), ("email.txt", "We agreed fees < 5,000 & no penalties.")], "What is the notice period?")
+assert isinstance(_prompt, str), "wrap_documents must return a string"
+assert _prompt.startswith("<documents>\n"), "The prompt starts with the opening documents tag"
+assert _prompt.endswith("</documents>\n\nWhat is the notice period?"), "The question comes last, after the closing tag and a blank line"
+assert '  <document index="1">\n    <source>contract.txt</source>\n    <document_content>\nEither party may terminate.\n    </document_content>\n  </document>' in _prompt, f"The first document block does not have the expected layout:\n{_prompt}"
+assert '<document index="2">' in _prompt and _prompt.index('index="1"') < _prompt.index('index="2"'), "Documents are numbered from 1 in the order given"
+assert "We agreed fees &lt; 5,000 &amp; no penalties." in _prompt, "The text must be escaped with escape()"
+assert "fees < 5,000" not in _prompt, "Unescaped document text reached the prompt"
+assert "<source>a &amp; b.txt</source>" in wrap_documents([("a & b.txt", "x")], "q"), "The source must be escaped too"
+assert wrap_documents([], "Just a question") == "<documents>\n</documents>\n\nJust a question", "With no documents the block is empty and the question still comes last"
+assert _prompt.count("<document_content>") == 2 and _prompt.count("</document>") == 2, "One block per document"
+print("Step 1 passed: documents are labelled, numbered, escaped, and placed before the question.")
+
+@@step
+{
+  "stepNumber": 2,
+  "title": "Check that every quote exists",
+  "instruction": "Implement verify_quotes(response, source). Get the quotes with the provided extract_quotes(response). Normalise the source once with the provided normalise helper. For each quote, normalise it too: it is found if the normalised quote is not empty and appears inside the normalised source, and missing otherwise. Return a tuple of two lists, (found, missing), holding the quotes as they were extracted and in their original order. Run it on RESPONSE and SOURCE: two quotes differ from the source only in an apostrophe and a line break and are found, and the third is not in the document at all. This is the verification from Section 2. [MOD-3.9]",
+  "hintConceptual": "A quotation is either in the text or it is not. Iron out the differences that do not matter, such as line breaks and fancy quotation marks, and then look for an exact match.",
+  "hintSyntax": "clean_source = normalise(source)\nfound, missing = [], []\nfor quote in extract_quotes(response):\n    clean = normalise(quote)\n    (found if clean and clean in clean_source else missing).append(quote)\nreturn found, missing"
+}
+@@assert
+_found, _missing = verify_quotes(RESPONSE, SOURCE)
+assert len(_found) == 2 and len(_missing) == 1, f"Two quotes are in the source and one is not, got {len(_found)} found and {len(_missing)} missing"
+assert _missing == ["The supplier is liable for all indirect losses."], f"The fabricated quote must be reported as missing, got {_missing}"
+assert _found[0].startswith("Either party may terminate") and "\u2019" in _found[0], "Quotes are returned as extracted, not in normalised form: a curly apostrophe still matches a straight one"
+assert _found[1] == "Fees are payable within 30 days\nof invoice.", "A quote broken across lines still matches, and is returned as extracted"
+assert verify_quotes("<quote>fees paid in the preceding 12 months</quote>", SOURCE) == (["fees paid in the preceding 12 months"], []), "A partial sentence that appears in the source is found"
+assert verify_quotes("<quote>Fees are payable within 60 days of invoice.</quote>", SOURCE) == ([], ["Fees are payable within 60 days of invoice."]), "A quote with one changed number is not found: the match is exact"
+assert verify_quotes("<quote>  </quote><quote></quote>", SOURCE) == ([], ["", ""]), "An empty quote counts as missing"
+assert verify_quotes("No quotes here at all.", SOURCE) == ([], []), "A response with no quotes gives two empty lists"
+assert verify_quotes("<quote>section 4.</quote>", SOURCE) == ([], ["section 4."]), "Matching is case-sensitive"
+print("Step 2 passed: two quotes are found despite formatting differences, and the invented one is reported.")
+
+@@step
+{
+  "stepNumber": 3,
+  "title": "One pass or split and combine?",
+  "instruction": "Implement map_reduce_cost(doc_tokens, chunk_tokens, prompt_tokens, summary_tokens). Return a tuple (single_pass, split) of input-token totals. The number of chunks is doc_tokens divided by chunk_tokens, rounded up with math.ceil. A single pass reads doc_tokens plus prompt_tokens. Splitting reads, in the map stage, doc_tokens plus the prompt once per chunk, and in the reduce stage, one summary per chunk plus the prompt once more. These are the two formulas from Section 2. Notice that splitting costs slightly more: it is chosen for coverage, not for savings. [MOD-3.9]",
+  "hintConceptual": "Splitting a document means repeating the instructions for every piece and then reading all the pieces' answers again. Add those extras up and compare with reading everything once.",
+  "hintSyntax": "chunks = math.ceil(doc_tokens / chunk_tokens)\nsingle_pass = doc_tokens + prompt_tokens\nsplit = (doc_tokens + chunks * prompt_tokens) + (chunks * summary_tokens + prompt_tokens)\nreturn single_pass, split"
+}
+@@assert
+assert map_reduce_cost(200_000, 10_000, 500, 400) == (200_500, 218_500), f"A 200,000-token document in 20 chunks, got {map_reduce_cost(200_000, 10_000, 500, 400)}"
+assert map_reduce_cost(600_000, 20_000, 800, 500) == (600_800, 639_800), "Recall question 1: 30 chunks of 20,000 tokens"
+assert map_reduce_cost(25_000, 10_000, 100, 50) == (25_100, 25_550), "25,000 tokens in chunks of 10,000 is THREE chunks: round up"
+assert map_reduce_cost(10_000, 10_000, 100, 50) == (10_100, 10_250), "A document that is exactly one chunk still pays for the reduce stage"
+assert map_reduce_cost(0, 10_000, 100, 50) == (100, 100), "An empty document has no chunks"
+assert all(isinstance(value, int) for value in map_reduce_cost(200_000, 10_000, 500, 400)), "Both totals are whole numbers"
+print("Step 3 passed: splitting a 200,000-token document costs 218,500 tokens against 200,500 for one pass.")
+
+@@step
+{
+  "stepNumber": 4,
+  "title": "A template that refuses to be sent incomplete",
+  "instruction": "Implement render_template(template, fields). Find the names the template needs with the expression given in the docstring, which uses string.Formatter().parse. A name is missing if it is not a key in fields, or if its value converted to a string is empty or only whitespace. If any names are missing, raise ValueError with the message 'missing fields: ' followed by the missing names, sorted and joined with a comma and a space. Otherwise return template.format(**fields). Extra fields that the template does not use are allowed. This is the template with required fields from Section 2. [MOD-3.9]",
+  "hintConceptual": "A template is a form. Before filling it in, list the boxes it has, and refuse to submit it while any box is empty, saying which ones.",
+  "hintSyntax": "needed = {name for _, name, _, _ in string.Formatter().parse(template) if name}\nmissing = sorted(name for name in needed if not str(fields.get(name, \"\")).strip())\nif missing:\n    raise ValueError(\"missing fields: \" + \", \".join(missing))\nreturn template.format(**fields)"
+}
+@@assert
+_full = {"document": "the Q3 report", "audience": "the board", "focus": "risks", "limit": 150}
+assert render_template(BRIEF, _full) == "Summarise the Q3 report for the board. Focus on risks. Limit: 150 words.", f"Got {render_template(BRIEF, _full)!r}"
+def _error(template, fields):
+    try:
+        render_template(template, fields)
+    except ValueError as problem:
+        return str(problem)
+    return None
+assert _error(BRIEF, {"document": "the Q3 report", "focus": "risks"}) == "missing fields: audience, limit", f"Every missing field is named, sorted, got {_error(BRIEF, {'document': 'the Q3 report', 'focus': 'risks'})!r}"
+assert _error(BRIEF, {"document": "the Q3 report", "focus": "risks", "audience": " ", "limit": 150}) == "missing fields: audience", "A blank value counts as missing"
+assert _error(BRIEF, {}) == "missing fields: audience, document, focus, limit", "With no fields at all, all four are missing"
+assert render_template(BRIEF, dict(_full, extra="ignored")).startswith("Summarise the Q3 report"), "Extra fields are allowed"
+assert render_template("No gaps here.", {}) == "No gaps here.", "A template with no fields needs none"
+assert render_template("{a} and {a} and {b}", {"a": 0, "b": "x"}) == "0 and 0 and x", "A value of 0 is not blank, and a repeated name is filled each time"
+print("Step 4 passed: a complete form is rendered, and an incomplete one names every missing field.")
+
+@@step
+{
+  "stepNumber": 5,
+  "title": "A quality gate for the final draft",
+  "instruction": "Implement quality_gate(draft, checks). checks is a list of (name, function) pairs. For each, call the function with the draft. If it returns a false value, or raises any exception, add the name to a list of failures. Return the list, in the order of the checks. An empty list means the draft passed. Try it with CHECKS on the two drafts in Section 3: the first fails three checks and the second passes all four. This is the quality gate from Section 2: specific, mechanical, and applied every time. [MOD-3.9]",
+  "hintConceptual": "Run every rule, write down each one that is not satisfied, and treat a rule that cannot be evaluated as not satisfied. A gate should never wave something through because a check broke.",
+  "hintSyntax": "failed = []\nfor name, check in checks:\n    try:\n        passed = bool(check(draft))\n    except Exception:\n        passed = False\n    if not passed:\n        failed.append(name)\nreturn failed"
+}
+@@assert
+assert quality_gate("As an AI, I think revenue rose.", CHECKS) == ["has-summary", "names-a-source", "no-filler"], f"The first draft fails three checks, in order, got {quality_gate('As an AI, I think revenue rose.', CHECKS)}"
+assert quality_gate("Summary: revenue rose 4 percent [source: q3-report.pdf].", CHECKS) == [], "The second draft passes every check"
+assert quality_gate("Summary: " + "word " * 200 + "[source: x]", CHECKS) == ["within-150-words"], "A draft that is too long fails only the length check"
+assert quality_gate("anything", []) == [], "With no checks nothing can fail"
+assert quality_gate("draft", [("crashes", lambda draft: draft.no_such_method()), ("fine", lambda draft: True)]) == ["crashes"], "A check that raises an exception counts as a failure, and later checks still run"
+assert quality_gate("draft", [("zero", lambda draft: 0), ("empty", lambda draft: ""), ("one", lambda draft: 1)]) == ["zero", "empty"], "Any false value is a failure, and any true value passes"
+assert quality_gate("b", [("z", lambda d: False), ("a", lambda d: False)]) == ["z", "a"], "Failures keep the order of the checks, not alphabetical order"
+print("Step 5 passed: the first draft fails three checks, the second passes all four.")

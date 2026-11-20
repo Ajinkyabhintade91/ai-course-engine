@@ -1,0 +1,3395 @@
+{
+  "courseTitle": "The Complete AI Mastery Course: Learn, Build, Earn",
+  "courseDescription": "A three-stage curriculum (Stage 1: Learn, Stage 2: Build, Stage 3: Earn) across 12 syllabus modules plus bonus resources. It runs from AI fundamentals and mastery of ChatGPT, Claude, and Gemini, through prompt engineering, AI content creation, workflow automation, building AI agents, coding with AI, and running models locally, to monetizing AI skills with clients and a 30-day mastery roadmap.",
+  "availablePaidPlatforms": [
+    "Coursera Plus"
+  ],
+  "stages": [
+    "Stage 1: Learn",
+    "Stage 2: Build",
+    "Stage 3: Earn"
+  ],
+  "modules": [
+    {
+      "moduleId": "MOD-1.1",
+      "slug": "mod-1-1",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "What is Artificial Intelligence?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Definitions of AI: rational agents, the Turing test, narrow vs general intelligence",
+        "A short history: symbolic AI, expert systems, AI winters, the statistical and deep learning eras",
+        "Where AI shows up today: search, recommendations, perception, language, and decision systems"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "what is artificial intelligence definition history survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "what is artificial intelligence definition history official documentation OR GitHub repository",
+        "communityWisdom": "what is artificial intelligence definition history pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "what is artificial intelligence definition history explained tutorial YouTube",
+        "courseraPaid": "Coursera course what is artificial intelligence definition history"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.2",
+      "slug": "mod-1-2",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "AI vs Machine Learning vs Deep Learning",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The nested hierarchy: AI contains ML contains deep learning contains generative models",
+        "Learning paradigms: supervised, unsupervised, self-supervised, and reinforcement learning",
+        "Why deep neural networks displaced hand-engineered features: data, compute, and representation learning"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI vs machine learning vs deep learning difference survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI vs machine learning vs deep learning difference official documentation OR GitHub repository",
+        "communityWisdom": "AI vs machine learning vs deep learning difference pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI vs machine learning vs deep learning difference explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI vs machine learning vs deep learning difference"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.3",
+      "slug": "mod-1-3",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "What are Large Language Models?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Language modeling as next-token prediction and the chain rule of probability",
+        "Tokens, embeddings, parameters, and context windows",
+        "Pre-training, fine-tuning, and instruction tuning: how a raw model becomes an assistant"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "large language models explained transformer next token prediction survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "large language models explained transformer next token prediction official documentation OR GitHub repository",
+        "communityWisdom": "large language models explained transformer next token prediction pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "large language models explained transformer next token prediction explained tutorial YouTube",
+        "courseraPaid": "Coursera course large language models explained transformer next token prediction"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.4",
+      "slug": "mod-1-4",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "How ChatGPT, Claude and Gemini work?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The transformer architecture: self-attention, layers, and autoregressive decoding",
+        "From prompt to reply: tokenization, the forward pass, sampling with temperature and top-p",
+        "What differs between vendors: training data, alignment methods (RLHF, constitutional approaches), tools, and context size"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "how ChatGPT Claude Gemini work transformer attention inference survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "how ChatGPT Claude Gemini work transformer attention inference official documentation OR GitHub repository",
+        "communityWisdom": "how ChatGPT Claude Gemini work transformer attention inference pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "how ChatGPT Claude Gemini work transformer attention inference explained tutorial YouTube",
+        "courseraPaid": "Coursera course how ChatGPT Claude Gemini work transformer attention inference"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.5",
+      "slug": "mod-1-5",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "What is Generative AI?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Generative vs discriminative models: modeling p(x) versus p(y|x)",
+        "Model families: autoregressive transformers, diffusion models, GANs, and VAEs",
+        "Modalities: text, image, audio, video, and code generation and where each is production-ready"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "generative AI explained diffusion models GANs LLMs survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "generative AI explained diffusion models GANs LLMs official documentation OR GitHub repository",
+        "communityWisdom": "generative AI explained diffusion models GANs LLMs pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "generative AI explained diffusion models GANs LLMs explained tutorial YouTube",
+        "courseraPaid": "Coursera course generative AI explained diffusion models GANs LLMs"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.6",
+      "slug": "mod-1-6",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "What are AI Agents?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The agent loop: perceive, reason, act, observe",
+        "What separates a chatbot from an agent: tools, memory, goals, and autonomy",
+        "Levels of autonomy and realistic examples of agents in production"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI agents explained LLM agent loop tools survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI agents explained LLM agent loop tools official documentation OR GitHub repository",
+        "communityWisdom": "AI agents explained LLM agent loop tools pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI agents explained LLM agent loop tools explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI agents explained LLM agent loop tools"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.7",
+      "slug": "mod-1-7",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "Open Source vs Closed Source AI",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Open weights vs open source vs API-only: what is actually released",
+        "Trade-offs: cost, privacy, control, capability, and support",
+        "Licenses and governance: Apache/MIT, Llama and Gemma terms, and how to read a model card"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "open source vs closed source AI models open weights licensing survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "open source vs closed source AI models open weights licensing official documentation OR GitHub repository",
+        "communityWisdom": "open source vs closed source AI models open weights licensing pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "open source vs closed source AI models open weights licensing explained tutorial YouTube",
+        "courseraPaid": "Coursera course open source vs closed source AI models open weights licensing"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.8",
+      "slug": "mod-1-8",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "AI Models Explained",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What a model is: architecture plus learned weights, and what parameter counts mean",
+        "Model categories: base, chat, reasoning, embedding, multimodal, and small models",
+        "Reading benchmarks and model cards without being misled"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI model types parameters benchmarks model cards survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI model types parameters benchmarks model cards official documentation OR GitHub repository",
+        "communityWisdom": "AI model types parameters benchmarks model cards pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI model types parameters benchmarks model cards explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI model types parameters benchmarks model cards"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.9",
+      "slug": "mod-1-9",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "How AI Processes Information",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Tokenization: byte-pair encoding and why models see sub-word pieces",
+        "Embeddings and vector similarity: meaning as geometry",
+        "Attention and the context window: how a model reads everything at once and why position matters"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "how LLMs process information tokenization embeddings attention survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "how LLMs process information tokenization embeddings attention official documentation OR GitHub repository",
+        "communityWisdom": "how LLMs process information tokenization embeddings attention pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "how LLMs process information tokenization embeddings attention explained tutorial YouTube",
+        "courseraPaid": "Coursera course how LLMs process information tokenization embeddings attention"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.10",
+      "slug": "mod-1-10",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "Limitations of Artificial Intelligence",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Knowledge cutoffs, context limits, and non-determinism",
+        "Weaknesses in arithmetic, counting, long-horizon planning, and out-of-distribution reasoning",
+        "Bias, privacy, security (prompt injection), and the cost and energy footprint"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "limitations of large language models reasoning knowledge cutoff bias survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "limitations of large language models reasoning knowledge cutoff bias official documentation OR GitHub repository",
+        "communityWisdom": "limitations of large language models reasoning knowledge cutoff bias pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "limitations of large language models reasoning knowledge cutoff bias explained tutorial YouTube",
+        "courseraPaid": "Coursera course limitations of large language models reasoning knowledge cutoff bias"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.11",
+      "slug": "mod-1-11",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "AI Hallucinations",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Why hallucinations happen: likelihood training, missing knowledge, and overconfident decoding",
+        "A taxonomy: factual, fabricated citations, faithfulness, and instruction-following errors",
+        "Mitigations: grounding with retrieval, citations, abstention, verification, and self-consistency checks"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "LLM hallucinations causes detection mitigation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "LLM hallucinations causes detection mitigation official documentation OR GitHub repository",
+        "communityWisdom": "LLM hallucinations causes detection mitigation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "LLM hallucinations causes detection mitigation explained tutorial YouTube",
+        "courseraPaid": "Coursera course LLM hallucinations causes detection mitigation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-1.12",
+      "slug": "mod-1-12",
+      "unitId": "UNIT-1",
+      "unitTitle": "Unit 1: Understanding AI from Basics",
+      "moduleTitle": "The Future of AI",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Scaling trends: compute, data, algorithmic efficiency, and inference cost curves",
+        "Near-term directions: agents, multimodality, on-device models, and reasoning models",
+        "Economics, jobs, regulation (EU AI Act), and AI safety as engineering disciplines"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "future of AI scaling laws agents regulation safety survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "future of AI scaling laws agents regulation safety official documentation OR GitHub repository",
+        "communityWisdom": "future of AI scaling laws agents regulation safety pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "future of AI scaling laws agents regulation safety explained tutorial YouTube",
+        "courseraPaid": "Coursera course future of AI scaling laws agents regulation safety"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.1",
+      "slug": "mod-2-1",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "ChatGPT Introduction",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The ChatGPT product surface: chats, projects, canvas, voice, file uploads, and search",
+        "Plans and limits: Free, Plus, Pro, Team, and Enterprise",
+        "How a conversation is assembled: system instructions, history, tools, and the context window"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT introduction interface features plans survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT introduction interface features plans official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT introduction interface features plans pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT introduction interface features plans explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT introduction interface features plans"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.2",
+      "slug": "mod-2-2",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Models and Model Selection",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The OpenAI model lineup: general, reasoning, and mini models and what each is for",
+        "Choosing by task: speed, depth of reasoning, context size, cost, and modality",
+        "A repeatable model-selection procedure with a small evaluation set"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT model selection GPT reasoning models comparison survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT model selection GPT reasoning models comparison official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT model selection GPT reasoning models comparison pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT model selection GPT reasoning models comparison explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT model selection GPT reasoning models comparison"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.3",
+      "slug": "mod-2-3",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Custom Instructions",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What custom instructions are and where they sit in the prompt stack",
+        "Writing durable instructions: role, audience, format, tone, and things to avoid",
+        "Testing and iterating instructions; when a project or custom GPT is the better home"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT custom instructions best practices survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT custom instructions best practices official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT custom instructions best practices pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT custom instructions best practices explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT custom instructions best practices"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.4",
+      "slug": "mod-2-4",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Memory and Personalization",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Saved memories vs chat-history reference: how personalization is stored and recalled",
+        "Managing, auditing, and deleting memories; temporary chats",
+        "Privacy and data-control settings and when to turn memory off"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT memory personalization saved memories chat history survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT memory personalization saved memories chat history official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT memory personalization saved memories chat history pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT memory personalization saved memories chat history explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT memory personalization saved memories chat history"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.5",
+      "slug": "mod-2-5",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Advanced Prompt Engineering",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Structured prompts: goal, context, constraints, examples, and output format",
+        "Reasoning techniques: step-by-step decomposition, self-critique, and prompting reasoning models differently",
+        "Iterative refinement and prompt debugging inside a conversation"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "advanced prompt engineering ChatGPT chain of thought techniques survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "advanced prompt engineering ChatGPT chain of thought techniques official documentation OR GitHub repository",
+        "communityWisdom": "advanced prompt engineering ChatGPT chain of thought techniques pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "advanced prompt engineering ChatGPT chain of thought techniques explained tutorial YouTube",
+        "courseraPaid": "Coursera course advanced prompt engineering ChatGPT chain of thought techniques"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.6",
+      "slug": "mod-2-6",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Custom GPTs",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Anatomy of a GPT: instructions, conversation starters, knowledge files, and capabilities",
+        "Actions: connecting a GPT to external APIs with an OpenAPI schema",
+        "Publishing, sharing, versioning, and protecting instructions and knowledge"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "custom GPTs builder instructions knowledge actions survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "custom GPTs builder instructions knowledge actions official documentation OR GitHub repository",
+        "communityWisdom": "custom GPTs builder instructions knowledge actions pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "custom GPTs builder instructions knowledge actions explained tutorial YouTube",
+        "courseraPaid": "Coursera course custom GPTs builder instructions knowledge actions"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.7",
+      "slug": "mod-2-7",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Deep Research",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "How deep research works: planning, multi-step browsing, synthesis, and citations",
+        "Writing a research brief: scope, sources, time range, and deliverable format",
+        "Verifying reports: source quality, citation checking, and known failure modes"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT deep research agentic research reports survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT deep research agentic research reports official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT deep research agentic research reports pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT deep research agentic research reports explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT deep research agentic research reports"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.8",
+      "slug": "mod-2-8",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Data Analysis",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The code execution sandbox: uploading files, pandas, and chart generation",
+        "An analysis workflow: profile, clean, explore, model, and report",
+        "Validating results: checking the code, sampling rows, and avoiding silent data errors"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT data analysis code interpreter CSV pandas survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT data analysis code interpreter CSV pandas official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT data analysis code interpreter CSV pandas pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT data analysis code interpreter CSV pandas explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT data analysis code interpreter CSV pandas"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.9",
+      "slug": "mod-2-9",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Image Generation",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "How image generation in ChatGPT works and what it is good and bad at",
+        "Prompt structure for images: subject, composition, style, lighting, and text rendering",
+        "Iterative editing, reference images, consistency, and usage rights"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT image generation prompting editing survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT image generation prompting editing official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT image generation prompting editing pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT image generation prompting editing explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT image generation prompting editing"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.10",
+      "slug": "mod-2-10",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "ChatGPT for Business",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Team and Enterprise workspaces: admin controls, data handling, and connectors",
+        "High-value business use cases: support, sales, marketing, operations, and analysis",
+        "Rollout: policy, training, measuring ROI, and managing risk"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT for business enterprise use cases governance survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT for business enterprise use cases governance official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT for business enterprise use cases governance pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT for business enterprise use cases governance explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT for business enterprise use cases governance"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.11",
+      "slug": "mod-2-11",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "ChatGPT for Productivity",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Personal productivity patterns: writing, summarizing, planning, and learning",
+        "Tasks, projects, and connectors for recurring work",
+        "Building a reusable prompt library and measuring time saved"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ChatGPT productivity workflows email meetings planning survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ChatGPT productivity workflows email meetings planning official documentation OR GitHub repository",
+        "communityWisdom": "ChatGPT productivity workflows email meetings planning pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ChatGPT productivity workflows email meetings planning explained tutorial YouTube",
+        "courseraPaid": "Coursera course ChatGPT productivity workflows email meetings planning"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-2.12",
+      "slug": "mod-2-12",
+      "unitId": "UNIT-2",
+      "unitTitle": "Unit 2: Mastering ChatGPT",
+      "moduleTitle": "Practical ChatGPT Workflows",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "End-to-end workflows: research to brief to draft to review",
+        "Combining features: projects, files, canvas, data analysis, and custom GPTs",
+        "Quality control: checklists, human review, and knowing when not to use ChatGPT"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "practical ChatGPT workflows end to end examples survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "practical ChatGPT workflows end to end examples official documentation OR GitHub repository",
+        "communityWisdom": "practical ChatGPT workflows end to end examples pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "practical ChatGPT workflows end to end examples explained tutorial YouTube",
+        "courseraPaid": "Coursera course practical ChatGPT workflows end to end examples"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.1",
+      "slug": "mod-3-1",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Claude: Overview and Setup",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The Claude model family and what each tier is for",
+        "Surfaces: claude.ai, desktop and mobile apps, the API, and Claude Code",
+        "Account setup, plans, styles, and first-run configuration"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude AI overview setup models plans survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude AI overview setup models plans official documentation OR GitHub repository",
+        "communityWisdom": "Claude AI overview setup models plans pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude AI overview setup models plans explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude AI overview setup models plans"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.2",
+      "slug": "mod-3-2",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Claude Projects",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Projects as persistent workspaces: instructions plus a knowledge base",
+        "Loading documents and how project knowledge uses the context window and retrieval",
+        "Organizing projects for clients, codebases, and recurring work"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude Projects knowledge base custom instructions survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude Projects knowledge base custom instructions official documentation OR GitHub repository",
+        "communityWisdom": "Claude Projects knowledge base custom instructions pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude Projects knowledge base custom instructions explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude Projects knowledge base custom instructions"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.3",
+      "slug": "mod-3-3",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Claude Artifacts",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What artifacts are: standalone documents, code, diagrams, and interactive apps",
+        "Prompting for artifacts and iterating on them in place",
+        "Sharing, publishing, and the limits of the artifact sandbox"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude Artifacts interactive apps documents survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude Artifacts interactive apps documents official documentation OR GitHub repository",
+        "communityWisdom": "Claude Artifacts interactive apps documents pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude Artifacts interactive apps documents explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude Artifacts interactive apps documents"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.4",
+      "slug": "mod-3-4",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Claude Code",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "What Claude Code is: an agentic coding tool in the terminal, IDE, desktop, and web",
+        "Core mechanics: the tool loop, permissions, CLAUDE.md memory, and slash commands",
+        "Everyday workflows: explore, plan, implement, test, and commit"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude Code CLI agentic coding CLAUDE.md survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude Code CLI agentic coding CLAUDE.md official documentation OR GitHub repository",
+        "communityWisdom": "Claude Code CLI agentic coding CLAUDE.md pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude Code CLI agentic coding CLAUDE.md explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude Code CLI agentic coding CLAUDE.md"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.5",
+      "slug": "mod-3-5",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Claude Skills",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "What a skill is: a folder of instructions, scripts, and resources loaded on demand",
+        "Anatomy of SKILL.md: frontmatter, description triggering, and progressive disclosure",
+        "Writing, testing, and sharing your own skills"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude Skills SKILL.md agent skills survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude Skills SKILL.md agent skills official documentation OR GitHub repository",
+        "communityWisdom": "Claude Skills SKILL.md agent skills pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude Skills SKILL.md agent skills explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude Skills SKILL.md agent skills"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.6",
+      "slug": "mod-3-6",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Model Context Protocol (MCP)",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The problem MCP solves: one protocol between models and external systems",
+        "Architecture: hosts, clients, servers, and the tools, resources, and prompts primitives",
+        "Connecting MCP servers to Claude and evaluating server trust"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Model Context Protocol MCP servers clients tools survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Model Context Protocol MCP servers clients tools official documentation OR GitHub repository",
+        "communityWisdom": "Model Context Protocol MCP servers clients tools pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Model Context Protocol MCP servers clients tools explained tutorial YouTube",
+        "courseraPaid": "Coursera course Model Context Protocol MCP servers clients tools"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.7",
+      "slug": "mod-3-7",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Computer Use",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "How computer use works: screenshot, reason, click and type, repeat",
+        "Good and bad use cases versus APIs and browser automation",
+        "Safety: sandboxing, prompt injection from screen content, and human confirmation"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude computer use tool screenshots GUI automation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude computer use tool screenshots GUI automation official documentation OR GitHub repository",
+        "communityWisdom": "Claude computer use tool screenshots GUI automation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude computer use tool screenshots GUI automation explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude computer use tool screenshots GUI automation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.8",
+      "slug": "mod-3-8",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Coding with Claude",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Prompting for code: specifications, constraints, examples, and tests",
+        "Working patterns: plan first, small diffs, test-driven loops, and code review",
+        "Reading and verifying generated code before trusting it"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "coding with Claude best practices prompts review survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "coding with Claude best practices prompts review official documentation OR GitHub repository",
+        "communityWisdom": "coding with Claude best practices prompts review pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "coding with Claude best practices prompts review explained tutorial YouTube",
+        "courseraPaid": "Coursera course coding with Claude best practices prompts review"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.9",
+      "slug": "mod-3-9",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Practical Claude Workflows",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Long-document analysis, writing, and research workflows",
+        "Combining projects, artifacts, skills, and connectors",
+        "Quality control and reusable workflow templates"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "practical Claude workflows writing research analysis survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "practical Claude workflows writing research analysis official documentation OR GitHub repository",
+        "communityWisdom": "practical Claude workflows writing research analysis pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "practical Claude workflows writing research analysis explained tutorial YouTube",
+        "courseraPaid": "Coursera course practical Claude workflows writing research analysis"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.10",
+      "slug": "mod-3-10",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Gemini: Overview and Gemini Models",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The Gemini model family: Pro, Flash, and lightweight tiers and their trade-offs",
+        "Surfaces: the Gemini app, AI Studio, Vertex AI, and Workspace",
+        "Strengths: long context, multimodality, and Google Search grounding"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Google Gemini overview models Pro Flash survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Google Gemini overview models Pro Flash official documentation OR GitHub repository",
+        "communityWisdom": "Google Gemini overview models Pro Flash pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Google Gemini overview models Pro Flash explained tutorial YouTube",
+        "courseraPaid": "Coursera course Google Gemini overview models Pro Flash"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.11",
+      "slug": "mod-3-11",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Gems",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What Gems are and how they compare with custom GPTs and Claude Projects",
+        "Writing Gem instructions and attaching knowledge files",
+        "Useful Gem patterns for study, writing, and work"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Gemini Gems custom assistants survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Gemini Gems custom assistants official documentation OR GitHub repository",
+        "communityWisdom": "Gemini Gems custom assistants pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Gemini Gems custom assistants explained tutorial YouTube",
+        "courseraPaid": "Coursera course Gemini Gems custom assistants"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.12",
+      "slug": "mod-3-12",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Gemini Deep Research",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "How Gemini Deep Research plans, browses, and writes a report",
+        "Steering the research plan and exporting results to Docs",
+        "Checking sources and comparing with other deep research tools"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Gemini Deep Research reports sources survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Gemini Deep Research reports sources official documentation OR GitHub repository",
+        "communityWisdom": "Gemini Deep Research reports sources pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Gemini Deep Research reports sources explained tutorial YouTube",
+        "courseraPaid": "Coursera course Gemini Deep Research reports sources"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.13",
+      "slug": "mod-3-13",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "Google Workspace Integration",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Gemini in Gmail, Docs, Sheets, Slides, Drive, and Meet",
+        "Workspace extensions and grounding answers in your own files",
+        "Admin controls, data privacy, and practical limits"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Gemini Google Workspace Gmail Docs Sheets integration survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Gemini Google Workspace Gmail Docs Sheets integration official documentation OR GitHub repository",
+        "communityWisdom": "Gemini Google Workspace Gmail Docs Sheets integration pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Gemini Google Workspace Gmail Docs Sheets integration explained tutorial YouTube",
+        "courseraPaid": "Coursera course Gemini Google Workspace Gmail Docs Sheets integration"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-3.14",
+      "slug": "mod-3-14",
+      "unitId": "UNIT-3",
+      "unitTitle": "Unit 3: Mastering Claude & Gemini",
+      "moduleTitle": "NotebookLM",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Source-grounded answers: how NotebookLM restricts itself to your documents",
+        "Notebooks, sources, citations, and Audio Overviews",
+        "Study and research workflows and where grounding still fails"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "NotebookLM source grounded notebook audio overview survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "NotebookLM source grounded notebook audio overview official documentation OR GitHub repository",
+        "communityWisdom": "NotebookLM source grounded notebook audio overview pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "NotebookLM source grounded notebook audio overview explained tutorial YouTube",
+        "courseraPaid": "Coursera course NotebookLM source grounded notebook audio overview"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-4.1",
+      "slug": "mod-4-1",
+      "unitId": "UNIT-4",
+      "unitTitle": "Unit 4: 100+ AI Tools Directory",
+      "moduleTitle": "How to use this directory",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "A taxonomy of AI tools by job to be done",
+        "Evaluation criteria: capability, cost, privacy, lock-in, and integration",
+        "A fast trial protocol for deciding whether a tool earns a place in your work"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "how to evaluate AI tools criteria framework survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "how to evaluate AI tools criteria framework official documentation OR GitHub repository",
+        "communityWisdom": "how to evaluate AI tools criteria framework pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "how to evaluate AI tools criteria framework explained tutorial YouTube",
+        "courseraPaid": "Coursera course how to evaluate AI tools criteria framework"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-4.2",
+      "slug": "mod-4-2",
+      "unitId": "UNIT-4",
+      "unitTitle": "Unit 4: 100+ AI Tools Directory",
+      "moduleTitle": "The directory",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Assistants, research, writing, and productivity tools",
+        "Image, video, audio, and presentation tools",
+        "Coding, automation, agent, data, and local-model tools"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "best AI tools list by category survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "best AI tools list by category official documentation OR GitHub repository",
+        "communityWisdom": "best AI tools list by category pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "best AI tools list by category explained tutorial YouTube",
+        "courseraPaid": "Coursera course best AI tools list by category"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-4.3",
+      "slug": "mod-4-3",
+      "unitId": "UNIT-4",
+      "unitTitle": "Unit 4: 100+ AI Tools Directory",
+      "moduleTitle": "Build your personal AI stack",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Mapping your weekly tasks to tool categories",
+        "Choosing a minimal stack and avoiding overlapping subscriptions",
+        "Costing, reviewing, and evolving the stack over time"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "build personal AI stack workflow tools survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "build personal AI stack workflow tools official documentation OR GitHub repository",
+        "communityWisdom": "build personal AI stack workflow tools pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "build personal AI stack workflow tools explained tutorial YouTube",
+        "courseraPaid": "Coursera course build personal AI stack workflow tools"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.1",
+      "slug": "mod-5-1",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Anatomy of a Perfect Prompt",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The components: role, task, context, constraints, examples, and output format",
+        "Why specificity works: prompts as conditioning on a probability distribution",
+        "A prompt template and a checklist for reviewing prompts"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "prompt engineering anatomy structure components survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "prompt engineering anatomy structure components official documentation OR GitHub repository",
+        "communityWisdom": "prompt engineering anatomy structure components pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "prompt engineering anatomy structure components explained tutorial YouTube",
+        "courseraPaid": "Coursera course prompt engineering anatomy structure components"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.2",
+      "slug": "mod-5-2",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Role-Based Prompting",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What role prompts change and what they do not",
+        "Designing roles: expertise, audience, stance, and boundaries",
+        "Evidence on persona prompting and common misuse"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "role prompting persona prompting effectiveness survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "role prompting persona prompting effectiveness official documentation OR GitHub repository",
+        "communityWisdom": "role prompting persona prompting effectiveness pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "role prompting persona prompting effectiveness explained tutorial YouTube",
+        "courseraPaid": "Coursera course role prompting persona prompting effectiveness"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.3",
+      "slug": "mod-5-3",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Context Engineering",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Context as the real interface: what goes in the window and in what order",
+        "Selecting, compressing, and ordering context; long-context failure modes",
+        "Context for agents: memory, retrieval, and tool results"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "context engineering LLM context window management survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "context engineering LLM context window management official documentation OR GitHub repository",
+        "communityWisdom": "context engineering LLM context window management pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "context engineering LLM context window management explained tutorial YouTube",
+        "courseraPaid": "Coursera course context engineering LLM context window management"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.4",
+      "slug": "mod-5-4",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Few-Shot Prompting",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "In-context learning: how examples steer a model without training",
+        "Choosing, ordering, and formatting examples; label and recency bias",
+        "Zero-shot vs few-shot vs fine-tuning"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "few-shot prompting in-context learning examples survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "few-shot prompting in-context learning examples official documentation OR GitHub repository",
+        "communityWisdom": "few-shot prompting in-context learning examples pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "few-shot prompting in-context learning examples explained tutorial YouTube",
+        "courseraPaid": "Coursera course few-shot prompting in-context learning examples"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.5",
+      "slug": "mod-5-5",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Structured Output",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Why structure matters for software that consumes model output",
+        "Techniques: format instructions, schemas, constrained decoding, and tool calls",
+        "Validation and repair loops"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "LLM structured output JSON schema constrained decoding survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "LLM structured output JSON schema constrained decoding official documentation OR GitHub repository",
+        "communityWisdom": "LLM structured output JSON schema constrained decoding pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "LLM structured output JSON schema constrained decoding explained tutorial YouTube",
+        "courseraPaid": "Coursera course LLM structured output JSON schema constrained decoding"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.6",
+      "slug": "mod-5-6",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Prompt Chaining",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Decomposing a task into a pipeline of focused prompts",
+        "Chain patterns: sequential, routing, parallel, and evaluator-optimizer",
+        "Passing state between steps and handling failures"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "prompt chaining LLM pipelines decomposition survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "prompt chaining LLM pipelines decomposition official documentation OR GitHub repository",
+        "communityWisdom": "prompt chaining LLM pipelines decomposition pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "prompt chaining LLM pipelines decomposition explained tutorial YouTube",
+        "courseraPaid": "Coursera course prompt chaining LLM pipelines decomposition"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.7",
+      "slug": "mod-5-7",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "System Prompts",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The role of the system prompt and the instruction hierarchy",
+        "Structure of production system prompts: identity, rules, tools, and format",
+        "Testing, versioning, and prompt-leak considerations"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "system prompts design best practices survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "system prompts design best practices official documentation OR GitHub repository",
+        "communityWisdom": "system prompts design best practices pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "system prompts design best practices explained tutorial YouTube",
+        "courseraPaid": "Coursera course system prompts design best practices"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.8",
+      "slug": "mod-5-8",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Multi-Step Instructions",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Writing unambiguous procedures: numbered steps, conditions, and stop rules",
+        "Why models skip or merge steps and how to prevent it",
+        "Checklists, intermediate outputs, and verification steps"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "multi-step instructions prompting sequential tasks survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "multi-step instructions prompting sequential tasks official documentation OR GitHub repository",
+        "communityWisdom": "multi-step instructions prompting sequential tasks pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "multi-step instructions prompting sequential tasks explained tutorial YouTube",
+        "courseraPaid": "Coursera course multi-step instructions prompting sequential tasks"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.9",
+      "slug": "mod-5-9",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Prompt Optimization",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Treating prompts as code: test sets, metrics, and regression checks",
+        "Manual and automatic optimization methods",
+        "Cost, latency, and token optimization including prompt caching"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "prompt optimization evaluation A/B testing DSPy survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "prompt optimization evaluation A/B testing DSPy official documentation OR GitHub repository",
+        "communityWisdom": "prompt optimization evaluation A/B testing DSPy pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "prompt optimization evaluation A/B testing DSPy explained tutorial YouTube",
+        "courseraPaid": "Coursera course prompt optimization evaluation A/B testing DSPy"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.10",
+      "slug": "mod-5-10",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Working with JSON",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "JSON syntax and JSON Schema essentials for prompt writers",
+        "Getting reliable JSON out of a model and parsing it safely",
+        "Feeding JSON into prompts and nested data pitfalls"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "JSON LLM prompts parsing validation schema survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "JSON LLM prompts parsing validation schema official documentation OR GitHub repository",
+        "communityWisdom": "JSON LLM prompts parsing validation schema pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "JSON LLM prompts parsing validation schema explained tutorial YouTube",
+        "courseraPaid": "Coursera course JSON LLM prompts parsing validation schema"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.11",
+      "slug": "mod-5-11",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Prompting for Images",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "How text conditions an image model",
+        "The image prompt formula: subject, medium, style, composition, lighting, and parameters",
+        "Negative prompts, reference images, seeds, and consistency"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "image generation prompting guide diffusion survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "image generation prompting guide diffusion official documentation OR GitHub repository",
+        "communityWisdom": "image generation prompting guide diffusion pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "image generation prompting guide diffusion explained tutorial YouTube",
+        "courseraPaid": "Coursera course image generation prompting guide diffusion"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.12",
+      "slug": "mod-5-12",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Prompting for Coding",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Specifying code tasks: inputs, outputs, constraints, and tests",
+        "Supplying codebase context and asking for diffs",
+        "Review, debugging, and refactoring prompts"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "prompting LLM for code generation best practices survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "prompting LLM for code generation best practices official documentation OR GitHub repository",
+        "communityWisdom": "prompting LLM for code generation best practices pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "prompting LLM for code generation best practices explained tutorial YouTube",
+        "courseraPaid": "Coursera course prompting LLM for code generation best practices"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.13",
+      "slug": "mod-5-13",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "Prompting for AI Agents",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "How agent prompts differ: goals, tools, stopping conditions, and autonomy",
+        "Writing tool descriptions and delegation briefs",
+        "Guardrails, escalation, and long-running task guidance"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "prompting AI agents tool descriptions system prompt survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "prompting AI agents tool descriptions system prompt official documentation OR GitHub repository",
+        "communityWisdom": "prompting AI agents tool descriptions system prompt pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "prompting AI agents tool descriptions system prompt explained tutorial YouTube",
+        "courseraPaid": "Coursera course prompting AI agents tool descriptions system prompt"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-5.14",
+      "slug": "mod-5-14",
+      "unitId": "UNIT-5",
+      "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+      "moduleTitle": "100 Ready-to-Use Prompts",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "A categorized prompt library and how to adapt each template",
+        "Parameterizing prompts with variables",
+        "Maintaining and testing a personal prompt library"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "prompt library templates reusable prompts survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "prompt library templates reusable prompts official documentation OR GitHub repository",
+        "communityWisdom": "prompt library templates reusable prompts pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "prompt library templates reusable prompts explained tutorial YouTube",
+        "courseraPaid": "Coursera course prompt library templates reusable prompts"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.1",
+      "slug": "mod-6-1",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "The AI Content Creation Pipeline",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The pipeline stages: ideate, script, produce, edit, publish, and analyze",
+        "Where AI helps and where human judgment stays essential",
+        "Brand voice, consistency, and a content calendar"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI content creation pipeline workflow survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI content creation pipeline workflow official documentation OR GitHub repository",
+        "communityWisdom": "AI content creation pipeline workflow pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI content creation pipeline workflow explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI content creation pipeline workflow"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.2",
+      "slug": "mod-6-2",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Images",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "How diffusion image models work at a practical level",
+        "Tool landscape and choosing a model for the job",
+        "Style consistency, upscaling, editing, and licensing"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI image generation tools Midjourney Flux comparison survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI image generation tools Midjourney Flux comparison official documentation OR GitHub repository",
+        "communityWisdom": "AI image generation tools Midjourney Flux comparison pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI image generation tools Midjourney Flux comparison explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI image generation tools Midjourney Flux comparison"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.3",
+      "slug": "mod-6-3",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Videos",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Text-to-video and image-to-video: capabilities and limits",
+        "Shot planning, prompts, and stitching clips into a sequence",
+        "Cost, duration limits, and artifacts"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI video generation tools text to video survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI video generation tools text to video official documentation OR GitHub repository",
+        "communityWisdom": "AI video generation tools text to video pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI video generation tools text to video explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI video generation tools text to video"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.4",
+      "slug": "mod-6-4",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Voiceovers",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "How neural text-to-speech and voice cloning work",
+        "Writing for the ear, pacing, pronunciation control, and SSML",
+        "Consent, disclosure, and commercial rights"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI voiceover text to speech voice cloning survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI voiceover text to speech voice cloning official documentation OR GitHub repository",
+        "communityWisdom": "AI voiceover text to speech voice cloning pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI voiceover text to speech voice cloning explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI voiceover text to speech voice cloning"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.5",
+      "slug": "mod-6-5",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Avatars",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Talking-head avatar generation and lip sync",
+        "Stock avatars vs a custom digital twin",
+        "Use cases, uncanny-valley risks, and disclosure"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI avatars talking head video generation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI avatars talking head video generation official documentation OR GitHub repository",
+        "communityWisdom": "AI avatars talking head video generation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI avatars talking head video generation explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI avatars talking head video generation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.6",
+      "slug": "mod-6-6",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Scripts",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Script structure: hook, promise, body, and call to action",
+        "Prompting for scripts in your own voice",
+        "Editing AI drafts into something worth watching"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI script writing video hooks structure survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI script writing video hooks structure official documentation OR GitHub repository",
+        "communityWisdom": "AI script writing video hooks structure pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI script writing video hooks structure explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI script writing video hooks structure"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.7",
+      "slug": "mod-6-7",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Thumbnails",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What makes a thumbnail work: contrast, faces, text, and curiosity",
+        "Generating and compositing thumbnails with AI tools",
+        "Testing thumbnails against click-through rate"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI thumbnail design click through rate survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI thumbnail design click through rate official documentation OR GitHub repository",
+        "communityWisdom": "AI thumbnail design click through rate pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI thumbnail design click through rate explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI thumbnail design click through rate"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.8",
+      "slug": "mod-6-8",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "Instagram Reels",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Short-form video structure and retention",
+        "An AI workflow for Reels: idea, script, edit, and captions",
+        "Posting cadence, analytics, and iteration"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Instagram Reels AI workflow short form video survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Instagram Reels AI workflow short form video official documentation OR GitHub repository",
+        "communityWisdom": "Instagram Reels AI workflow short form video pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Instagram Reels AI workflow short form video explained tutorial YouTube",
+        "courseraPaid": "Coursera course Instagram Reels AI workflow short form video"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.9",
+      "slug": "mod-6-9",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "Instagram Carousels",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Carousel structure: cover hook, slide flow, and final call to action",
+        "Generating copy and slide designs with AI",
+        "Templates, batching, and repurposing"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Instagram carousel design AI workflow survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Instagram carousel design AI workflow official documentation OR GitHub repository",
+        "communityWisdom": "Instagram carousel design AI workflow pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Instagram carousel design AI workflow explained tutorial YouTube",
+        "courseraPaid": "Coursera course Instagram carousel design AI workflow"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.10",
+      "slug": "mod-6-10",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "YouTube Videos",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Long-form workflow: research, script, record or generate, edit, and package",
+        "Titles, descriptions, chapters, and search optimization with AI",
+        "Retention analytics and iteration"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "YouTube video production AI workflow survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "YouTube video production AI workflow official documentation OR GitHub repository",
+        "communityWisdom": "YouTube video production AI workflow pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "YouTube video production AI workflow explained tutorial YouTube",
+        "courseraPaid": "Coursera course YouTube video production AI workflow"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.11",
+      "slug": "mod-6-11",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "AI Presentations",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Generating decks with AI presentation tools",
+        "From outline to narrative to slides",
+        "Editing for clarity and avoiding generic AI slides"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI presentation tools slide generation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI presentation tools slide generation official documentation OR GitHub repository",
+        "communityWisdom": "AI presentation tools slide generation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI presentation tools slide generation explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI presentation tools slide generation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-6.12",
+      "slug": "mod-6-12",
+      "unitId": "UNIT-6",
+      "unitTitle": "Unit 6: AI Content Creation Masterclass",
+      "moduleTitle": "Automated Content Pipelines",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Automating repurposing: one source into many formats",
+        "Orchestrating with workflow tools and LLM APIs",
+        "Human approval gates, scheduling, and quality control"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "automated content pipeline n8n AI repurposing survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "automated content pipeline n8n AI repurposing official documentation OR GitHub repository",
+        "communityWisdom": "automated content pipeline n8n AI repurposing pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "automated content pipeline n8n AI repurposing explained tutorial YouTube",
+        "courseraPaid": "Coursera course automated content pipeline n8n AI repurposing"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.1",
+      "slug": "mod-7-1",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "What is Automation?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Automation defined: rules, triggers, and repeatable processes",
+        "What to automate: frequency, time cost, and error rate",
+        "Classic automation vs AI automation"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "what is automation business process automation basics survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "what is automation business process automation basics official documentation OR GitHub repository",
+        "communityWisdom": "what is automation business process automation basics pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "what is automation business process automation basics explained tutorial YouTube",
+        "courseraPaid": "Coursera course what is automation business process automation basics"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.2",
+      "slug": "mod-7-2",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Workflow Automation",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Workflows as directed graphs of steps",
+        "Data passing between steps, branching, loops, and merging",
+        "Mapping a manual process into a workflow diagram"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "workflow automation concepts nodes data flow survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "workflow automation concepts nodes data flow official documentation OR GitHub repository",
+        "communityWisdom": "workflow automation concepts nodes data flow pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "workflow automation concepts nodes data flow explained tutorial YouTube",
+        "courseraPaid": "Coursera course workflow automation concepts nodes data flow"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.3",
+      "slug": "mod-7-3",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "APIs Explained",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Clients, servers, requests, and responses",
+        "HTTP methods, endpoints, headers, query parameters, and status codes",
+        "Reading API documentation and making a first request"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "REST API explained HTTP methods status codes survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "REST API explained HTTP methods status codes official documentation OR GitHub repository",
+        "communityWisdom": "REST API explained HTTP methods status codes pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "REST API explained HTTP methods status codes explained tutorial YouTube",
+        "courseraPaid": "Coursera course REST API explained HTTP methods status codes"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.4",
+      "slug": "mod-7-4",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Webhooks Explained",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Push vs pull: webhooks compared with polling",
+        "Anatomy of a webhook delivery: URL, payload, signature, and retries",
+        "Testing, securing, and deduplicating webhooks"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "webhooks explained vs polling signature verification survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "webhooks explained vs polling signature verification official documentation OR GitHub repository",
+        "communityWisdom": "webhooks explained vs polling signature verification pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "webhooks explained vs polling signature verification explained tutorial YouTube",
+        "courseraPaid": "Coursera course webhooks explained vs polling signature verification"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.5",
+      "slug": "mod-7-5",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "JSON Fundamentals",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "JSON syntax and data types",
+        "Nested objects and arrays and path expressions",
+        "Parsing, transforming, and validating JSON"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "JSON fundamentals syntax data types nested survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "JSON fundamentals syntax data types nested official documentation OR GitHub repository",
+        "communityWisdom": "JSON fundamentals syntax data types nested pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "JSON fundamentals syntax data types nested explained tutorial YouTube",
+        "courseraPaid": "Coursera course JSON fundamentals syntax data types nested"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.6",
+      "slug": "mod-7-6",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Triggers and Actions",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Trigger types: schedule, webhook, polling, and app event",
+        "Actions, searches, filters, and conditional paths",
+        "Idempotency and avoiding duplicate runs"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "automation triggers and actions event driven survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "automation triggers and actions event driven official documentation OR GitHub repository",
+        "communityWisdom": "automation triggers and actions event driven pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "automation triggers and actions event driven explained tutorial YouTube",
+        "courseraPaid": "Coursera course automation triggers and actions event driven"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.7",
+      "slug": "mod-7-7",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "n8n Introduction",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "n8n concepts: nodes, connections, items, expressions, and credentials",
+        "Self-hosted vs cloud and the fair-code license",
+        "Building a first workflow with AI nodes"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "n8n introduction workflow automation self hosted survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "n8n introduction workflow automation self hosted official documentation OR GitHub repository",
+        "communityWisdom": "n8n introduction workflow automation self hosted pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "n8n introduction workflow automation self hosted explained tutorial YouTube",
+        "courseraPaid": "Coursera course n8n introduction workflow automation self hosted"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.8",
+      "slug": "mod-7-8",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Make Introduction",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Scenarios, modules, bundles, operations, and routers",
+        "Iterators, aggregators, and data mapping",
+        "Pricing by operation and designing efficient scenarios"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Make.com introduction scenarios modules survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Make.com introduction scenarios modules official documentation OR GitHub repository",
+        "communityWisdom": "Make.com introduction scenarios modules pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Make.com introduction scenarios modules explained tutorial YouTube",
+        "courseraPaid": "Coursera course Make.com introduction scenarios modules"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.9",
+      "slug": "mod-7-9",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Zapier Introduction",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Zaps, triggers, actions, filters, and paths",
+        "Tasks, pricing, and when Zapier is the right choice",
+        "Zapier AI features and tables"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Zapier introduction zaps triggers actions survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Zapier introduction zaps triggers actions official documentation OR GitHub repository",
+        "communityWisdom": "Zapier introduction zaps triggers actions pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Zapier introduction zaps triggers actions explained tutorial YouTube",
+        "courseraPaid": "Coursera course Zapier introduction zaps triggers actions"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.10",
+      "slug": "mod-7-10",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Connecting LLMs with APIs",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Anatomy of an LLM API call: model, messages, and parameters",
+        "Tokens, pricing, rate limits, and streaming",
+        "Calling LLM APIs from workflow tools with an HTTP request"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "LLM API integration chat completions messages API survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "LLM API integration chat completions messages API official documentation OR GitHub repository",
+        "communityWisdom": "LLM API integration chat completions messages API pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "LLM API integration chat completions messages API explained tutorial YouTube",
+        "courseraPaid": "Coursera course LLM API integration chat completions messages API"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.11",
+      "slug": "mod-7-11",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Gmail Automation",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Gmail triggers and actions: read, label, draft, and send",
+        "AI email triage: classify, summarize, and draft",
+        "OAuth scopes, quotas, and safe-send design"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Gmail automation API triage labels drafts survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Gmail automation API triage labels drafts official documentation OR GitHub repository",
+        "communityWisdom": "Gmail automation API triage labels drafts pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Gmail automation API triage labels drafts explained tutorial YouTube",
+        "courseraPaid": "Coursera course Gmail automation API triage labels drafts"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.12",
+      "slug": "mod-7-12",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Google Sheets Automation",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Sheets as a lightweight database: rows, ranges, and keys",
+        "Read, append, update, and lookup operations",
+        "Concurrency, rate limits, and schema drift"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Google Sheets automation API append update survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Google Sheets automation API append update official documentation OR GitHub repository",
+        "communityWisdom": "Google Sheets automation API append update pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Google Sheets automation API append update explained tutorial YouTube",
+        "courseraPaid": "Coursera course Google Sheets automation API append update"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.13",
+      "slug": "mod-7-13",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "WhatsApp Automation",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The WhatsApp Business Platform: Cloud API, templates, and the 24-hour window",
+        "Building an inbound and outbound message flow",
+        "Opt-in rules, policy compliance, and costs"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "WhatsApp Business API automation Cloud API templates survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "WhatsApp Business API automation Cloud API templates official documentation OR GitHub repository",
+        "communityWisdom": "WhatsApp Business API automation Cloud API templates pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "WhatsApp Business API automation Cloud API templates explained tutorial YouTube",
+        "courseraPaid": "Coursera course WhatsApp Business API automation Cloud API templates"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.14",
+      "slug": "mod-7-14",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Error Handling",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Failure types: transient, permanent, and data errors",
+        "Retries with exponential backoff, timeouts, and dead-letter handling",
+        "Alerting, logging, and idempotent design"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "automation error handling retries exponential backoff idempotency survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "automation error handling retries exponential backoff idempotency official documentation OR GitHub repository",
+        "communityWisdom": "automation error handling retries exponential backoff idempotency pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "automation error handling retries exponential backoff idempotency explained tutorial YouTube",
+        "courseraPaid": "Coursera course automation error handling retries exponential backoff idempotency"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.15",
+      "slug": "mod-7-15",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Authentication and API Keys",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "API keys, bearer tokens, and OAuth 2.0 flows",
+        "Storing secrets: credential stores and environment variables",
+        "Rotation, least privilege, and leak response"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "API authentication API keys OAuth 2.0 secrets management survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "API authentication API keys OAuth 2.0 secrets management official documentation OR GitHub repository",
+        "communityWisdom": "API authentication API keys OAuth 2.0 secrets management pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "API authentication API keys OAuth 2.0 secrets management explained tutorial YouTube",
+        "courseraPaid": "Coursera course API authentication API keys OAuth 2.0 secrets management"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.16",
+      "slug": "mod-7-16",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Project 1: Automated Email Assistant",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Requirements and architecture for an AI inbox assistant",
+        "Classification, drafting, and a human approval step",
+        "Testing, monitoring, and cost control"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI email assistant automation project survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI email assistant automation project official documentation OR GitHub repository",
+        "communityWisdom": "AI email assistant automation project pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI email assistant automation project explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI email assistant automation project"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.17",
+      "slug": "mod-7-17",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Project 2: Lead Generation Workflow",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Lead capture, enrichment, scoring, and routing",
+        "AI personalization of outreach",
+        "CRM sync, deduplication, and compliance"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "lead generation automation workflow enrichment scoring survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "lead generation automation workflow enrichment scoring official documentation OR GitHub repository",
+        "communityWisdom": "lead generation automation workflow enrichment scoring pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "lead generation automation workflow enrichment scoring explained tutorial YouTube",
+        "courseraPaid": "Coursera course lead generation automation workflow enrichment scoring"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.18",
+      "slug": "mod-7-18",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Project 3: AI Customer Support",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Support architecture: intake, retrieval, answer, and escalation",
+        "Grounding answers in a knowledge base",
+        "Handoff rules, tone, and quality measurement"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI customer support automation RAG escalation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI customer support automation RAG escalation official documentation OR GitHub repository",
+        "communityWisdom": "AI customer support automation RAG escalation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI customer support automation RAG escalation explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI customer support automation RAG escalation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.19",
+      "slug": "mod-7-19",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Project 4: Automated Reporting",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Scheduled data collection and aggregation",
+        "AI-written summaries built on verified numbers",
+        "Delivery by email, chat, or dashboard and alert thresholds"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "automated reporting workflow LLM summary survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "automated reporting workflow LLM summary official documentation OR GitHub repository",
+        "communityWisdom": "automated reporting workflow LLM summary pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "automated reporting workflow LLM summary explained tutorial YouTube",
+        "courseraPaid": "Coursera course automated reporting workflow LLM summary"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.20",
+      "slug": "mod-7-20",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Project 5: Content to Content Automation",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Repurposing long content into many formats",
+        "Transcription, chunking, and summarization pipeline",
+        "Review queue and publishing"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "content repurposing automation workflow survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "content repurposing automation workflow official documentation OR GitHub repository",
+        "communityWisdom": "content repurposing automation workflow pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "content repurposing automation workflow explained tutorial YouTube",
+        "courseraPaid": "Coursera course content repurposing automation workflow"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.21",
+      "slug": "mod-7-21",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Project 6: Social Media Content Automation",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Idea backlog to drafted posts",
+        "Platform-specific formatting and scheduling APIs",
+        "Approval, analytics feedback, and brand safety"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "social media content automation scheduling AI survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "social media content automation scheduling AI official documentation OR GitHub repository",
+        "communityWisdom": "social media content automation scheduling AI pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "social media content automation scheduling AI explained tutorial YouTube",
+        "courseraPaid": "Coursera course social media content automation scheduling AI"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-7.22",
+      "slug": "mod-7-22",
+      "unitId": "UNIT-7",
+      "unitTitle": "Unit 7: AI Automation Masterclass",
+      "moduleTitle": "Bonus: 10+ Ready-to-Use Automation Templates",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "A catalog of reusable automation templates",
+        "How to import and adapt a template safely",
+        "Parameterizing and documenting templates"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "automation templates n8n Make Zapier survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "automation templates n8n Make Zapier official documentation OR GitHub repository",
+        "communityWisdom": "automation templates n8n Make Zapier pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "automation templates n8n Make Zapier explained tutorial YouTube",
+        "courseraPaid": "Coursera course automation templates n8n Make Zapier"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.1",
+      "slug": "mod-8-1",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "What is an AI Agent?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "A working definition: an LLM using tools in a loop toward a goal",
+        "Workflows vs agents and when each fits",
+        "A minimal agent in fifty lines"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "what is an AI agent LLM agents definition survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "what is an AI agent LLM agents definition official documentation OR GitHub repository",
+        "communityWisdom": "what is an AI agent LLM agents definition pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "what is an AI agent LLM agents definition explained tutorial YouTube",
+        "courseraPaid": "Coursera course what is an AI agent LLM agents definition"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.2",
+      "slug": "mod-8-2",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "AI Agent Architecture",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Components: model, prompt, tools, memory, planner, and executor",
+        "Control-loop patterns: ReAct, plan-and-execute, and reflection",
+        "State management and termination conditions"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI agent architecture components planning ReAct survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI agent architecture components planning ReAct official documentation OR GitHub repository",
+        "communityWisdom": "AI agent architecture components planning ReAct pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI agent architecture components planning ReAct explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI agent architecture components planning ReAct"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.3",
+      "slug": "mod-8-3",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "LLM + Tools + Memory",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The LLM as a reasoning engine and its limits",
+        "Tools as the agent's hands and eyes",
+        "Short-term, long-term, episodic, and semantic memory"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "LLM agent tools memory short term long term survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "LLM agent tools memory short term long term official documentation OR GitHub repository",
+        "communityWisdom": "LLM agent tools memory short term long term pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "LLM agent tools memory short term long term explained tutorial YouTube",
+        "courseraPaid": "Coursera course LLM agent tools memory short term long term"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.4",
+      "slug": "mod-8-4",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Function Calling",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "How function calling works: schema in, structured call out",
+        "Writing JSON Schema for functions and handling arguments",
+        "Parallel calls, forced tool choice, and error returns"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "LLM function calling JSON schema survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "LLM function calling JSON schema official documentation OR GitHub repository",
+        "communityWisdom": "LLM function calling JSON schema pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "LLM function calling JSON schema explained tutorial YouTube",
+        "courseraPaid": "Coursera course LLM function calling JSON schema"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.5",
+      "slug": "mod-8-5",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Tool Calling",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Tool use across providers and the tool-result loop",
+        "Designing good tools: names, descriptions, and granularity",
+        "Validation, timeouts, and safe execution"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "tool calling agents tool design best practices survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "tool calling agents tool design best practices official documentation OR GitHub repository",
+        "communityWisdom": "tool calling agents tool design best practices pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "tool calling agents tool design best practices explained tutorial YouTube",
+        "courseraPaid": "Coursera course tool calling agents tool design best practices"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.6",
+      "slug": "mod-8-6",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "MCP",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "MCP inside an agent stack: servers as reusable tool providers",
+        "Building a simple MCP server and choosing a transport",
+        "Security: trust boundaries and tool poisoning"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Model Context Protocol build MCP server survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Model Context Protocol build MCP server official documentation OR GitHub repository",
+        "communityWisdom": "Model Context Protocol build MCP server pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Model Context Protocol build MCP server explained tutorial YouTube",
+        "courseraPaid": "Coursera course Model Context Protocol build MCP server"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.7",
+      "slug": "mod-8-7",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "RAG",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Retrieval-augmented generation: index, retrieve, augment, generate",
+        "Chunking, embeddings, hybrid search, and reranking",
+        "Evaluating retrieval and answer faithfulness"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "retrieval augmented generation RAG pipeline chunking survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "retrieval augmented generation RAG pipeline chunking official documentation OR GitHub repository",
+        "communityWisdom": "retrieval augmented generation RAG pipeline chunking pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "retrieval augmented generation RAG pipeline chunking explained tutorial YouTube",
+        "courseraPaid": "Coursera course retrieval augmented generation RAG pipeline chunking"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.8",
+      "slug": "mod-8-8",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Vector Databases",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Embeddings and similarity metrics: cosine, dot product, and Euclidean",
+        "Approximate nearest neighbor indexes: HNSW and IVF",
+        "Choosing a vector store and metadata filtering"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "vector databases similarity search HNSW embeddings survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "vector databases similarity search HNSW embeddings official documentation OR GitHub repository",
+        "communityWisdom": "vector databases similarity search HNSW embeddings pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "vector databases similarity search HNSW embeddings explained tutorial YouTube",
+        "courseraPaid": "Coursera course vector databases similarity search HNSW embeddings"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.9",
+      "slug": "mod-8-9",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Multi-Agent Systems",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Why multiple agents: context isolation, specialization, and parallelism",
+        "Topologies: orchestrator-worker, pipeline, and debate",
+        "Coordination cost, failure modes, and when a single agent wins"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "multi-agent systems LLM orchestrator subagents survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "multi-agent systems LLM orchestrator subagents official documentation OR GitHub repository",
+        "communityWisdom": "multi-agent systems LLM orchestrator subagents pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "multi-agent systems LLM orchestrator subagents explained tutorial YouTube",
+        "courseraPaid": "Coursera course multi-agent systems LLM orchestrator subagents"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.10",
+      "slug": "mod-8-10",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Agentic Workflows",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Workflow patterns: chaining, routing, parallelization, orchestrator-workers, and evaluator-optimizer",
+        "Choosing a pattern for a given task",
+        "Implementing patterns in code and in workflow tools"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "agentic workflows patterns routing parallelization evaluator survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "agentic workflows patterns routing parallelization evaluator official documentation OR GitHub repository",
+        "communityWisdom": "agentic workflows patterns routing parallelization evaluator pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "agentic workflows patterns routing parallelization evaluator explained tutorial YouTube",
+        "courseraPaid": "Coursera course agentic workflows patterns routing parallelization evaluator"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.11",
+      "slug": "mod-8-11",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Human-in-the-Loop",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Where humans belong: approval, review, and escalation",
+        "Designing interrupts, checkpoints, and resumable state",
+        "Balancing autonomy against risk"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "human in the loop AI agents approval survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "human in the loop AI agents approval official documentation OR GitHub repository",
+        "communityWisdom": "human in the loop AI agents approval pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "human in the loop AI agents approval explained tutorial YouTube",
+        "courseraPaid": "Coursera course human in the loop AI agents approval"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.12",
+      "slug": "mod-8-12",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "AI Agent Evaluation",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "What to measure: task success, trajectory quality, cost, and latency",
+        "Building eval sets and graders: code-based, LLM-judge, and human",
+        "Regression testing and tracing"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI agent evaluation evals benchmarks LLM judge survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI agent evaluation evals benchmarks LLM judge official documentation OR GitHub repository",
+        "communityWisdom": "AI agent evaluation evals benchmarks LLM judge pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI agent evaluation evals benchmarks LLM judge explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI agent evaluation evals benchmarks LLM judge"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.13",
+      "slug": "mod-8-13",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Deployment",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Deployment shapes: serverless, containers, queues, and schedulers",
+        "State, concurrency, and long-running tasks",
+        "Observability, cost control, and rollouts"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "deploying AI agents production hosting observability survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "deploying AI agents production hosting observability official documentation OR GitHub repository",
+        "communityWisdom": "deploying AI agents production hosting observability pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "deploying AI agents production hosting observability explained tutorial YouTube",
+        "courseraPaid": "Coursera course deploying AI agents production hosting observability"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.14",
+      "slug": "mod-8-14",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Security and Permissions",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "The agent threat model: prompt injection and data exfiltration",
+        "Least privilege, sandboxing, and approval gates",
+        "Secrets, audit logs, and incident response"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI agent security prompt injection permissions least privilege survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI agent security prompt injection permissions least privilege official documentation OR GitHub repository",
+        "communityWisdom": "AI agent security prompt injection permissions least privilege pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI agent security prompt injection permissions least privilege explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI agent security prompt injection permissions least privilege"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.15",
+      "slug": "mod-8-15",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Agent Project 1: AI Research Agent",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Planning a research agent: search, read, and synthesize",
+        "Source tracking and citation discipline",
+        "Evaluating report quality"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "build AI research agent web search synthesis survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "build AI research agent web search synthesis official documentation OR GitHub repository",
+        "communityWisdom": "build AI research agent web search synthesis pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "build AI research agent web search synthesis explained tutorial YouTube",
+        "courseraPaid": "Coursera course build AI research agent web search synthesis"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.16",
+      "slug": "mod-8-16",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Agent Project 2: AI Sales Agent",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Lead research and qualification",
+        "Personalized outreach drafting and CRM updates",
+        "Guardrails, approval, and compliance"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI sales agent lead qualification outreach survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI sales agent lead qualification outreach official documentation OR GitHub repository",
+        "communityWisdom": "AI sales agent lead qualification outreach pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI sales agent lead qualification outreach explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI sales agent lead qualification outreach"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.17",
+      "slug": "mod-8-17",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Agent Project 3: AI Customer Support Agent",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "RAG over help content plus account tools",
+        "Escalation and handoff design",
+        "Measuring resolution rate and satisfaction"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI customer support agent RAG tools escalation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI customer support agent RAG tools escalation official documentation OR GitHub repository",
+        "communityWisdom": "AI customer support agent RAG tools escalation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI customer support agent RAG tools escalation explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI customer support agent RAG tools escalation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.18",
+      "slug": "mod-8-18",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Agent Project 4: AI Content Creation Agent",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "A research, outline, draft, and edit pipeline",
+        "Brand-voice memory and style guides",
+        "Review and publishing tools"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI content creation agent pipeline survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI content creation agent pipeline official documentation OR GitHub repository",
+        "communityWisdom": "AI content creation agent pipeline pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI content creation agent pipeline explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI content creation agent pipeline"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-8.19",
+      "slug": "mod-8-19",
+      "unitId": "UNIT-8",
+      "unitTitle": "Unit 8: Build Your Own AI Agents",
+      "moduleTitle": "Agent Project 5: AI Personal Assistant",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Calendar, email, and task tools",
+        "Persistent memory and user preferences",
+        "Permissions, confirmation, and proactive behavior"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI personal assistant agent calendar email survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI personal assistant agent calendar email official documentation OR GitHub repository",
+        "communityWisdom": "AI personal assistant agent calendar email pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI personal assistant agent calendar email explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI personal assistant agent calendar email"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.1",
+      "slug": "mod-9-1",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "AI-Assisted Coding",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "The spectrum from autocomplete to chat to autonomous agents",
+        "What AI coding tools do well and poorly",
+        "A productive human-AI coding loop"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI assisted coding tools productivity research survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI assisted coding tools productivity research official documentation OR GitHub repository",
+        "communityWisdom": "AI assisted coding tools productivity research pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI assisted coding tools productivity research explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI assisted coding tools productivity research"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.2",
+      "slug": "mod-9-2",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Vibe Coding",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What vibe coding means and where the term came from",
+        "When it works: prototypes and personal tools; when it fails",
+        "Guardrails: version control, tests, and reviewing diffs"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "vibe coding meaning risks best practices survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "vibe coding meaning risks best practices official documentation OR GitHub repository",
+        "communityWisdom": "vibe coding meaning risks best practices pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "vibe coding meaning risks best practices explained tutorial YouTube",
+        "courseraPaid": "Coursera course vibe coding meaning risks best practices"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.3",
+      "slug": "mod-9-3",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Claude Code",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Installing and configuring Claude Code for a project",
+        "CLAUDE.md, permissions, plan mode, subagents, hooks, and MCP",
+        "A feature-building workflow from start to finish"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Claude Code workflow subagents hooks MCP survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Claude Code workflow subagents hooks MCP official documentation OR GitHub repository",
+        "communityWisdom": "Claude Code workflow subagents hooks MCP pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Claude Code workflow subagents hooks MCP explained tutorial YouTube",
+        "courseraPaid": "Coursera course Claude Code workflow subagents hooks MCP"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.4",
+      "slug": "mod-9-4",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Cursor",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Cursor fundamentals: tab completion, inline edit, chat, and agent",
+        "Rules, codebase indexing, and context control",
+        "Model choice, cost, and privacy mode"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Cursor AI editor agent rules survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Cursor AI editor agent rules official documentation OR GitHub repository",
+        "communityWisdom": "Cursor AI editor agent rules pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Cursor AI editor agent rules explained tutorial YouTube",
+        "courseraPaid": "Coursera course Cursor AI editor agent rules"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.5",
+      "slug": "mod-9-5",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Windsurf (now Devin Desktop)",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Windsurf and its Cascade agent, and its move under Cognition and Devin",
+        "Flows, rules, and memories",
+        "Comparing agentic IDEs"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Windsurf editor Cascade Devin survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Windsurf editor Cascade Devin official documentation OR GitHub repository",
+        "communityWisdom": "Windsurf editor Cascade Devin pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Windsurf editor Cascade Devin explained tutorial YouTube",
+        "courseraPaid": "Coursera course Windsurf editor Cascade Devin"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.6",
+      "slug": "mod-9-6",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Replit",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Replit as a cloud IDE with an agent that builds and deploys",
+        "Databases, secrets, and deployments on Replit",
+        "When to graduate from Replit to your own stack"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Replit Agent build deploy apps survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Replit Agent build deploy apps official documentation OR GitHub repository",
+        "communityWisdom": "Replit Agent build deploy apps pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Replit Agent build deploy apps explained tutorial YouTube",
+        "courseraPaid": "Coursera course Replit Agent build deploy apps"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.7",
+      "slug": "mod-9-7",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Building Websites",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "How websites work: HTML, CSS, JavaScript, and hosting",
+        "Prompting AI to build and refine a static site",
+        "Responsive design, accessibility, and performance"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "building websites with AI HTML CSS static site survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "building websites with AI HTML CSS static site official documentation OR GitHub repository",
+        "communityWisdom": "building websites with AI HTML CSS static site pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "building websites with AI HTML CSS static site explained tutorial YouTube",
+        "courseraPaid": "Coursera course building websites with AI HTML CSS static site"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.8",
+      "slug": "mod-9-8",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Building Web Applications",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Web app architecture: frontend, backend, database, and auth",
+        "Specifying an app for an AI builder",
+        "Data modeling, APIs, and state"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "building web applications with AI full stack survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "building web applications with AI full stack official documentation OR GitHub repository",
+        "communityWisdom": "building web applications with AI full stack pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "building web applications with AI full stack explained tutorial YouTube",
+        "courseraPaid": "Coursera course building web applications with AI full stack"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.9",
+      "slug": "mod-9-9",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Debugging with AI",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "A debugging method: reproduce, isolate, hypothesize, and verify",
+        "Giving the AI the right evidence: errors, logs, and a minimal reproduction",
+        "Avoiding fix loops and regression"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "debugging with AI assistant techniques survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "debugging with AI assistant techniques official documentation OR GitHub repository",
+        "communityWisdom": "debugging with AI assistant techniques pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "debugging with AI assistant techniques explained tutorial YouTube",
+        "courseraPaid": "Coursera course debugging with AI assistant techniques"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.10",
+      "slug": "mod-9-10",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Git and GitHub",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Git fundamentals: commits, branches, merges, and remotes",
+        "The GitHub flow: pull requests, reviews, and issues",
+        "Using Git as a safety net for AI-generated changes"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "git and GitHub basics branches pull requests survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "git and GitHub basics branches pull requests official documentation OR GitHub repository",
+        "communityWisdom": "git and GitHub basics branches pull requests pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "git and GitHub basics branches pull requests explained tutorial YouTube",
+        "courseraPaid": "Coursera course git and GitHub basics branches pull requests"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.11",
+      "slug": "mod-9-11",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Deployment",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Deployment targets: static hosts, serverless, containers, and VPS",
+        "Environment variables, domains, and HTTPS",
+        "Continuous deployment basics and rollback"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "web app deployment Vercel environment variables CI survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "web app deployment Vercel environment variables CI official documentation OR GitHub repository",
+        "communityWisdom": "web app deployment Vercel environment variables CI pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "web app deployment Vercel environment variables CI explained tutorial YouTube",
+        "courseraPaid": "Coursera course web app deployment Vercel environment variables CI"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.12",
+      "slug": "mod-9-12",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Understanding Code Generated by AI",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "A method for reading unfamiliar code",
+        "Spotting common defects in AI-written code",
+        "Security review: secrets, injection, and dependencies"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "understanding AI generated code review security survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "understanding AI generated code review security official documentation OR GitHub repository",
+        "communityWisdom": "understanding AI generated code review security pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "understanding AI generated code review security explained tutorial YouTube",
+        "courseraPaid": "Coursera course understanding AI generated code review security"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.13",
+      "slug": "mod-9-13",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Project 1: Personal Portfolio Website",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Planning content and structure",
+        "Building with AI and iterating on design",
+        "Deploying and attaching a custom domain"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "personal portfolio website project build with AI survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "personal portfolio website project build with AI official documentation OR GitHub repository",
+        "communityWisdom": "personal portfolio website project build with AI pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "personal portfolio website project build with AI explained tutorial YouTube",
+        "courseraPaid": "Coursera course personal portfolio website project build with AI"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.14",
+      "slug": "mod-9-14",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Project 2: Full Web App, 'Client Lead Tracker'",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Requirements and data model for a lead tracker",
+        "CRUD, authentication, and pipeline views",
+        "Testing and deployment"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "lead tracker CRM web app project CRUD survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "lead tracker CRM web app project CRUD official documentation OR GitHub repository",
+        "communityWisdom": "lead tracker CRM web app project CRUD pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "lead tracker CRM web app project CRUD explained tutorial YouTube",
+        "courseraPaid": "Coursera course lead tracker CRM web app project CRUD"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-9.15",
+      "slug": "mod-9-15",
+      "unitId": "UNIT-9",
+      "unitTitle": "Unit 9: Coding with AI",
+      "moduleTitle": "Project 3: AI-Powered Tool, 'Proposal Generator'",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Designing an LLM-backed feature",
+        "Prompt templates, structured output, and document rendering",
+        "API-key safety, cost limits, and evaluation"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI proposal generator app LLM API project survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI proposal generator app LLM API project official documentation OR GitHub repository",
+        "communityWisdom": "AI proposal generator app LLM API project pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI proposal generator app LLM API project explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI proposal generator app LLM API project"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.1",
+      "slug": "mod-10-1",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "What are Local LLMs?",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Running models on your own hardware: why and why not",
+        "Open-weight models, quantization, and the GGUF format",
+        "The runtime landscape: llama.cpp, Ollama, LM Studio, and vLLM"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "local LLMs explained quantization GGUF survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "local LLMs explained quantization GGUF official documentation OR GitHub repository",
+        "communityWisdom": "local LLMs explained quantization GGUF pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "local LLMs explained quantization GGUF explained tutorial YouTube",
+        "courseraPaid": "Coursera course local LLMs explained quantization GGUF"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.2",
+      "slug": "mod-10-2",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Ollama Introduction",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What Ollama is: a model runner with a registry and a local API",
+        "Architecture: server, CLI, model library, and Modelfile",
+        "Ollama compared with the alternatives"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Ollama introduction architecture Modelfile survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Ollama introduction architecture Modelfile official documentation OR GitHub repository",
+        "communityWisdom": "Ollama introduction architecture Modelfile pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Ollama introduction architecture Modelfile explained tutorial YouTube",
+        "courseraPaid": "Coursera course Ollama introduction architecture Modelfile"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.3",
+      "slug": "mod-10-3",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Installing Ollama",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Installing on Windows, macOS, and Linux",
+        "Verifying GPU acceleration",
+        "Configuration: model directory, host, port, and environment variables"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "install Ollama Windows macOS Linux survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "install Ollama Windows macOS Linux official documentation OR GitHub repository",
+        "communityWisdom": "install Ollama Windows macOS Linux pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "install Ollama Windows macOS Linux explained tutorial YouTube",
+        "courseraPaid": "Coursera course install Ollama Windows macOS Linux"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.4",
+      "slug": "mod-10-4",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Downloading Models",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Pulling, listing, and removing models",
+        "Reading tags: parameter size and quantization level",
+        "Disk and memory budgeting"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Ollama pull models tags quantization sizes survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Ollama pull models tags quantization sizes official documentation OR GitHub repository",
+        "communityWisdom": "Ollama pull models tags quantization sizes pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Ollama pull models tags quantization sizes explained tutorial YouTube",
+        "courseraPaid": "Coursera course Ollama pull models tags quantization sizes"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.5",
+      "slug": "mod-10-5",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Qwen",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The Qwen family from Alibaba: general, coder, and vision models",
+        "Strengths: multilingual ability, coding, and tool calling",
+        "Sizes, licenses, and recommended variants"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Qwen models Alibaba local survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Qwen models Alibaba local official documentation OR GitHub repository",
+        "communityWisdom": "Qwen models Alibaba local pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Qwen models Alibaba local explained tutorial YouTube",
+        "courseraPaid": "Coursera course Qwen models Alibaba local"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.6",
+      "slug": "mod-10-6",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Llama",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Meta's Llama lineage and its role in the ecosystem",
+        "Model sizes and capabilities",
+        "The Llama license and acceptable-use policy"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Meta Llama models local license survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Meta Llama models local license official documentation OR GitHub repository",
+        "communityWisdom": "Meta Llama models local license pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Meta Llama models local license explained tutorial YouTube",
+        "courseraPaid": "Coursera course Meta Llama models local license"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.7",
+      "slug": "mod-10-7",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Gemma",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Google's Gemma family and its relationship to Gemini",
+        "Multimodal and small-footprint variants",
+        "License terms and best uses"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Google Gemma models local survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Google Gemma models local official documentation OR GitHub repository",
+        "communityWisdom": "Google Gemma models local pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Google Gemma models local explained tutorial YouTube",
+        "courseraPaid": "Coursera course Google Gemma models local"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.8",
+      "slug": "mod-10-8",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Mistral",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Mistral AI's open-weight and commercial models",
+        "Efficiency focus and function-calling support",
+        "Licensing differences across models"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Mistral models open weight local survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Mistral models open weight local official documentation OR GitHub repository",
+        "communityWisdom": "Mistral models open weight local pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Mistral models open weight local explained tutorial YouTube",
+        "courseraPaid": "Coursera course Mistral models open weight local"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.9",
+      "slug": "mod-10-9",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "DeepSeek",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "DeepSeek chat and reasoning models",
+        "Distilled reasoning variants for local use",
+        "Thinking tokens, performance, and caveats"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "DeepSeek models R1 reasoning local survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "DeepSeek models R1 reasoning local official documentation OR GitHub repository",
+        "communityWisdom": "DeepSeek models R1 reasoning local pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "DeepSeek models R1 reasoning local explained tutorial YouTube",
+        "courseraPaid": "Coursera course DeepSeek models R1 reasoning local"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.10",
+      "slug": "mod-10-10",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Hardware Requirements",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Estimating memory from parameters and quantization",
+        "GPU vs CPU vs Apple Silicon unified memory",
+        "Tokens-per-second expectations and upgrade paths"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "local LLM hardware requirements VRAM estimation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "local LLM hardware requirements VRAM estimation official documentation OR GitHub repository",
+        "communityWisdom": "local LLM hardware requirements VRAM estimation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "local LLM hardware requirements VRAM estimation explained tutorial YouTube",
+        "courseraPaid": "Coursera course local LLM hardware requirements VRAM estimation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.11",
+      "slug": "mod-10-11",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Connecting Local Models to Applications",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "The Ollama REST API and the OpenAI-compatible endpoint",
+        "Calling local models from Python and JavaScript",
+        "Front ends and integrations"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Ollama API OpenAI compatible endpoint integration survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Ollama API OpenAI compatible endpoint integration official documentation OR GitHub repository",
+        "communityWisdom": "Ollama API OpenAI compatible endpoint integration pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Ollama API OpenAI compatible endpoint integration explained tutorial YouTube",
+        "courseraPaid": "Coursera course Ollama API OpenAI compatible endpoint integration"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.12",
+      "slug": "mod-10-12",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Running Local AI Agents",
+      "difficulty": "Advanced",
+      "subTopics": [
+        "Tool calling with local models",
+        "Building a small local agent loop",
+        "Reliability limits and mitigation"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "local AI agents Ollama tool calling survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "local AI agents Ollama tool calling official documentation OR GitHub repository",
+        "communityWisdom": "local AI agents Ollama tool calling pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "local AI agents Ollama tool calling explained tutorial YouTube",
+        "courseraPaid": "Coursera course local AI agents Ollama tool calling"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.13",
+      "slug": "mod-10-13",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Privacy and Offline Usage",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "What stays on your machine and what does not",
+        "Fully offline setups",
+        "Compliance use cases and remaining risks"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "local LLM privacy offline air gapped survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "local LLM privacy offline air gapped official documentation OR GitHub repository",
+        "communityWisdom": "local LLM privacy offline air gapped pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "local LLM privacy offline air gapped explained tutorial YouTube",
+        "courseraPaid": "Coursera course local LLM privacy offline air gapped"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.14",
+      "slug": "mod-10-14",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Troubleshooting",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Diagnosing slow generation and out-of-memory errors",
+        "GPU not detected, context truncation, and prompt-template issues",
+        "Logs, environment variables, and a systematic checklist"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "Ollama troubleshooting slow GPU not used survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "Ollama troubleshooting slow GPU not used official documentation OR GitHub repository",
+        "communityWisdom": "Ollama troubleshooting slow GPU not used pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "Ollama troubleshooting slow GPU not used explained tutorial YouTube",
+        "courseraPaid": "Coursera course Ollama troubleshooting slow GPU not used"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-10.15",
+      "slug": "mod-10-15",
+      "unitId": "UNIT-10",
+      "unitTitle": "Unit 10: Run AI Locally",
+      "moduleTitle": "Model Selection Guide",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Selecting by task, hardware, and license",
+        "Building a personal benchmark",
+        "A decision table of recommended picks"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "choose local LLM model selection guide survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "choose local LLM model selection guide official documentation OR GitHub repository",
+        "communityWisdom": "choose local LLM model selection guide pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "choose local LLM model selection guide explained tutorial YouTube",
+        "courseraPaid": "Coursera course choose local LLM model selection guide"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.1",
+      "slug": "mod-11-1",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "The Honest Truth First",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Realistic expectations: effort, timelines, and competition",
+        "Hype and scams to avoid",
+        "What clients actually pay for"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI freelancing reality AI automation agency honest survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI freelancing reality AI automation agency honest official documentation OR GitHub repository",
+        "communityWisdom": "AI freelancing reality AI automation agency honest pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI freelancing reality AI automation agency honest explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI freelancing reality AI automation agency honest"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.2",
+      "slug": "mod-11-2",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "The 10 Monetization Models",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Services: freelancing, agency, and consulting",
+        "Products: templates, tools, courses, and content",
+        "Comparing models on effort, margin, and scalability"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "ways to monetize AI skills business models survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "ways to monetize AI skills business models official documentation OR GitHub repository",
+        "communityWisdom": "ways to monetize AI skills business models pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "ways to monetize AI skills business models explained tutorial YouTube",
+        "courseraPaid": "Coursera course ways to monetize AI skills business models"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.3",
+      "slug": "mod-11-3",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "How to Identify Business Problems",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Process mapping and finding bottlenecks",
+        "Quantifying a problem in time and money",
+        "Prioritizing by impact and feasibility"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "identify business problems process mapping automation opportunity survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "identify business problems process mapping automation opportunity official documentation OR GitHub repository",
+        "communityWisdom": "identify business problems process mapping automation opportunity pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "identify business problems process mapping automation opportunity explained tutorial YouTube",
+        "courseraPaid": "Coursera course identify business problems process mapping automation opportunity"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.4",
+      "slug": "mod-11-4",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Finding Potential Clients",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Ideal client profile and niche selection",
+        "Channels: network, outbound, content, and marketplaces",
+        "Outreach that earns replies"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "find clients freelance outreach lead generation survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "find clients freelance outreach lead generation official documentation OR GitHub repository",
+        "communityWisdom": "find clients freelance outreach lead generation pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "find clients freelance outreach lead generation explained tutorial YouTube",
+        "courseraPaid": "Coursera course find clients freelance outreach lead generation"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.5",
+      "slug": "mod-11-5",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Building a Portfolio",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Portfolio projects that demonstrate outcomes",
+        "Writing case studies",
+        "Demos, proof, and social presence"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "build portfolio case studies freelance survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "build portfolio case studies freelance official documentation OR GitHub repository",
+        "communityWisdom": "build portfolio case studies freelance pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "build portfolio case studies freelance explained tutorial YouTube",
+        "courseraPaid": "Coursera course build portfolio case studies freelance"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.6",
+      "slug": "mod-11-6",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Creating Service Packages",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Productized services and tiered packages",
+        "Defining scope, deliverables, and exclusions",
+        "Naming and positioning an offer"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "productized services packages freelance survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "productized services packages freelance official documentation OR GitHub repository",
+        "communityWisdom": "productized services packages freelance pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "productized services packages freelance explained tutorial YouTube",
+        "courseraPaid": "Coursera course productized services packages freelance"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.7",
+      "slug": "mod-11-7",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Pricing Frameworks",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Hourly, project, retainer, and value-based pricing",
+        "Calculating costs, margin, and return on investment",
+        "Anchoring and presenting options"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "pricing frameworks value based pricing freelance survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "pricing frameworks value based pricing freelance official documentation OR GitHub repository",
+        "communityWisdom": "pricing frameworks value based pricing freelance pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "pricing frameworks value based pricing freelance explained tutorial YouTube",
+        "courseraPaid": "Coursera course pricing frameworks value based pricing freelance"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.8",
+      "slug": "mod-11-8",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Writing Proposals",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Proposal structure: problem, solution, scope, timeline, price, and next step",
+        "Mirroring the discovery call",
+        "Follow-up and handling objections"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "writing client proposals structure survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "writing client proposals structure official documentation OR GitHub repository",
+        "communityWisdom": "writing client proposals structure pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "writing client proposals structure explained tutorial YouTube",
+        "courseraPaid": "Coursera course writing client proposals structure"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.9",
+      "slug": "mod-11-9",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Discovery Calls",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Call structure and question frameworks",
+        "Qualifying budget, authority, need, and timing",
+        "Taking notes and closing with clear next steps"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "discovery call questions framework consulting survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "discovery call questions framework consulting official documentation OR GitHub repository",
+        "communityWisdom": "discovery call questions framework consulting pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "discovery call questions framework consulting explained tutorial YouTube",
+        "courseraPaid": "Coursera course discovery call questions framework consulting"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.10",
+      "slug": "mod-11-10",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Client Onboarding",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Contracts, invoices, and kickoff",
+        "Access, credentials, and security hygiene",
+        "Setting communication cadence and expectations"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "client onboarding process freelance agency survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "client onboarding process freelance agency official documentation OR GitHub repository",
+        "communityWisdom": "client onboarding process freelance agency pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "client onboarding process freelance agency explained tutorial YouTube",
+        "courseraPaid": "Coursera course client onboarding process freelance agency"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.11",
+      "slug": "mod-11-11",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Delivering Projects",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Milestones, demos, and feedback loops",
+        "Scope-creep management and change requests",
+        "Documentation, handover, and training"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "project delivery scope management freelance survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "project delivery scope management freelance official documentation OR GitHub repository",
+        "communityWisdom": "project delivery scope management freelance pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "project delivery scope management freelance explained tutorial YouTube",
+        "courseraPaid": "Coursera course project delivery scope management freelance"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-11.12",
+      "slug": "mod-11-12",
+      "unitId": "UNIT-11",
+      "unitTitle": "Unit 11: Make Money with AI",
+      "moduleTitle": "Retaining Clients",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Retainers, maintenance, and support plans",
+        "Reporting value and return on investment",
+        "Upsells, referrals, and long-term relationships"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "client retention retainers upsell survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "client retention retainers upsell official documentation OR GitHub repository",
+        "communityWisdom": "client retention retainers upsell pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "client retention retainers upsell explained tutorial YouTube",
+        "courseraPaid": "Coursera course client retention retainers upsell"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-12.1",
+      "slug": "mod-12-1",
+      "unitId": "UNIT-12",
+      "unitTitle": "Unit 12: 30 Day AI Mastery Roadmap",
+      "moduleTitle": "How the roadmap works",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Roadmap principles: daily practice, projects, and review",
+        "Time budgeting and tracking",
+        "Adapting the plan to your starting level"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "learning plan deliberate practice spaced repetition survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "learning plan deliberate practice spaced repetition official documentation OR GitHub repository",
+        "communityWisdom": "learning plan deliberate practice spaced repetition pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "learning plan deliberate practice spaced repetition explained tutorial YouTube",
+        "courseraPaid": "Coursera course learning plan deliberate practice spaced repetition"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-12.2",
+      "slug": "mod-12-2",
+      "unitId": "UNIT-12",
+      "unitTitle": "Unit 12: 30 Day AI Mastery Roadmap",
+      "moduleTitle": "The 30-day plan",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Week 1: foundations and prompting",
+        "Weeks 2 and 3: tools, automation, agents, and coding projects",
+        "Week 4: portfolio, offer, and outreach"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "30 day AI learning plan roadmap survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "30 day AI learning plan roadmap official documentation OR GitHub repository",
+        "communityWisdom": "30 day AI learning plan roadmap pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "30 day AI learning plan roadmap explained tutorial YouTube",
+        "courseraPaid": "Coursera course 30 day AI learning plan roadmap"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-12.3",
+      "slug": "mod-12-3",
+      "unitId": "UNIT-12",
+      "unitTitle": "Unit 12: 30 Day AI Mastery Roadmap",
+      "moduleTitle": "After Day 30",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Specialization paths",
+        "Staying current without drowning in news",
+        "Compounding: projects, audience, and clients"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "continuous learning AI skills staying current survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "continuous learning AI skills staying current official documentation OR GitHub repository",
+        "communityWisdom": "continuous learning AI skills staying current pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "continuous learning AI skills staying current explained tutorial YouTube",
+        "courseraPaid": "Coursera course continuous learning AI skills staying current"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.1",
+      "slug": "mod-13-1",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "20 AI Agent Project Ideas",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Twenty agent ideas grouped by difficulty",
+        "Scoping each idea into a minimum viable version",
+        "Choosing a project that fits your goals"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI agent project ideas survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI agent project ideas official documentation OR GitHub repository",
+        "communityWisdom": "AI agent project ideas pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI agent project ideas explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI agent project ideas"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.2",
+      "slug": "mod-13-2",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "10 AI Automation Workflow Ideas",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "Ten workflow ideas across business functions",
+        "Trigger, steps, and tools for each",
+        "Estimating the value of each workflow"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI automation workflow ideas business survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI automation workflow ideas business official documentation OR GitHub repository",
+        "communityWisdom": "AI automation workflow ideas business pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI automation workflow ideas business explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI automation workflow ideas business"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.3",
+      "slug": "mod-13-3",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "100+ AI Terminology Glossary",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Core machine learning and LLM terms",
+        "Agent, RAG, and automation terms",
+        "Business and deployment terms"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI terminology glossary survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI terminology glossary official documentation OR GitHub repository",
+        "communityWisdom": "AI terminology glossary pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI terminology glossary explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI terminology glossary"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.4",
+      "slug": "mod-13-4",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "AI Learning Roadmap",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "Skill tree from beginner to builder",
+        "Resources mapped to each stage",
+        "Milestones and self-assessment"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI learning roadmap beginner to advanced survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI learning roadmap beginner to advanced official documentation OR GitHub repository",
+        "communityWisdom": "AI learning roadmap beginner to advanced pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI learning roadmap beginner to advanced explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI learning roadmap beginner to advanced"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.5",
+      "slug": "mod-13-5",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "Client Proposal Template",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "A fill-in proposal template",
+        "Section-by-section guidance",
+        "Variations for small and large projects"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "client proposal template consulting survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "client proposal template consulting official documentation OR GitHub repository",
+        "communityWisdom": "client proposal template consulting pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "client proposal template consulting explained tutorial YouTube",
+        "courseraPaid": "Coursera course client proposal template consulting"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.6",
+      "slug": "mod-13-6",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "Discovery Call Framework",
+      "difficulty": "Intermediate",
+      "subTopics": [
+        "A call agenda with timing",
+        "A question bank",
+        "A post-call summary template"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "discovery call framework script survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "discovery call framework script official documentation OR GitHub repository",
+        "communityWisdom": "discovery call framework script pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "discovery call framework script explained tutorial YouTube",
+        "courseraPaid": "Coursera course discovery call framework script"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.7",
+      "slug": "mod-13-7",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "AI Project Portfolio Checklist",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "A checklist for each portfolio piece",
+        "Presentation and proof",
+        "Maintenance and updates"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "project portfolio checklist AI survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "project portfolio checklist AI official documentation OR GitHub repository",
+        "communityWisdom": "project portfolio checklist AI pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "project portfolio checklist AI explained tutorial YouTube",
+        "courseraPaid": "Coursera course project portfolio checklist AI"
+      },
+      "status": "completed"
+    },
+    {
+      "moduleId": "MOD-13.8",
+      "slug": "mod-13-8",
+      "unitId": "UNIT-13",
+      "unitTitle": "Unit 13: Bonus Resources",
+      "moduleTitle": "AI Tool Selection Cheat Sheet",
+      "difficulty": "Foundational",
+      "subTopics": [
+        "A decision matrix by task",
+        "Cost and capability quick reference",
+        "Red flags when choosing tools"
+      ],
+      "searchQueries": {
+        "arxivAndTheory": "AI tool selection comparison cheat sheet survey paper arXiv OR university lecture notes",
+        "docsAndRepos": "AI tool selection comparison cheat sheet official documentation OR GitHub repository",
+        "communityWisdom": "AI tool selection comparison cheat sheet pitfalls lessons learned reddit OR \"hacker news\" OR stackoverflow",
+        "youtubeFree": "AI tool selection comparison cheat sheet explained tutorial YouTube",
+        "courseraPaid": "Coursera course AI tool selection comparison cheat sheet"
+      },
+      "status": "completed"
+    }
+  ]
+}

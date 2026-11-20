@@ -1,0 +1,770 @@
+@@meta
+{
+  "moduleId": "MOD-6.3",
+  "slug": "mod-6-3",
+  "unitId": "UNIT-6",
+  "unitTitle": "Unit 6: AI Content Creation Masterclass",
+  "title": "AI Videos",
+  "difficulty": "Intermediate",
+  "estimatedMinutes": 95,
+  "citations": [
+    { "title": "Video generation prompt guide (Veo)", "source": "Google Cloud Docs", "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/video/video-gen-prompt-guide" },
+    { "title": "Video generation models as world simulators", "source": "OpenAI", "url": "https://openai.com/index/video-generation-models-as-world-simulators/" },
+    { "title": "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets", "source": "arXiv", "url": "https://arxiv.org/abs/2311.15127" },
+    { "title": "High-Resolution Image Synthesis with Latent Diffusion Models", "source": "arXiv", "url": "https://arxiv.org/abs/2112.10752" },
+    { "title": "Disclosing use of altered or synthetic content", "source": "YouTube Help", "url": "https://support.google.com/youtube/answer/14328491" },
+    { "title": "Article 50: Transparency Obligations for Providers and Deployers of Certain AI Systems", "source": "EU Artificial Intelligence Act", "url": "https://artificialintelligenceact.eu/article/50/" }
+  ],
+  "videoLibrary": [
+    {
+      "id": "VID-6.3-1",
+      "title": "How to Make AI Videos for Beginners: Zero to Expert in 15 Min",
+      "creator": "Roboverse",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=UcQiJ0OkwgI",
+      "timingInstruction": "Watch after reading Section 1, before the detail on why clips are short",
+      "keyTakeaway": "A beginner workflow for generating video clips with current AI tools."
+    },
+    {
+      "id": "VID-6.3-2",
+      "title": "How to Start Making AI Videos in 2026 - Full Course",
+      "creator": "Youri van Hofwegen",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=gY9KTfMGauU",
+      "timingInstruction": "Watch after reading Section 2 (image-to-video and shot planning), to see the keyframe-then-animate workflow carried out",
+      "keyTakeaway": "A full walkthrough of producing AI video, from generating still images to animating them and assembling the clips."
+    },
+    {
+      "id": "VID-6.3-3",
+      "title": "How to Make an AI Video with Runway AI Beginner Tutorial 2026",
+      "creator": "Merle Becker",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=5DUHRr8x88U",
+      "timingInstruction": "Watch after completing the lab, to see one tool's controls for prompts, first frames, and camera movement",
+      "keyTakeaway": "A beginner's tour of a current video generator, showing text-to-video and image-to-video side by side."
+    },
+    {
+      "id": "VID-6.3-4",
+      "title": "AI Video Generation: A Comprehensive guide",
+      "creator": "SkillsBooster Academy",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/ai-video-generation",
+      "timingInstruction": "Take after Section 4 for structured practice across several video tools",
+      "keyTakeaway": "A course-length treatment of AI video tools and workflows, from prompting to editing the generated clips into a finished piece."
+    }
+  ],
+  "lab": {
+    "labTitle": "Hands-On Lab: Shots, Prompts, Budget, Continuity, and the Timeline",
+    "context": "A woodworking shop wants a 30-second film made with AI video tools and has a small budget for generations. You will turn a script into a shot list that respects a clip-length limit, lint each shot's prompt, estimate the cost given how many attempts are wasted, plan how each shot begins so that the film holds together, and lay the clips on a timeline.",
+    "language": "python"
+  }
+}
+
+@@reading
+# AI Videos
+
+Video models can now turn a sentence, or a single picture, into several seconds of moving footage with sound. Those seconds can be striking. They are also short, expensive, and unreliable, and a finished film is made of many of them joined together.
+
+This chapter is about working inside those limits. It explains what text-to-video and image-to-video can and cannot do and why, how to plan a film as a list of short shots and write a prompt for each, how to hold a character and a look steady across clips, and how to budget for a medium in which most of what you generate is thrown away.
+
+## 1. First-Principles Mental Model & Intuition
+
+### A director with a ten-second camera
+
+Imagine a film crew whose camera stops after ten seconds, and whose actors cannot be relied on to look the same in the next take.
+
+Nobody would try to shoot a film with that crew by shouting "action" and hoping. They would plan every shot in advance. They would keep each shot short and simple, with one thing happening in it. They would keep photographs of the actors and the set pinned to the wall, and check every take against them. They would expect to shoot each shot several times. And they would rely on the edit, with cuts, sound, and music, to turn fragments into a film.
+
+That is exactly how AI video is made. The model is the crew. You are the director and the editor.
+
+### Two ways in
+
+```text
+   TEXT-TO-VIDEO                         IMAGE-TO-VIDEO
+
+   "A woodworker sharpens a chisel"      [ a still image you approved ]
+              |                           + "the hands draw the chisel
+              v                              across the stone"
+   the model invents the person,                     |
+   the room, the light, the framing,                 v
+   and the motion                         the model invents only the motion
+
+   cheap to try, hard to control          one extra step, far more control
+```
+
+In text-to-video the model decides everything. In image-to-video you supply the first frame, so the person, the setting, the light, and the framing are already fixed, and the model's job shrinks to making it move.
+
+The second route is the one most finished work uses, for a reason that Module 6.2 makes clear. A still image costs little and takes seconds. You can generate twenty, choose one, and repair it. Video costs many times more per attempt. So you settle everything you can in stills, where mistakes are cheap, and spend video generations only on motion.
+
+### The whole process
+
+```text
+   SCRIPT -> SHOT LIST -> KEYFRAME IMAGES -> ANIMATE EACH SHOT -> SELECT -> EDIT + SOUND
+               |               |                    |                |
+            one action     approve the          several takes     most takes
+            per shot       look in stills       per shot          are discarded
+```
+
+## 2. Core Theory, Mathematical Foundations & Architecture Internals
+
+### How a video model works
+
+A video is a stack of images, and a video model is an image diffusion model extended along time. As Module 6.2 described, an image model denoises a compressed grid called a latent. A video model denoises a block of latents, one layer for each moment, all at once. Because every frame is denoised together with its neighbours, the frames agree with each other: an object in one frame is in a consistent place in the next.
+
+That design explains the three limits that shape all practical work.
+
+**Clips are short.** The number of frames is the frame rate times the duration:
+
+$$
+\text{frames} = f \times t
+$$
+
+Eight seconds at 24 frames per second is 192 frames. Even with compression in time as well as space, the block that must be denoised together grows with every second, and so do the memory and the computation. Models are also trained mostly on short clips. So a single generation is typically somewhere between five and fifteen seconds.
+
+**Consistency fades with distance.** Frames close together in time are held together strongly. Frames far apart are held together weakly. Within a short clip a face stays the same. Over a long one it drifts, and between two separate generations nothing connects them at all unless you supply it.
+
+**Physics is learned, not known.** The model has seen a great deal of footage and reproduces what motion usually looks like. It has no model of objects, weight, or cause. Simple, common motion is rendered well. Unusual interactions, such as liquids pouring, hands manipulating tools, or one object passing behind another, are where things melt, multiply, or vanish.
+
+### Capabilities and limits
+
+| Usually works | Often fails |
+|---|---|
+| A single subject with one simple motion | Several people interacting |
+| Slow camera moves: a push in, a pan | Fast action and complex choreography |
+| Atmosphere: weather, light, water, smoke | Hands doing precise work |
+| Stylised and animated looks | Readable text that stays stable |
+| A few seconds of consistent identity | The same character across separate clips |
+| Ambient sound and simple effects, in models with audio | Long speech matched exactly to lips |
+
+The left column is where to aim. A film made of shots from the left column, cut well, looks accomplished. A film that needs the right column needs a camera.
+
+### Planning shots
+
+A script is turned into a **shot list** before anything is generated. Each entry is one shot, and each shot must fit the limits above.
+
+| Rule | Reason |
+|---|---|
+| One action per shot | The model handles one motion well and two badly |
+| No longer than the clip limit | A longer beat must be split or cut |
+| Shorter is safer | Fewer frames, fewer chances for drift |
+| Note the scene and the characters | They decide which reference images are needed |
+| Dialogue must fit the duration | About two and a half spoken words per second |
+
+A beat that runs longer than the clip limit has three treatments: cut it down, split it into two shots from different angles, or generate a second clip that continues from the last frame of the first.
+
+### Prompting a shot
+
+A video prompt has everything an image prompt has, from Module 5.11, and adds motion, camera movement, and sound. Google's guide for its Veo models lists the elements.
+
+| Element | Example |
+|---|---|
+| Subject | "A woodworker's hands" |
+| Action | "draw a chisel across a wet sharpening stone" |
+| Scene | "at a cluttered bench by a window" |
+| Camera angle and shot size | "Close-up, eye level" |
+| Camera movement | "Static camera", or "slow push in" |
+| Lens and focus | "Shallow depth of field" |
+| Lighting | "Warm window light from the left" |
+| Style and mood | "Documentary, calm" |
+| Audio | "The steady rasp of steel on stone" |
+
+The same guide gives advice that matches this unit's. Write descriptive sentences and not lists of keywords. Start with subject, action, and scene, and add the rest. Put audio in its own sentence. In a negative prompt, name what to exclude without the words "no" or "don't". And know the camera vocabulary: a **dolly** moves the camera through space, while a **zoom** changes the lens, and they look different.
+
+Two points are specific to motion. Describe one action, in the order it happens. And keep changes modest: a few seconds cannot contain a sunrise, a costume change, and a journey.
+
+With image-to-video the prompt is shorter. The image already shows the subject, the scene, and the light. The prompt describes only what moves, how the camera moves, and the sound.
+
+### Holding a film together
+
+Nothing links two generations except what you give to both. There are four devices.
+
+| Device | Holds steady |
+|---|---|
+| **A keyframe image for each shot**, made from the same references | The look and the characters, shot to shot |
+| **Character and style references**, where the tool takes them | A face, a costume, a palette |
+| **Starting from the last frame** of the previous clip | Continuous motion across a split beat |
+| **First and last frame** both supplied | Where a shot begins and where it must end |
+
+The keyframe method is the foundation. Produce one still per shot, using the consistency methods of Modules 5.11 and 6.2: the same character description, the same references, the same model. Lay the stills side by side. If they look like frames from one film, animate them. If they do not, fix the stills, which costs almost nothing.
+
+### Cost and the keep rate
+
+Video generation is usually priced by the second of output. At the time of writing (November 2026), prices for leading models run from roughly ten to forty US cents per second, depending on the model, the resolution, and whether sound is included.
+
+The price per second is not the cost of your film. Most takes are discarded. If a fraction $r$ of generated footage is usable, the **keep rate**, then a film of $S$ finished seconds at a price of $P$ per second costs about
+
+$$
+\text{cost} = \frac{S \times P}{r}
+$$
+
+A 29-second film at USD 0.25 per second with one usable take in four costs about USD 29, not USD 7.25. Raising the keep rate to one in two halves the bill. That is the financial case for everything in this chapter: simple shots, approved keyframes, and image-to-video all raise $r$.
+
+### Stitching
+
+The finished film is assembled in an editor. If clips of durations $d_{1}, \dots, d_{n}$ are joined with crossfades of length $c$, each fade overlaps two clips, and the total running time is
+
+$$
+T = \sum_{i=1}^{n} d_{i} - (n - 1)\,c
+$$
+
+Three things matter in the edit. **Cut early.** The first and last half-second of a generated clip are often its weakest, and trimming them hides a great deal. **Grade together.** A single colour treatment across all clips makes separate generations look like one film. **Let sound carry it.** A continuous voiceover, music, and ambient sound run across the cuts and tell the viewer the shots belong together. Module 6.4 covers the voice.
+
+### Sound
+
+Some current models generate audio with the picture: ambient sound, effects, and short lines of speech. It is convenient for atmosphere. For anything longer than a line, the more dependable method is still to produce narration separately and lay it under the pictures, because it keeps one voice consistent across every clip and can be re-recorded without regenerating video.
+
+### The tools
+
+Names and versions change faster in video than anywhere else in this unit. In 2026, OpenAI closed its Sora video app, which a year earlier had been the best known of them. At the time of writing, widely used video models include Google's Veo, Runway, Kling, Luma, Pika, and Seedance, with open models that can be run on your own hardware. They differ in clip length, in resolution, in whether they produce sound, in what references they accept, and in price. Compare them on the shots you actually need, with the method of Module 4.1.
+
+### Disclosure and likeness
+
+Realistic generated video is the clearest case for the disclosure rules of Module 6.1. A realistic scene that did not happen needs the platform's label, and in the European Union must be disclosed as artificially generated. Generating a real person's likeness without their consent is a legal and ethical problem whatever the tool allows. Most tools refuse it, and the ones that do not leave the liability with you.
+
+### Complexity
+
+The cost of a generation grows with frames times resolution. The cost of a film grows with its length divided by the keep rate. Planning is linear in the number of shots, and it is the only part that is nearly free.
+
+## 3. Production-Grade Implementation & Annotated Walkthrough
+
+First, turning a script into shots that fit the clip limit.
+
+```python
+import math
+import re
+
+BEATS = [
+    {"scene": "workshop", "what": "A woodworker picks up a blunt chisel and frowns at the torn grain", "seconds": 6},
+    {"scene": "workshop", "what": "Close on hands flattening the chisel on a coarse stone", "seconds": 14},
+    {"scene": "workshop", "what": "The chisel takes a thin clean shaving from oak", "seconds": 5},
+    {"scene": "shopfront", "what": "The finished stool sits in the shop window at dusk", "seconds": 4},
+]
+
+def plan_shots(beats, max_seconds):
+    shots = []
+    for beat in beats:
+        parts = math.ceil(beat["seconds"] / max_seconds)
+        each = round(beat["seconds"] / parts, 2)
+        for part in range(parts):
+            shots.append({"scene": beat["scene"], "what": beat["what"], "seconds": each, "part": f"{part + 1}/{parts}"})
+    return shots
+
+SHOTS = plan_shots(BEATS, 8)
+for shot in SHOTS:
+    print(shot["scene"], shot["seconds"], shot["part"])
+print(len(SHOTS), sum(shot["seconds"] for shot in SHOTS), len(plan_shots(BEATS, 5)))
+```
+
+- **A beat is one moment of the script, with a scene and a duration.** The four beats total 29 seconds.
+- **A beat longer than the limit is split into equal parts.** The number of parts is the duration divided by the limit, rounded up.
+- **With an 8-second limit, the 14-second beat becomes two shots of 7 seconds.** The other three beats fit as they are, so there are five shots.
+- **Each shot records which part it is.** "2/2" marks a continuation, which matters later: a continuation should begin from the last frame of the part before it.
+- **The total is unchanged at 29 seconds.** Splitting changes how the film is generated, not how long it is.
+- **A tighter limit means more shots.** With a 5-second limit the same script needs seven. More shots mean more joins to hide, and also shorter and safer clips.
+
+Next, checking a shot's prompt.
+
+```python
+CAMERA = ("close-up", "wide shot", "medium shot", "low angle", "high angle", "overhead",
+          "tracking", "dolly", "pan", "tilt", "handheld", "static")
+
+def lint_shot(shot, words_per_second=2.5):
+    text = " " + " ".join(re.sub(r"[^a-z0-9\- ]", " ", shot.get("prompt", "").lower()).split()) + " "
+    problems = []
+    if " then " in text:
+        problems.append("multiple-actions")
+    if not any(" " + term + " " in text for term in CAMERA):
+        problems.append("no-camera")
+    if any(" " + word + " " in text for word in ("no", "not", "without")):
+        problems.append("negation")
+    if len(shot.get("dialogue", "").split()) > words_per_second * shot.get("seconds", 0):
+        problems.append("dialogue-too-long")
+    return problems
+
+BAD_SHOT = {"prompt": "A man sharpens a chisel, then walks to the bench and cuts a joint, no music", "seconds": 6,
+            "dialogue": "Today I am going to show you the three steps that take a chisel from blunt to razor sharp in under ten minutes"}
+GOOD_SHOT = {"prompt": ("Close-up, static camera. A woodworker's hands draw a chisel across a wet sharpening stone. "
+                        "Warm window light from the left. Audio: the steady rasp of steel on stone."),
+             "seconds": 6, "dialogue": "Flatten the back first."}
+print(lint_shot(BAD_SHOT))
+print(lint_shot(GOOD_SHOT))
+```
+
+- **Four checks, each a rule from Section 2.** The word "then" signals more than one action. A prompt with no camera term leaves the framing and movement to chance. A negation names the thing to be excluded, as Module 5.11 explained. And dialogue is measured against the shot's length.
+- **The bad shot fails all four.** It asks for sharpening, walking, and cutting in six seconds. It names no camera. It says "no music". And its 23 words of speech need about nine seconds at two and a half words a second.
+- **The good shot passes.** One action, a shot size and a camera instruction, light, and sound in a sentence of its own, with four words of speech.
+- **The camera list is short on purpose.** It holds common terms, and a prompt using an unusual one would be flagged wrongly. A linter of this kind is a prompt to look, not a judgement.
+- **Speech that does not fit is the commonest planning error.** A line that takes nine seconds to say cannot be delivered in a six-second shot, and the model will rush it, cut it, or garble it.
+
+Then, what the film will cost.
+
+```python
+def budget(shots, price_per_second, keep_rate):
+    final = round(sum(shot["seconds"] for shot in shots), 2)
+    generated = round(final / keep_rate, 1)
+    return {"final_seconds": final, "generated_seconds": generated, "cost": round(generated * price_per_second, 2)}
+
+print(budget(SHOTS, 0.25, 1.0))
+print(budget(SHOTS, 0.25, 0.25))
+print(budget(SHOTS, 0.25, 0.5))
+```
+
+- **The function divides the finished length by the keep rate.** That gives the seconds that must be generated to end up with the seconds needed.
+- **With every take usable, 29 seconds cost USD 7.25.** This is the figure a price list suggests, and it is never the real one.
+- **At a keep rate of one in four, 116 seconds are generated and the cost is USD 29.** Four times the naive estimate.
+- **At one in two, the cost is USD 14.50.** Doubling the keep rate halves the bill. Approved keyframes and simple shots are how the keep rate is raised.
+- **The same arithmetic applies to time.** If each generation takes two minutes, 116 seconds of footage in clips of about six seconds is around twenty generations and forty minutes of waiting.
+
+Finally, how each shot begins, and the timeline.
+
+```python
+def continuity_plan(shots):
+    plan, previous_scene = [], None
+    for number, shot in enumerate(shots, start=1):
+        if not shot["part"].startswith("1/"):
+            plan.append(f"continue from the last frame of shot {number - 1}")
+        elif shot["scene"] == previous_scene:
+            plan.append("new keyframe, same references: " + shot["scene"])
+        else:
+            plan.append("new keyframe, new references: " + shot["scene"])
+        previous_scene = shot["scene"]
+    return plan
+
+def timeline(durations, crossfade=0.0):
+    clips, start = [], 0.0
+    for duration in durations:
+        clips.append((round(start, 2), round(start + duration, 2)))
+        start += duration - crossfade
+    return {"clips": clips, "total": clips[-1][1] if clips else 0.0}
+
+for number, line in enumerate(continuity_plan(SHOTS), start=1):
+    print(number, line)
+durations = [shot["seconds"] for shot in SHOTS]
+print(timeline(durations))
+print(timeline(durations, crossfade=0.5))
+```
+
+- **`continuity_plan` decides how each shot starts.** There are three cases, built from the devices in Section 2.
+- **A continuation starts from the last frame of the shot before it.** Shot 3 is the second half of the sharpening beat, so it picks up exactly where shot 2 ended and the motion runs on.
+- **A new shot in the same scene gets a new keyframe from the same references.** Shots 2 and 4 are new angles in the workshop. The woodworker and the bench must match, so their stills are made from the same character and style references.
+- **A new scene needs new references.** Shot 5, the shopfront, has a new setting to establish. The first shot is treated the same way.
+- **The plan counts the stills to approve before any video is generated.** Here it is four keyframes, from two sets of references.
+- **`timeline` places each clip.** With plain cuts, each clip starts where the last ended, and the total is 29 seconds.
+- **With half-second crossfades, each clip starts half a second before the previous one ends.** Four fades shorten the film by two seconds, to 27. A voiceover timed to 29 seconds would now overrun, which is why the fades are decided before the narration is recorded.
+
+**Complexity.** Every function is linear in the number of beats or shots. The expensive quantity is the generated seconds that `budget` reports.
+
+### A shot list template
+
+```text
+#   Scene       Seconds   Start from                 Action (one)            Camera            Sound / dialogue
+1   workshop    6         keyframe A (new refs)      picks up chisel         medium, static    bench ambience
+2   workshop    7         keyframe B (same refs)     sharpens on stone       close-up, static  rasp of steel
+3   workshop    7         last frame of shot 2       continues sharpening    close-up, static  rasp of steel
+4   workshop    5         keyframe C (same refs)     takes a clean shaving   close-up, push in "That is sharp."
+5   shopfront   4         keyframe D (new refs)      stool in the window     wide, static      street at dusk
+```
+
+### Choosing a take
+
+| Check | Reject if |
+|---|---|
+| The subject | The face, hands, or product changes during the clip |
+| Objects | Anything appears, vanishes, or merges |
+| Motion | It is floaty, too slow, or reverses |
+| The edges of the frame | Background figures distort |
+| Any text | It flickers or changes |
+| The first and last half-second | They cannot be trimmed without losing the action |
+| Against the keyframe | The look has drifted from what was approved |
+
+## 4. Practitioner Wisdom & Edge Cases (Reddit / HN / Stack Overflow Synthesis)
+
+**Starting in the video tool.** Typing a paragraph into a video generator and pressing the button is the expensive way to discover that you had no plan. Write the script, then the shot list, then make the stills.
+
+**Too much in one shot.** "She walks in, sits down, opens the laptop, and smiles" is four actions. The model does one, or blends them into something strange. One action per shot, and let the edit join them.
+
+**Skipping the keyframes.** Text-to-video for every shot gives five clips with five different woodworkers. Approving a still for each shot first is the single biggest improvement to consistency and to cost.
+
+**Expecting one long take.** A request for a continuous two-minute scene runs into the clip limit and into drift. Films are made of shots, and most shots in professionally edited video are only a few seconds long anyway.
+
+**Budgeting by the price list.** The price per second assumes every take is used. Plan for three or four takes per shot until you have measured your own keep rate.
+
+**Fighting the model.** A shot that has failed ten times will probably fail an eleventh. Change the shot: a different angle, a simpler action, a cutaway to an object instead of hands at work.
+
+**Hands and tools.** Precise manipulation is the hardest thing to generate. Frame it wider, keep it brief, or film it. A real five-second clip of your own hands, cut between generated shots, is often the best answer.
+
+**Text in the frame.** Signs and labels shimmer and change from frame to frame. Add titles and captions in the editor, where they stay still.
+
+**Lip-sync for long speech.** Generated speech with matching lips works for a line. For a paragraph, use a narrator over the pictures, or a dedicated avatar tool of the kind covered in Module 6.5.
+
+**Leaving the clip untrimmed.** Generated clips often begin with a moment of stillness and end as things start to go wrong. Cut both ends.
+
+**No sound design.** Silent or mismatched clips feel like a slideshow. One continuous bed of ambient sound and music under all the shots does more for coherence than any visual trick.
+
+**Forgetting the label.** A realistic generated scene posted without the platform's disclosure risks removal and penalties, and the audience's trust. Label it.
+
+**A real person's face.** Animating a photograph of a real person, or generating someone recognisable, without consent, is the use most likely to cause harm and legal trouble. Do not, whatever the tool permits.
+
+## 5. Active Recall Check & Synthesis Summary
+
+**Summary.** A video model denoises a block of frames together, which keeps nearby frames consistent and makes long clips costly, so a generation lasts roughly five to fifteen seconds, identity drifts over time, and physics is imitated and not understood. Films are therefore built from short shots, each with one action, planned in a shot list before anything is generated. Image-to-video gives far more control than text-to-video, because a still that you approved fixes the subject, the setting, and the light, and stills are cheap to get right. A shot's prompt adds motion, camera movement, and sound to the parts of an image prompt, with dialogue limited to about two and a half words per second. Consistency across clips comes from keyframes made with shared references, and from starting a continuation on the last frame of the clip before. Because most takes are discarded, a film of $S$ seconds at price $P$ with keep rate $r$ costs about $SP/r$. The edit, trimmed clips, one colour grade, and continuous sound, turns fragments into a film, with a running time of $\sum d_{i} - (n-1)c$ when crossfades of length $c$ are used. Realistic generated video must be labelled, and real people's likenesses need consent.
+
+**Question 1.** A script has five beats lasting 4, 12, 7, 21, and 6 seconds, and the video tool's clips are limited to 8 seconds. How many shots are needed, and how long is each? The tool charges USD 0.30 per second, and the team keeps about one take in three. Estimate the cost. If approving keyframes first raised the keep rate to one in two, what would the cost be?
+
+<details>
+<summary>View Answer</summary>
+
+Each beat is split into the smallest number of equal parts that fit the limit. The 4-second beat is one shot. The 12-second beat needs two shots, since 12 divided by 8 rounds up to 2, of 6 seconds each. The 7-second beat is one shot. The 21-second beat needs three shots, since 21 divided by 8 is 2.6 and rounds up to 3, of 7 seconds each. The 6-second beat is one shot. That is eight shots in all: 4, 6, 6, 7, 7, 7, 7, and 6 seconds, which total the original 50 seconds. At a keep rate of one in three, the footage that must be generated is 50 divided by one third, which is 150 seconds. At USD 0.30 per second that is about USD 45, three times the USD 15 that the price list alone would suggest. With a keep rate of one in two, 100 seconds are generated, costing USD 30. The saving of USD 15 on this one film is the return on approving stills first, and it understates the benefit, because the stills also make the eight shots match each other. Two further points follow from the split. The 21-second beat is a warning in itself: three consecutive shots of one continuous action will need to continue from each other's last frames, and identity will drift across them, so it is worth asking whether the beat can be cut down or broken up with a different angle. And each split adds a join that the edit has to hide.
+
+</details>
+
+**Question 2.** A creator generates five clips of "a red-haired baker" with text-to-video and finds that she looks like a different person in each. Explain why, using how video models work, and describe a workflow that fixes it.
+
+<details>
+<summary>View Answer</summary>
+
+A video model keeps a subject consistent by denoising all the frames of one clip together, so that each frame is constrained by its neighbours. That constraint exists only inside a single generation. Two separate generations share nothing except the words of the prompt, and "a red-haired baker" fits a great many different faces, ages, builds, and kitchens. Each generation begins from different random noise and settles on a different one of them. Module 5.11 made the same point for still images: words cannot pin down a particular face. The fix is to give every generation something in common that does pin it down. First, create the character as a still image, using a detailed description and trying variations until one is right, and save it as a reference, with a second reference for the bakery. Second, make a keyframe for each of the five shots from those references, with the same model and the same description block, and lay the five stills side by side. If the baker is not recognisably the same in all five, fix the stills, which costs seconds and very little money. Third, animate each keyframe with image-to-video, so that the model starts from the approved face and only has to add motion, keeping each shot short, since identity drifts as a clip gets longer. Fourth, where one action runs across two clips, start the second from the last frame of the first. Fifth, in the edit, apply one colour grade and trim any clip at the point where her features begin to change. The workflow also lowers cost, because fewer video takes are rejected.
+
+</details>
+
+**Question 3.** Five clips of 6, 7, 7, 5, and 4 seconds are joined with crossfades of 0.5 seconds. What is the running time? The narration was recorded to last 29 seconds. What is the problem, and what are the options? Separately, the fourth shot includes a line of dialogue of 18 words in its 5 seconds. Is that feasible?
+
+<details>
+<summary>View Answer</summary>
+
+The five clips total 29 seconds. Five clips have four joins, and each crossfade of 0.5 seconds overlaps the two clips it joins, so the film is shortened by 4 times 0.5, which is 2 seconds, to a running time of 27 seconds. The narration lasts 29 seconds, so it overruns the pictures by 2 seconds: the film would end while the voice is still speaking. The options are to use plain cuts instead of crossfades, which restores the 29 seconds and is the usual choice in any case, since frequent crossfades look dated; to extend the last shot or add a closing shot of 2 seconds, such as a title; to shorten the narration by about five words, since at two and a half words a second 2 seconds is five words; or to speed the narration slightly, which sounds rushed if overdone. The lesson is to decide the transitions before recording the narration, or to record the narration first and cut the pictures to it. As for the dialogue, at about two and a half spoken words per second a 5-second shot holds roughly 12 or 13 words. Eighteen words would need a little over 7 seconds. It is not feasible as written. The model would either rush the line unnaturally or fail to finish it. The line should be cut to about twelve words, or the shot lengthened to 7 or 8 seconds, or the line moved to the narration track and the shot left without speech, which is the most dependable choice for anything longer than a short phrase.
+
+</details>
+
+@@starter
+"""
+Lab: Shots, Prompts, Budget, Continuity, and the Timeline
+Standard library only. Complete the TODO in each step, then press "Run & Verify Step".
+"""
+import math
+import re
+
+BEATS = [
+    {"scene": "workshop", "what": "A woodworker picks up a blunt chisel and frowns at the torn grain", "seconds": 6},
+    {"scene": "workshop", "what": "Close on hands flattening the chisel on a coarse stone", "seconds": 14},
+    {"scene": "workshop", "what": "The chisel takes a thin clean shaving from oak", "seconds": 5},
+    {"scene": "shopfront", "what": "The finished stool sits in the shop window at dusk", "seconds": 4},
+]
+
+# The shot list that Step 1 should produce from BEATS with an 8-second limit (provided, so
+# that later steps do not depend on Step 1).
+SHOTS = [
+    {"scene": "workshop", "what": BEATS[0]["what"], "seconds": 6.0, "part": "1/1"},
+    {"scene": "workshop", "what": BEATS[1]["what"], "seconds": 7.0, "part": "1/2"},
+    {"scene": "workshop", "what": BEATS[1]["what"], "seconds": 7.0, "part": "2/2"},
+    {"scene": "workshop", "what": BEATS[2]["what"], "seconds": 5.0, "part": "1/1"},
+    {"scene": "shopfront", "what": BEATS[3]["what"], "seconds": 4.0, "part": "1/1"},
+]
+
+CAMERA = ("close-up", "wide shot", "medium shot", "low angle", "high angle", "overhead",
+          "tracking", "dolly", "pan", "tilt", "handheld", "static")
+
+BAD_SHOT = {"prompt": "A man sharpens a chisel, then walks to the bench and cuts a joint, no music", "seconds": 6,
+            "dialogue": "Today I am going to show you the three steps that take a chisel from blunt to razor sharp in under ten minutes"}
+
+GOOD_SHOT = {"prompt": ("Close-up, static camera. A woodworker's hands draw a chisel across a wet sharpening stone. "
+                        "Warm window light from the left. Audio: the steady rasp of steel on stone."),
+             "seconds": 6, "dialogue": "Flatten the back first."}
+
+
+# ---------------------------------------------------------------- Step 1
+def plan_shots(beats, max_seconds):
+    """Each beat is {"scene", "what", "seconds"}. A beat is split into
+        parts = math.ceil(seconds / max_seconds)
+    equal shots, each lasting round(seconds / parts, 2). For each part, numbered from 1, add
+        {"scene": the beat's scene, "what": the beat's description, "seconds": the shot length, "part": "k/parts"}
+    with the scene and what copied from the beat. Return the list of shots in order."""
+    # TODO Step 1
+    return None
+
+
+# ---------------------------------------------------------------- Step 2
+def lint_shot(shot, words_per_second=2.5):
+    """shot is {"prompt", "seconds", "dialogue"}. Make a comparison string from the prompt:
+    lowercase, every character that is not a letter, digit, hyphen, or space replaced by a
+    space, runs of spaces collapsed, and one space added at each end. Report, in this order:
+        "multiple-actions"   if " then " is in it
+        "no-camera"          if no term of CAMERA appears in it with a space on each side
+        "negation"           if any of "no", "not", "without" appears as a whole word
+        "dialogue-too-long"  if the number of words in the dialogue is more than
+                             words_per_second * seconds
+    Missing keys count as an empty string or 0."""
+    # TODO Step 2
+    return None
+
+
+# ---------------------------------------------------------------- Step 3
+def budget(shots, price_per_second, keep_rate):
+    """final     = the total seconds of the shots, rounded to 2 places
+    generated = final / keep_rate, rounded to 1 place
+    cost      = generated * price_per_second, rounded to 2 places
+    Return {"final_seconds": final, "generated_seconds": generated, "cost": cost}."""
+    # TODO Step 3
+    return None
+
+
+# ---------------------------------------------------------------- Step 4
+def continuity_plan(shots):
+    """Return one line per shot saying how it starts. For shot number n (from 1):
+        if its "part" does not start with "1/":
+            "continue from the last frame of shot " + str(n - 1)
+        otherwise, if its scene is the same as the previous shot's scene:
+            "new keyframe, same references: " + scene
+        otherwise (including the first shot):
+            "new keyframe, new references: " + scene
+    """
+    # TODO Step 4
+    return None
+
+
+# ---------------------------------------------------------------- Step 5
+def timeline(durations, crossfade=0.0):
+    """Place clips end to end. The first starts at 0. Each clip is recorded as
+    (start, start + duration), both rounded to 2 places, and the next clip starts at
+    start + duration - crossfade. Return {"clips": the list of pairs,
+    "total": the end of the last clip, or 0.0 if there are no clips}."""
+    # TODO Step 5
+    return None
+
+
+if __name__ == "__main__":
+    print("shots     :", plan_shots(BEATS, 8))
+    print("lint      :", lint_shot(BAD_SHOT))
+    print("budget    :", budget(SHOTS, 0.25, 0.25))
+    print("continuity:", continuity_plan(SHOTS))
+    print("timeline  :", timeline([shot["seconds"] for shot in SHOTS], crossfade=0.5))
+
+@@solution
+"""
+Lab solution: Shots, Prompts, Budget, Continuity, and the Timeline
+Standard library only.
+"""
+import math
+import re
+
+BEATS = [
+    {"scene": "workshop", "what": "A woodworker picks up a blunt chisel and frowns at the torn grain", "seconds": 6},
+    {"scene": "workshop", "what": "Close on hands flattening the chisel on a coarse stone", "seconds": 14},
+    {"scene": "workshop", "what": "The chisel takes a thin clean shaving from oak", "seconds": 5},
+    {"scene": "shopfront", "what": "The finished stool sits in the shop window at dusk", "seconds": 4},
+]
+
+# The shot list that Step 1 should produce from BEATS with an 8-second limit (provided, so
+# that later steps do not depend on Step 1).
+SHOTS = [
+    {"scene": "workshop", "what": BEATS[0]["what"], "seconds": 6.0, "part": "1/1"},
+    {"scene": "workshop", "what": BEATS[1]["what"], "seconds": 7.0, "part": "1/2"},
+    {"scene": "workshop", "what": BEATS[1]["what"], "seconds": 7.0, "part": "2/2"},
+    {"scene": "workshop", "what": BEATS[2]["what"], "seconds": 5.0, "part": "1/1"},
+    {"scene": "shopfront", "what": BEATS[3]["what"], "seconds": 4.0, "part": "1/1"},
+]
+
+CAMERA = ("close-up", "wide shot", "medium shot", "low angle", "high angle", "overhead",
+          "tracking", "dolly", "pan", "tilt", "handheld", "static")
+
+BAD_SHOT = {"prompt": "A man sharpens a chisel, then walks to the bench and cuts a joint, no music", "seconds": 6,
+            "dialogue": "Today I am going to show you the three steps that take a chisel from blunt to razor sharp in under ten minutes"}
+
+GOOD_SHOT = {"prompt": ("Close-up, static camera. A woodworker's hands draw a chisel across a wet sharpening stone. "
+                        "Warm window light from the left. Audio: the steady rasp of steel on stone."),
+             "seconds": 6, "dialogue": "Flatten the back first."}
+
+
+# ---------------------------------------------------------------- Step 1
+def plan_shots(beats, max_seconds):
+    """A film is planned as shots before anything is generated. A beat longer than the
+    clip limit is split, and each split is a join the edit will have to hide."""
+    shots = []
+    for beat in beats:
+        parts = math.ceil(beat["seconds"] / max_seconds)
+        each = round(beat["seconds"] / parts, 2)
+        for part in range(parts):
+            shots.append({"scene": beat["scene"], "what": beat["what"], "seconds": each, "part": f"{part + 1}/{parts}"})
+    return shots
+
+
+# ---------------------------------------------------------------- Step 2
+def lint_shot(shot, words_per_second=2.5):
+    """One action, a stated camera, no negation, and speech that fits the shot. A prompt to
+    look, not a judgement: the camera list is short and will miss unusual terms."""
+    text = " " + " ".join(re.sub(r"[^a-z0-9\- ]", " ", shot.get("prompt", "").lower()).split()) + " "
+    problems = []
+    if " then " in text:
+        problems.append("multiple-actions")
+    if not any(" " + term + " " in text for term in CAMERA):
+        problems.append("no-camera")
+    if any(" " + word + " " in text for word in ("no", "not", "without")):
+        problems.append("negation")
+    if len(shot.get("dialogue", "").split()) > words_per_second * shot.get("seconds", 0):
+        problems.append("dialogue-too-long")
+    return problems
+
+
+# ---------------------------------------------------------------- Step 3
+def budget(shots, price_per_second, keep_rate):
+    """The price per second assumes every take is used. Dividing by the keep rate gives the
+    footage that must be generated, and the real cost."""
+    final = round(sum(shot["seconds"] for shot in shots), 2)
+    generated = round(final / keep_rate, 1)
+    return {"final_seconds": final, "generated_seconds": generated, "cost": round(generated * price_per_second, 2)}
+
+
+# ---------------------------------------------------------------- Step 4
+def continuity_plan(shots):
+    """Nothing links two generations except what both are given: the last frame of the clip
+    before, or a keyframe made from shared references."""
+    plan, previous_scene = [], None
+    for number, shot in enumerate(shots, start=1):
+        if not shot["part"].startswith("1/"):
+            plan.append(f"continue from the last frame of shot {number - 1}")
+        elif shot["scene"] == previous_scene:
+            plan.append("new keyframe, same references: " + shot["scene"])
+        else:
+            plan.append("new keyframe, new references: " + shot["scene"])
+        previous_scene = shot["scene"]
+    return plan
+
+
+# ---------------------------------------------------------------- Step 5
+def timeline(durations, crossfade=0.0):
+    """Each crossfade overlaps two clips and shortens the film, which is why transitions are
+    decided before the narration is timed."""
+    clips, start = [], 0.0
+    for duration in durations:
+        clips.append((round(start, 2), round(start + duration, 2)))
+        start += duration - crossfade
+    return {"clips": clips, "total": clips[-1][1] if clips else 0.0}
+
+
+if __name__ == "__main__":
+    shots = plan_shots(BEATS, 8)
+    for shot in shots:
+        print(shot["scene"], shot["seconds"], shot["part"])
+    print(len(shots), sum(shot["seconds"] for shot in shots), len(plan_shots(BEATS, 5)), shots == SHOTS)
+
+    print(lint_shot(BAD_SHOT), len(BAD_SHOT["dialogue"].split()))
+    print(lint_shot(GOOD_SHOT), len(GOOD_SHOT["dialogue"].split()))
+
+    print(budget(SHOTS, 0.25, 1.0))
+    print(budget(SHOTS, 0.25, 0.25))
+    print(budget(SHOTS, 0.25, 0.5))
+
+    for number, line in enumerate(continuity_plan(SHOTS), start=1):
+        print(number, line)
+    durations = [shot["seconds"] for shot in SHOTS]
+    print(timeline(durations))
+    print(timeline(durations, crossfade=0.5))
+
+    recall = plan_shots([{"scene": "s", "what": "w", "seconds": seconds} for seconds in (4, 12, 7, 21, 6)], 8)
+    print([shot["seconds"] for shot in recall], len(recall), budget(recall, 0.30, 1 / 3), budget(recall, 0.30, 0.5))
+    print(8 * 24, 2.5 * 5, 18 / 2.5)
+
+@@step
+{
+  "stepNumber": 1,
+  "title": "Turn beats into shots",
+  "instruction": "Implement plan_shots(beats, max_seconds). Each beat is a dict with a scene, a description under 'what', and a duration in seconds. A beat is split into the smallest number of equal parts that fit the limit: parts is math.ceil(seconds / max_seconds), and each part lasts round(seconds / parts, 2). For each part, numbered from 1, append a shot dict with the beat's 'scene' and 'what', 'seconds' set to the part's length, and 'part' set to the text 'k/parts', such as '1/2'. Return the list of shots in order. Plan BEATS with a limit of 8 seconds and count the shots. This is shot planning under the clip limit from Section 2. [MOD-6.3]",
+  "hintConceptual": "A camera that runs for eight seconds cannot film a fourteen-second moment in one go. Divide the moment into the fewest equal takes that the camera can manage.",
+  "hintSyntax": "shots = []\nfor beat in beats:\n    parts = math.ceil(beat[\"seconds\"] / max_seconds)\n    each = round(beat[\"seconds\"] / parts, 2)\n    for part in range(parts):\n        shots.append({\"scene\": beat[\"scene\"], \"what\": beat[\"what\"], \"seconds\": each, \"part\": f\"{part + 1}/{parts}\"})\nreturn shots"
+}
+@@assert
+_shots = plan_shots(BEATS, 8)
+assert _shots == SHOTS, f"Four beats become five shots with an 8-second limit, got {_shots}"
+assert [shot["seconds"] for shot in _shots] == [6.0, 7.0, 7.0, 5.0, 4.0] and [shot["part"] for shot in _shots] == ["1/1", "1/2", "2/2", "1/1", "1/1"], "The 14-second beat is split into two shots of 7 seconds"
+assert sum(shot["seconds"] for shot in _shots) == 29, "Splitting does not change the total length"
+assert [shot["seconds"] for shot in plan_shots(BEATS, 5)] == [3.0, 3.0, 4.67, 4.67, 4.67, 5.0, 4.0], "With a 5-second limit there are seven shots, and uneven divisions are rounded to 2 places"
+_recall = plan_shots([{"scene": "s", "what": "w", "seconds": seconds} for seconds in (4, 12, 7, 21, 6)], 8)
+assert [shot["seconds"] for shot in _recall] == [4.0, 6.0, 6.0, 7.0, 7.0, 7.0, 7.0, 6.0], "The numbers from the first recall question: eight shots"
+assert plan_shots([{"scene": "a", "what": "x", "seconds": 8}], 8) == [{"scene": "a", "what": "x", "seconds": 8.0, "part": "1/1"}], "A beat exactly at the limit is one shot"
+assert plan_shots([{"scene": "a", "what": "x", "seconds": 24}], 8)[2] == {"scene": "a", "what": "x", "seconds": 8.0, "part": "3/3"}, "A 24-second beat is three shots, and each keeps the beat's scene and description"
+assert plan_shots([], 8) == [], "No beats, no shots"
+print("Step 1 passed: four beats become five shots, none longer than the clip limit.")
+
+@@step
+{
+  "stepNumber": 2,
+  "title": "Lint a shot's prompt",
+  "instruction": "Implement lint_shot(shot, words_per_second). The shot is a dict with a 'prompt', a duration in 'seconds', and a 'dialogue'. Build a comparison string from the prompt: lowercase, every character that is not a letter, digit, hyphen, or space replaced by a space, runs of spaces collapsed, and one space added at each end. Report 'multiple-actions' if ' then ' is in it. Report 'no-camera' if none of the terms in CAMERA appears in it with a space on each side. Report 'negation' if 'no', 'not', or 'without' appears as a whole word. Report 'dialogue-too-long' if the number of words in the dialogue is more than words_per_second times the seconds. Missing keys count as empty or zero. Return the list in that order. Run it on BAD_SHOT and GOOD_SHOT. These are the rules for shots and prompts in Section 2. [MOD-6.3]",
+  "hintConceptual": "A director reading a line on the shot list asks four things. Is this one action or several? Where is the camera? Does it tell me what to leave out, or what to show? And can the actor say that line in the time?",
+  "hintSyntax": "text = \" \" + \" \".join(re.sub(r\"[^a-z0-9\\- ]\", \" \", shot.get(\"prompt\", \"\").lower()).split()) + \" \"\nproblems = []\nif \" then \" in text:\n    problems.append(\"multiple-actions\")\nif not any(\" \" + term + \" \" in text for term in CAMERA):\n    problems.append(\"no-camera\")\nif any(\" \" + word + \" \" in text for word in (\"no\", \"not\", \"without\")):\n    problems.append(\"negation\")\nif len(shot.get(\"dialogue\", \"\").split()) > words_per_second * shot.get(\"seconds\", 0):\n    problems.append(\"dialogue-too-long\")\nreturn problems"
+}
+@@assert
+assert lint_shot(BAD_SHOT) == ["multiple-actions", "no-camera", "negation", "dialogue-too-long"], f"The bad shot fails all four checks, got {lint_shot(BAD_SHOT)}"
+assert lint_shot(GOOD_SHOT) == [], f"The good shot passes, got {lint_shot(GOOD_SHOT)}"
+assert lint_shot({"prompt": "Wide shot of a lighthouse in fog.", "seconds": 5, "dialogue": ""}) == [], "A two-word camera term is found, and an empty dialogue fits"
+assert lint_shot({"prompt": "Overhead view of the authentic workshop, nothing moves.", "seconds": 4}) == [], "Whole words only: 'authentic' is not 'then' and 'nothing' is not 'no'"
+assert lint_shot({"prompt": "A fox runs across snow", "seconds": 5}) == ["no-camera"], "A prompt with no camera term is flagged"
+assert lint_shot({"prompt": "Static camera. A street WITHOUT cars.", "seconds": 5}) == ["negation"], "Negation is found whatever the case"
+assert lint_shot({"prompt": "Close-up of a face.", "seconds": 4, "dialogue": "one two three four five six seven eight nine ten"}) == [], "Ten words in four seconds is exactly at the limit of 2.5 words a second"
+assert lint_shot({"prompt": "Close-up of a face.", "seconds": 4, "dialogue": "one two three four five six seven eight nine ten eleven"}) == ["dialogue-too-long"], "Eleven words in four seconds is over it"
+assert lint_shot({"prompt": "Close-up of a face.", "seconds": 4, "dialogue": "one two three four five six seven eight nine ten eleven"}, words_per_second=3) == [], "The speaking rate is an argument"
+assert lint_shot({}) == ["no-camera"], "An empty shot has no camera term and does not raise"
+print("Step 2 passed: three actions, no camera, a negation, and 23 words of speech in six seconds are all reported.")
+
+@@step
+{
+  "stepNumber": 3,
+  "title": "Budget with the keep rate",
+  "instruction": "Implement budget(shots, price_per_second, keep_rate). The finished length is the sum of the shots' seconds, rounded to 2 decimal places. The footage that must be generated is that length divided by the keep rate, rounded to 1 decimal place. The cost is the generated seconds times the price per second, rounded to 2 decimal places. Return a dict with 'final_seconds', 'generated_seconds', and 'cost'. Run it on SHOTS at USD 0.25 per second with keep rates of 1.0, 0.25, and 0.5. This is the cost formula from Section 2: the price list assumes every take is used, and most are not. [MOD-6.3]",
+  "hintConceptual": "A fisherman who keeps one catch in four must land four fish for every one sold. The cost of the day is the cost of everything landed, not of what went to market.",
+  "hintSyntax": "final = round(sum(shot[\"seconds\"] for shot in shots), 2)\ngenerated = round(final / keep_rate, 1)\nreturn {\"final_seconds\": final, \"generated_seconds\": generated, \"cost\": round(generated * price_per_second, 2)}"
+}
+@@assert
+assert budget(SHOTS, 0.25, 0.25) == {"final_seconds": 29.0, "generated_seconds": 116.0, "cost": 29.0}, f"At one usable take in four, 116 seconds are generated for USD 29, got {budget(SHOTS, 0.25, 0.25)}"
+assert budget(SHOTS, 0.25, 1.0) == {"final_seconds": 29.0, "generated_seconds": 29.0, "cost": 7.25}, "With every take usable, the cost is the price-list figure of USD 7.25"
+assert budget(SHOTS, 0.25, 0.5) == {"final_seconds": 29.0, "generated_seconds": 58.0, "cost": 14.5}, "Doubling the keep rate halves the cost"
+assert budget(SHOTS, 0.10, 0.25)["cost"] == 11.6, "A cheaper model at the same keep rate"
+_recall = [{"seconds": seconds} for seconds in (4, 6, 6, 7, 7, 7, 7, 6)]
+assert budget(_recall, 0.30, 1 / 3) == {"final_seconds": 50, "generated_seconds": 150.0, "cost": 45.0} and budget(_recall, 0.30, 0.5)["cost"] == 30.0, "The numbers from the first recall question"
+assert budget([], 0.25, 0.25) == {"final_seconds": 0, "generated_seconds": 0.0, "cost": 0.0}, "No shots, no cost"
+assert budget([{"seconds": 4.67}, {"seconds": 4.67}, {"seconds": 4.67}], 0.2, 0.5) == {"final_seconds": 14.01, "generated_seconds": 28.0, "cost": 5.6}, "Totals are rounded: 14.01 seconds, 28.0 generated"
+print("Step 3 passed: a 29-second film costs USD 29 at one take in four, not the USD 7.25 on the price list.")
+
+@@step
+{
+  "stepNumber": 4,
+  "title": "Plan how each shot begins",
+  "instruction": "Implement continuity_plan(shots). Return a list with one line of text per shot, saying how that shot should start. Number the shots from 1. If a shot's 'part' does not begin with '1/', it is a continuation: the line is 'continue from the last frame of shot ' followed by the number of the shot before it. Otherwise, if its scene is the same as the previous shot's scene, the line is 'new keyframe, same references: ' followed by the scene. Otherwise, which includes the first shot, the line is 'new keyframe, new references: ' followed by the scene. Run it on SHOTS and count how many keyframes must be approved before any video is generated. These are the consistency devices from Section 2. [MOD-6.3]",
+  "hintConceptual": "A continuity supervisor on a film set checks three things before each take: is this the same moment carried on, a new angle on the same scene, or somewhere new? Each has a different answer to 'what must match?'",
+  "hintSyntax": "plan, previous_scene = [], None\nfor number, shot in enumerate(shots, start=1):\n    if not shot[\"part\"].startswith(\"1/\"):\n        plan.append(f\"continue from the last frame of shot {number - 1}\")\n    elif shot[\"scene\"] == previous_scene:\n        plan.append(\"new keyframe, same references: \" + shot[\"scene\"])\n    else:\n        plan.append(\"new keyframe, new references: \" + shot[\"scene\"])\n    previous_scene = shot[\"scene\"]\nreturn plan"
+}
+@@assert
+_plan = continuity_plan(SHOTS)
+assert _plan == ["new keyframe, new references: workshop", "new keyframe, same references: workshop", "continue from the last frame of shot 2", "new keyframe, same references: workshop", "new keyframe, new references: shopfront"], f"Three kinds of start across five shots, got {_plan}"
+assert sum(1 for line in _plan if line.startswith("new keyframe")) == 4, "Four keyframes to approve before any video is generated"
+assert sum(1 for line in _plan if "new references" in line) == 2, "Two sets of references: the workshop and the shopfront"
+_three = [{"scene": "a", "part": "1/3"}, {"scene": "a", "part": "2/3"}, {"scene": "a", "part": "3/3"}]
+assert continuity_plan(_three) == ["new keyframe, new references: a", "continue from the last frame of shot 1", "continue from the last frame of shot 2"], "A beat in three parts chains each part to the one before"
+_back = [{"scene": "a", "part": "1/1"}, {"scene": "b", "part": "1/1"}, {"scene": "a", "part": "1/1"}]
+assert continuity_plan(_back) == ["new keyframe, new references: a", "new keyframe, new references: b", "new keyframe, new references: a"], "Only the immediately preceding shot's scene is compared"
+assert continuity_plan([{"scene": "a", "part": "1/1"}, {"scene": "a", "part": "1/2"}]) == ["new keyframe, new references: a", "new keyframe, same references: a"], "The first part of a split beat is a new keyframe, not a continuation"
+assert continuity_plan([]) == [], "No shots, no plan"
+print("Step 4 passed: four keyframes from two sets of references, and one shot that continues from the last frame.")
+
+@@step
+{
+  "stepNumber": 5,
+  "title": "Lay the clips on a timeline",
+  "instruction": "Implement timeline(durations, crossfade). The durations are the lengths of the clips in order. The first clip starts at 0. Record each clip as a tuple of its start and its end, where the end is the start plus the duration, both rounded to 2 decimal places. The next clip then starts at the previous start plus the duration minus the crossfade. Return a dict with 'clips', the list of tuples, and 'total', the end of the last clip, or 0.0 if there are no clips. Run it on the five durations of SHOTS with no crossfade, and then with a crossfade of 0.5 seconds. This is the stitching formula from Section 2. [MOD-6.3]",
+  "hintConceptual": "Laying roof tiles: with no overlap, the roof is as long as the tiles laid end to end. With each tile overlapping the last, the same tiles cover less.",
+  "hintSyntax": "clips, start = [], 0.0\nfor duration in durations:\n    clips.append((round(start, 2), round(start + duration, 2)))\n    start += duration - crossfade\nreturn {\"clips\": clips, \"total\": clips[-1][1] if clips else 0.0}"
+}
+@@assert
+_durations = [6.0, 7.0, 7.0, 5.0, 4.0]
+assert timeline(_durations) == {"clips": [(0.0, 6.0), (6.0, 13.0), (13.0, 20.0), (20.0, 25.0), (25.0, 29.0)], "total": 29.0}, f"With plain cuts the clips run end to end for 29 seconds, got {timeline(_durations)}"
+assert timeline(_durations, crossfade=0.5) == {"clips": [(0.0, 6.0), (5.5, 12.5), (12.0, 19.0), (18.5, 23.5), (23.0, 27.0)], "total": 27.0}, "Four half-second crossfades shorten the film by 2 seconds"
+assert timeline(_durations, 0.5)["total"] == sum(_durations) - (len(_durations) - 1) * 0.5, "The total is the sum of the clips minus one crossfade per join"
+assert timeline([4.67, 4.67, 4.67]) == {"clips": [(0.0, 4.67), (4.67, 9.34), (9.34, 14.01)], "total": 14.01}, "Starts and ends are rounded to 2 places"
+assert timeline([5]) == {"clips": [(0.0, 5.0)], "total": 5.0} and timeline([5], crossfade=1) == {"clips": [(0.0, 5.0)], "total": 5.0}, "A single clip has no join, so a crossfade changes nothing"
+assert timeline([]) == {"clips": [], "total": 0.0}, "No clips, a total of zero"
+assert timeline([3, 3], crossfade=1)["clips"] == [(0.0, 3.0), (2.0, 5.0)], "The second clip begins one crossfade before the first ends"
+print("Step 5 passed: half-second crossfades turn 29 seconds of clips into a 27-second film.")

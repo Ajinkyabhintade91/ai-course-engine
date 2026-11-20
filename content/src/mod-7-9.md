@@ -1,0 +1,679 @@
+@@meta
+{
+  "moduleId": "MOD-7.9",
+  "slug": "mod-7-9",
+  "unitId": "UNIT-7",
+  "unitTitle": "Unit 7: AI Automation Masterclass",
+  "title": "Zapier Introduction",
+  "difficulty": "Foundational",
+  "estimatedMinutes": 85,
+  "citations": [
+    { "title": "Plans and Pricing", "source": "Zapier", "url": "https://zapier.com/pricing" },
+    { "title": "How Zapier triggers work", "source": "Zapier Help", "url": "https://help.zapier.com/hc/en-us/articles/8496181445261-How-Zapier-triggers-work" },
+    { "title": "Zapier polling trigger deduplication: Implementation guide", "source": "Zapier Docs", "url": "https://docs.zapier.com/platform/build/deduplication" },
+    { "title": "Operations", "source": "Make Help Center", "url": "https://help.make.com/operations" },
+    { "title": "n8n Pricing", "source": "n8n", "url": "https://n8n.io/pricing/" }
+  ],
+  "videoLibrary": [
+    {
+      "id": "VID-7.9-1",
+      "title": "Zapier tutorial for beginners - Learn how to use Zapier and create your first Zap",
+      "creator": "JimmyRose - Automation & Productivity",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=tX2cTiD9P9Y",
+      "timingInstruction": "Watch after reading Section 1, to build a first Zap alongside the explanation",
+      "keyTakeaway": "A first Zap from trigger to action, with test data pulled in at each step."
+    },
+    {
+      "id": "VID-7.9-2",
+      "title": "Zapier AI Tutorial for Beginners: Automation Made Simple 🟧",
+      "creator": "Kevin Stratvert",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=JtdUgJGI_Oo",
+      "timingInstruction": "Watch after reading Section 2, paying attention to filters, formatter steps, and paths",
+      "keyTakeaway": "Building Zaps that include AI steps."
+    },
+    {
+      "id": "VID-7.9-3",
+      "title": "Operationalizing No-Code AI with Zapier Automation and Plans",
+      "creator": "Board Infinity",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/operationalizing-no-code-ai-with-zapier-automation-and-plans",
+      "timingInstruction": "Take after this chapter, focusing on the parts about AI steps and plan limits",
+      "keyTakeaway": "Builds AI-assisted Zaps for business processes and plans them against Zapier's task limits."
+    }
+  ],
+  "lab": {
+    "labTitle": "Hands-On Lab: Task Counting, Plan Choice, Formatter, Tables Lookups, and Tool Comparison",
+    "context": "A small online shop runs its order follow-ups in Zapier and wants to know what each Zap really costs before adding more. You will count the tasks a run uses through filters and paths, pick the cheapest plan for a month of orders, build the text clean-up a Formatter step does, use a Tables-style find-or-create to stop duplicate contacts, and compare the same workload under Zapier, Make, and n8n pricing.",
+    "language": "python"
+  }
+}
+
+@@reading
+# Zapier Introduction
+
+Zapier is the best-known automation tool and, for many people, the first one they use. Its strengths are breadth and simplicity: it connects to more than 9,000 apps, and a person who has never written code can build a working automation in minutes by picking a trigger from a list, picking an action, and mapping fields between them.
+
+Modules 7.7 and 7.8 introduced n8n and Make. This chapter completes the set. It covers Zapier's building blocks, Zaps, triggers, actions, filters, formatters, and paths; how Zapier counts **tasks**, which is different from both Make's credits and n8n's executions and leads to different design advice; Zapier's own data and AI features; and when Zapier is the right choice. The lab ends by putting the same workload through all three pricing models side by side.
+
+## 1. First-Principles Mental Model & Intuition
+
+### A vending machine for automations
+
+Zapier works like a well-stocked vending machine. You do not cook; you choose. Pick an app and an event for the trigger, "New form submission in Typeform". Pick an app and an event for the action, "Create contact in HubSpot". Fill in the fields from a menu of the trigger's data. Switch it on.
+
+This is called a **Zap**. Zapier's own definition is short: a Zap is an automated workflow that connects apps, and consists of a trigger and one or more actions.
+
+```text
+   TRIGGER                 FILTER              FORMATTER            ACTION              ACTION
+   New Typeform entry  ->  only if amount  ->  tidy the name   ->   Create HubSpot  ->  Send Slack
+                           is 100 or more      and email            contact             message
+   free                    free                free                 1 task              1 task
+```
+
+The labels on the bottom row are the key to Zapier's pricing. Zapier counts a **task** each time an action successfully does something. Triggers watching for new data do not use tasks, and a family of built-in tools, filters, formatters, paths, delays, and others, are free.
+
+### The building blocks
+
+| Block | What it does |
+|---|---|
+| **Zap** | One automation: a trigger and its steps |
+| **Trigger** | The event that starts a Zap, instant or polling |
+| **Action** | Something done in an app: create, update, send |
+| **Search** | Finds a record, often with "create if not found" |
+| **Filter** | Continues only if conditions hold |
+| **Formatter** | Transforms text, numbers, and dates |
+| **Paths** | Branches the Zap by conditions |
+| **Zap run** | One run of a Zap, with its history and data |
+| **Task** | One successful action: what you pay for |
+
+## 2. Core Theory, Mathematical Foundations & Architecture Internals
+
+### Triggers: instant and polling
+
+As Module 7.6 explained, a trigger notices events either by being told, an instant trigger built on a webhook, or by asking, a polling trigger. Zapier marks instant triggers in its app listings. For polling triggers, how often Zapier checks depends on the plan. At the time of writing (November 2026), Zapier's pricing page lists a polling time of 15 minutes on the Free plan, 2 minutes on Professional, and 1 minute on Team and Enterprise.
+
+Polling triggers deduplicate by each record's ID, as Module 7.6 described from Zapier's developer documentation, so a record already seen does not start the Zap again. Crucially for cost, a polling check that finds nothing uses no tasks, unlike Make, where each check is an operation.
+
+### What counts as a task
+
+Zapier's pricing page defines it: tasks are used when a Zap successfully moves data or completes an action, for example each contact created uses one task. Some apps or actions may use more than one, and an action that does not complete successfully does not count.
+
+The same page lists the steps that do **not** count as tasks:
+
+| Free step | What it does |
+|---|---|
+| Filter by Zapier | Stops the run unless conditions hold |
+| Formatter by Zapier | Transforms text, numbers, dates |
+| Path by Zapier | Branches by conditions |
+| Delay, Looping, Sub-Zap, Digest | Timing, repetition, reuse, batching |
+| Zapier Tables, Zapier Forms | Built-in database and forms |
+| Storage, Zapier Manager | Simple key-value storage, Zapier administration |
+
+For a Zap with a trigger, free steps, and $a$ action steps, a run that reaches every action uses $a$ tasks. A run stopped by a filter uses only the tasks of the actions before the filter, often none. Over a month,
+
+$$\text{tasks} = \sum_{\text{runs}} \text{successful actions in that run}$$
+
+### Filters and paths
+
+A **filter** in Zapier stops the run when its conditions fail. Because filters are free and a stopped run uses no further tasks, the standard advice is the same as for Make: filter as early as possible. In Zapier, a filter placed straight after the trigger makes an unwanted run cost nothing at all.
+
+**Paths** split a Zap into branches, each with its own rules. Every path whose rules match runs, the behaviour Module 7.6 described, so a record can take more than one branch. Each branch's actions count tasks if they run. Paths themselves are free.
+
+### Formatter
+
+Formatter by Zapier transforms values between steps without using tasks: trimming spaces, changing case, extracting an email address or a number from text, splitting a name, formatting dates and currencies, looking values up in a table, and providing defaults for empty fields. These are the Module 7.5 transformations, done as visual steps. Because they are free, it costs nothing to clean data properly before sending it on, and a messy CRM is usually a sign that this step was skipped.
+
+### Zapier Tables, Storage, and finding before creating
+
+Zapier Tables is a built-in database. Since steps using it are free, it is a natural place to keep state that a Zap needs: contacts already processed, the run-once keys of Module 7.6, a lookup of products to owners. The common pattern is **find or create**: look for a record by a key, use it if found, create it if not. Done against a table with a normalised key, lower-case and trimmed email addresses for example, it prevents the duplicate contacts that form resubmissions and typos create.
+
+### Plans
+
+At the time of writing (November 2026), Zapier's pricing page shows a Free plan with 100 tasks a month and only two-step Zaps, a trigger and one action; Professional starting from USD 19.99 a month; Team starting from USD 69 a month for up to 25 users; and Enterprise by quotation. Professional and Team are sold in task tiers, and on annual billing Professional is priced at USD 19.99 for 750 tasks, USD 49 for 2,000, and USD 129 for 10,000; monthly billing costs more. Plans differ in features as well as tasks: multi-step Zaps, premium apps, and webhooks need a paid plan.
+
+When a Zap reaches the plan's task limit, Zapier can switch to **pay-per-task billing**, charged at a higher rate per task than the subscription's tasks; with it turned off, Zaps pause until the next usage period. A sudden spike, a bulk import that triggers a Zap thousands of times for example, can therefore either stop automations or cost noticeably more.
+
+### Three pricing models side by side
+
+The three tools covered in this unit charge for different things.
+
+| Tool | Unit | Polling checks with no data | Filters and formatters | Steps per run |
+|---|---|---|---|---|
+| Zapier | Task: one successful action | Free | Free | Each action counts |
+| Make | Credit: one module run | One credit each | Filters free; transform modules count | Each module counts |
+| n8n Cloud | Execution: one workflow run | A schedule's run counts | Free | Unlimited |
+
+For a workload of $r$ runs with data a month, $a$ actions each, and $c$ trigger checks:
+
+$$\text{Zapier} = r \times a, \qquad \text{Make} \approx c + r \times a, \qquad \text{n8n} = c$$
+
+where for n8n with a webhook trigger, $c = r$. These are units, not prices; the price per unit differs by tool and plan. But the shapes explain the standard advice: Zapier is kind to polling and to short Zaps, Make punishes frequent empty checks, and n8n is kind to long workflows. The lab's last step computes all three.
+
+### AI features
+
+Zapier has added AI throughout: building Zaps from a description with its Copilot, AI steps that call language models inside a Zap, AI fields in Tables, and Agents, which act more autonomously and are billed in their own unit rather than tasks. It also offers an MCP server, which lets AI assistants that support the Model Context Protocol call Zapier actions. AI steps inside a Zap are actions like any other: they use tasks, and their output should be checked before it reaches customers, exactly as Unit 5 recommended. Module 7.10 shows how to call model APIs directly, which is useful when a built-in AI step is not flexible enough.
+
+### When Zapier is the right choice
+
+| Situation | Zapier fits because |
+|---|---|
+| Non-technical team, quick wins | The simplest builder and the largest app catalogue |
+| A niche app with an official Zapier integration only | 9,000+ apps |
+| Short Zaps, mostly polling, modest volume | Free polling and free filters keep task use low |
+| Long workflows, high volume | Less ideal: every action counts; consider n8n |
+| Heavy data reshaping, arrays, loops | Less ideal: Make or n8n handle data more flexibly |
+| Data must stay on your own servers | Not possible: consider self-hosted n8n |
+
+### Complexity
+
+Task counting is one pass over the steps of each run. Find-or-create against a table is a lookup by key. Monthly estimates are sums over runs, so they are linear in the number of runs modelled.
+
+## 3. Production-Grade Implementation & Annotated Walkthrough
+
+First, counting tasks through filters and paths.
+
+```python
+FREE_STEPS = {"trigger", "filter", "formatter", "path", "delay", "digest", "tables", "storage"}
+
+def run_zap(steps, record, failing=frozenset()):
+    tasks = 0
+    for step in steps:
+        kind = step[0]
+        if kind == "filter":
+            if not step[1](record):
+                return tasks, "filtered"
+        elif kind == "paths":
+            for condition, branch in step[1]:
+                if condition(record):
+                    used, status = run_zap(branch, record, failing)
+                    tasks += used
+                    if status == "error":
+                        return tasks, "error"
+        elif kind == "action":
+            if step[1] in failing:
+                return tasks, "error"
+            tasks += 1
+        elif kind not in FREE_STEPS:
+            raise ValueError("unknown step: " + kind)
+    return tasks, "success"
+
+ZAP = [("trigger",), ("filter", lambda r: r["amount"] >= 100), ("formatter",), ("action", "crm"),
+       ("paths", [(lambda r: r["amount"] >= 1000, [("action", "slack"), ("action", "email_manager")]),
+                  (lambda r: r["country"] == "GB", [("action", "vat_sheet")])]),
+       ("action", "thank_you")]
+for order in ({"amount": 50, "country": "GB"}, {"amount": 400, "country": "US"},
+              {"amount": 400, "country": "GB"}, {"amount": 2500, "country": "GB"}):
+    print(order, run_zap(ZAP, order))
+print(run_zap(ZAP, {"amount": 2500, "country": "GB"}, failing={"slack"}))
+```
+
+- **The Zap is a list of steps; free kinds cost nothing.** Triggers, filters, formatters, paths, delays, digests, Tables, and Storage are all in the free set, following Zapier's list.
+- **A filter that fails ends the run with status "filtered".** The order of 50 stops at the filter and uses 0 tasks.
+- **Each successful action is one task.** An order of 400 from the US runs the CRM action and the thank-you: 2 tasks.
+- **Every matching path runs.** An order of 400 from Great Britain also takes the VAT path, 3 tasks. An order of 2,500 from Great Britain takes both paths, 5 tasks.
+- **A failing action stops the run, and is not counted.** With Slack failing, the large order uses 1 task, for the CRM, and stops with "error". In this model a failure anywhere stops the whole run, which is how an error behaves in a Zap without custom error handling.
+- **A path's own filter result does not stop the main run.** A branch that ends "filtered" simply contributes its tasks so far; only an error propagates.
+
+Next, a month of orders and the cheapest plan.
+
+```python
+TIERS = [("Free", 0, 100), ("Professional 750", 19.99, 750), ("Professional 2K", 49, 2000), ("Professional 10K", 129, 10000)]
+
+def monthly_tasks(steps, records):
+    return sum(run_zap(steps, record)[0] for record in records)
+
+def cheapest_tier(tasks, tiers, multi_step=True):
+    fitting = [tier for tier in tiers if tier[2] >= tasks and not (multi_step and tier[0] == "Free")]
+    return min(fitting, key=lambda tier: tier[1])[0] if fitting else None
+
+MONTH = ([{"amount": 50, "country": "GB"}] * 400 + [{"amount": 400, "country": "US"}] * 300
+         + [{"amount": 400, "country": "GB"}] * 200 + [{"amount": 2500, "country": "GB"}] * 40)
+print(monthly_tasks(ZAP, MONTH), cheapest_tier(monthly_tasks(ZAP, MONTH), TIERS))
+```
+
+- **940 orders in a month use 1,400 tasks.** The 400 small orders use none, 300 use 2 each, 200 use 3 each, and 40 use 5 each: 600 + 600 + 200.
+- **The tiers are Zapier's published annual Professional prices, plus Free.**
+- **A multi-step Zap rules out Free,** which allows only two-step Zaps, whatever the task count.
+- **1,400 tasks need the 2,000-task tier at USD 49 a month.** Without the early filter, the 400 small orders, all from Great Britain, would use 3 tasks each, the CRM action, the VAT path, and the thank-you, adding 1,200 and pushing the total to 2,600, beyond that tier.
+
+Then, a Formatter step and a Tables lookup.
+
+```python
+import re
+
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+
+def formatter(value, operation):
+    if operation == "trim":
+        return value.strip()
+    if operation == "lowercase":
+        return value.lower()
+    if operation == "titlecase":
+        return " ".join(word.capitalize() for word in value.split())
+    if operation == "extract_email":
+        found = EMAIL.search(value)
+        return found.group(0) if found else ""
+    if operation == "first_word":
+        words = value.split()
+        return words[0] if words else ""
+    if operation.startswith("default:"):
+        return value if value.strip() else operation[len("default:"):]
+    raise ValueError("unknown operation: " + operation)
+
+def find_or_create(table, key_field, record):
+    key = str(record[key_field]).strip().lower()
+    for row in table:
+        if str(row[key_field]).strip().lower() == key:
+            return row, False
+    row = dict(record)
+    row[key_field] = key
+    table.append(row)
+    return row, True
+
+raw = "  hello from PRIYA shah <Priya.Shah+news@Example.co.uk> thanks "
+print(formatter(raw, "extract_email"), formatter("  priya   SHAH ", "titlecase"), formatter("Priya Shah", "first_word"), formatter("  ", "default:there"))
+contacts = []
+print(find_or_create(contacts, "email", {"email": "Priya@Example.com", "name": "Priya"}))
+print(find_or_create(contacts, "email", {"email": " priya@example.com", "name": "P. Shah"}), len(contacts))
+```
+
+- **Each Formatter operation is one small, named transformation.** An unknown operation is an error.
+- **`extract_email` finds an address inside free text:** `Priya.Shah+news@Example.co.uk`, including the plus tag.
+- **`titlecase` also collapses repeated spaces:** "  priya   SHAH " becomes "Priya Shah".
+- **`first_word` gives a first name for a greeting, and `default:there` fills an empty one,** so "Hi there" goes out instead of "Hi ".
+- **`find_or_create` compares normalised keys.** "Priya@Example.com" and " priya@example.com" are the same contact, so the second call finds the first row instead of creating a duplicate.
+- **The stored key is normalised too,** so later lookups by any capitalisation match.
+- **In Zapier, both of these steps are free.** Formatter and Tables steps do not count as tasks, so cleaning and deduplicating cost nothing extra.
+
+Finally, the same workload under three pricing models.
+
+```python
+def compare_units(runs, actions, checks):
+    return {"zapier_tasks": runs * actions, "make_credits": checks + runs * actions, "n8n_executions": checks}
+
+print(compare_units(300, 4, 2880))
+print(compare_units(300, 4, 300))
+print(compare_units(2000, 8, 2000))
+```
+
+- **300 runs with data a month, 4 actions each, polled every 15 minutes (2,880 checks).** Zapier: 1,200 tasks, since checks are free. Make: 4,080 credits, matching Module 7.8's figure for the same pattern. n8n: 2,880 executions, since every scheduled run counts.
+- **The same workload with an instant trigger, where checks equal runs.** Make drops to 1,500 and n8n to 300; Zapier stays at 1,200.
+- **2,000 runs of an 8-action workflow by webhook.** Zapier 16,000 tasks, Make 18,000 credits, n8n 2,000 executions. Long workflows are where execution pricing shines.
+- **These are units, not money.** Each tool prices its units differently, by plan and by billing period. Compare prices only after converting units with each tool's current price list.
+
+**Complexity.** `run_zap` visits each step once, and each path branch it enters. `monthly_tasks` is linear in the runs. `formatter` is linear in the text. `find_or_create` is linear in the table here; a real database uses an index. `compare_units` is constant.
+
+### A Zap planning sheet
+
+```text
+ZAP NAME         [what it does, in one line]
+TRIGGER          [app, event]   instant or polling?   expected runs per month: [n]
+FILTER           [conditions]   placed directly after the trigger?
+FORMAT           [fields cleaned: trim, case, email, defaults]
+DEDUPE           [Tables find-or-create on key: field]
+ACTIONS          [list]   tasks per run: [a]
+PATHS            [conditions]   can a record match more than one?
+TASKS / MONTH    runs x actions reached, per path
+ERRORS           [who is notified, and is Autoreplay on?]
+```
+
+### Common Zap patterns and their task cost
+
+| Pattern | Tasks per run |
+|---|---|
+| Form to CRM | 1 |
+| Form to CRM and Slack | 2 |
+| Email to filter to CRM, most emails filtered | Mostly 0, else 1 |
+| New row to AI summary to Slack | 2 |
+| Order to Formatter to Tables lookup to invoice | 1 |
+
+## 4. Practitioner Wisdom & Edge Cases (Reddit / HN / Stack Overflow Synthesis)
+
+**Filters placed late.** A filter after two actions has already used two tasks. Put filters directly after the trigger.
+
+**Overlapping paths.** A record matching two paths runs both, using tasks on both. Make the rules exclusive unless both are wanted.
+
+**Bulk imports that trigger thousands of runs.** Importing 5,000 contacts into a CRM can trigger a "new contact" Zap 5,000 times. Turn the Zap off during imports.
+
+**Pay-per-task surprises.** Over the limit, tasks cost more, or Zaps pause. Watch usage and set alerts.
+
+**Free plan limits.** Two-step Zaps only. Anything with a filter plus an action, or two actions, needs a paid plan.
+
+**Polling delay on Free.** Fifteen minutes between checks is too slow for anything customer-facing. Use instant triggers where offered.
+
+**Dirty data in, dirty data out.** Formatter steps are free. Trim, lower-case, and default every field before it reaches a CRM.
+
+**Duplicate contacts.** Resubmitted forms create duplicates. Find or create on a normalised email.
+
+**Edits not triggering.** "New record" triggers ignore updates, as Module 7.6 explained. Use an "updated record" trigger if needed.
+
+**Error emails ignored.** Zapier emails about errors; a busy inbox buries them. Route errors to a channel someone watches, and use Autoreplay where available for transient failures.
+
+**AI steps without checks.** An AI action's output goes straight to the next step. Add a filter on its format, or a human review step, before anything customer-facing.
+
+**Choosing by habit.** Zapier is excellent for short, app-to-app automations. Long, heavy, or data-sensitive workflows may belong in Make or n8n.
+
+## 5. Active Recall Check & Synthesis Summary
+
+**Summary.** Zapier builds Zaps from a trigger and steps chosen from more than 9,000 apps. Triggers are instant, via webhooks, or polling, at intervals that depend on the plan, 15 minutes on Free, 2 on Professional, and 1 on Team and Enterprise at the time of writing, with deduplication by record ID. Zapier charges by task: one task per action that completes successfully, while triggers, failed actions, and the built-in tools, filters, formatters, paths, delays, looping, sub-Zaps, digests, Tables, Forms, Storage, and Zapier Manager, use none. Filters placed directly after the trigger therefore make unwanted runs free, and every matching path runs and counts its own actions. Formatter cleans data for free, and Tables supports free find-or-create lookups that prevent duplicates. Plans run from Free, 100 tasks and two-step Zaps only, to Professional, from USD 19.99 a month for 750 tasks on annual billing, Team, and Enterprise; beyond the limit, pay-per-task billing costs more per task or Zaps pause. Compared with Make, which charges every module run including empty checks, and n8n, which charges per execution regardless of steps, Zapier suits short Zaps and polling, while long workflows favour n8n. AI steps use tasks like any action and need their outputs checked.
+
+**Question 1.** A Zap triggers on every new email in a shared inbox, about 3,000 a month. It uses an AI step to classify each email, then a filter keeps only "sales" emails, about 10 percent, then creates a CRM lead and posts to Slack. Calculate the monthly tasks, explain which design choice drives the cost, and redesign the Zap to cut it, estimating the new total.
+
+<details>
+<summary>View Answer</summary>
+
+Every email reaches the AI step, which is an action, so it uses 3,000 tasks. The filter is free, but it comes after the AI step. About 300 emails pass and each uses 2 more tasks, for the CRM lead and the Slack post: 600. The total is 3,600 tasks a month, which needs at least the 10,000-task Professional tier rather than the 2,000-task tier. The cost is driven by placing the expensive step before the filter: 2,700 of the 3,000 AI tasks are spent on emails that are then thrown away. Redesign: put a free filter first, using information available without AI. For example, keep only emails sent to the sales address, or whose subject or body contains words like "quote", "pricing", or "demo", or exclude automated senders such as no-reply addresses and newsletters, using Formatter if needed. If that rough filter keeps, say, 900 emails, the AI step uses 900 tasks, and the 300 confirmed sales emails use 600 more: 1,500 in all, which fits the 2,000-task tier. The rough filter must be tested so it does not drop real sales emails; a weekly check of a sample of filtered-out emails is a sensible safeguard.
+
+</details>
+
+**Question 2.** Using the three formulas in Section 2, compare Zapier, Make, and n8n for (a) a 3-action automation that runs 500 times a month from a polling trigger checked every 2 minutes, and (b) a 12-action automation that runs 3,000 times a month from a webhook. Which tool's unit count is lowest in each case, and why must you still look at prices before deciding?
+
+<details>
+<summary>View Answer</summary>
+
+(a) Every 2 minutes is 720 checks a day, 21,600 in a 30-day month. Zapier: 500 runs times 3 actions is 1,500 tasks, since polling checks are free. Make: 21,600 checks plus 1,500 for the actions, 23,100 credits. n8n with a schedule polling every 2 minutes: 21,600 executions. Zapier's count is by far the lowest, because it is the only one that does not charge for checking. If the source could send webhooks, Make would drop to about 500 plus 1,500, 2,000 credits, and n8n to 500 executions. (b) With a webhook, checks equal runs. Zapier: 3,000 times 12, 36,000 tasks. Make: 3,000 plus 36,000, 39,000 credits. n8n: 3,000 executions. n8n's count is lowest by more than a factor of ten, because it charges once per run regardless of the 12 steps. Prices still matter because the units are not equal in value: a task, a credit, and an execution each cost different amounts, depending on the tier and on annual or monthly billing. Features also matter, including which apps are supported natively, whether self-hosting is needed, and who will maintain the automation. The formulas show the shape of each tool's costs; the price lists turn them into money.
+
+</details>
+
+**Question 3.** A gym's sign-up form sends new members to a Zap that creates a contact in its email tool. Members often resubmit the form, or type their email with different capitals, and the email tool now has many duplicate contacts, each of whom receives the welcome series twice. Design the fix using Zapier's free steps, explain why it costs no extra tasks, and say what it does not fix.
+
+<details>
+<summary>View Answer</summary>
+
+Add two free steps before the action. First, a Formatter step to normalise the email: trim spaces and convert to lower case, so "Sam@Gym.com " and "sam@gym.com" become identical. Second, a Zapier Tables find-or-create on that normalised email: look for a row with that email; if found, the member is already known; if not, create the row. Then add a free filter that continues only if the row was just created, so the "create contact" action and the welcome series run only for genuinely new members. Formatter, Tables, and Filter steps do not count as tasks, so the Zap still uses one task per new member and none for duplicates, which in fact reduces the task count. What it does not fix: the duplicates already in the email tool, which need a one-off clean-up by merging contacts; typing mistakes that produce a different email address altogether, such as "sam@gmial.com", which normalisation cannot detect; members who sign up with two different real addresses; and, unless the table is seeded with existing members, the first resubmission by anyone who joined before the fix. Seeding the table from the current, cleaned contact list closes that last gap.
+
+</details>
+
+@@starter
+"""
+Lab: Task Counting, Plan Choice, Formatter, Tables Lookups, and Tool Comparison
+Standard library only. Complete the TODO in each step, then press "Run & Verify Step".
+"""
+import re
+
+FREE_STEPS = {"trigger", "filter", "formatter", "path", "delay", "digest", "tables", "storage"}
+TIERS = [("Free", 0, 100), ("Professional 750", 19.99, 750), ("Professional 2K", 49, 2000), ("Professional 10K", 129, 10000)]
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+
+ZAP = [("trigger",), ("filter", lambda r: r["amount"] >= 100), ("formatter",), ("action", "crm"),
+       ("paths", [(lambda r: r["amount"] >= 1000, [("action", "slack"), ("action", "email_manager")]),
+                  (lambda r: r["country"] == "GB", [("action", "vat_sheet")])]),
+       ("action", "thank_you")]
+
+
+# ---------------------------------------------------------------- Step 1
+def run_zap(steps, record, failing=frozenset()):
+    """Return (tasks, status). Walk the steps:
+        ("filter", condition)      -> if condition(record) is false, return (tasks, "filtered")
+        ("paths", [(condition, branch_steps)])  -> for every branch whose condition holds, run it
+                                      recursively and add its tasks; if its status is "error",
+                                      return (tasks, "error"); a "filtered" branch just ends that branch
+        ("action", name)           -> if name is in failing, return (tasks, "error"); else tasks += 1
+        a kind in FREE_STEPS        -> free, continue
+        anything else              -> ValueError
+    At the end return (tasks, "success")."""
+    # TODO Step 1
+    return None
+
+
+# ---------------------------------------------------------------- Step 2
+def monthly_tasks(steps, records):
+    """The sum of run_zap(steps, record)[0] over the records."""
+    # TODO Step 2
+    return None
+
+
+def cheapest_tier(tasks, tiers, multi_step=True):
+    """tiers: (name, price, tasks included). Keep tiers with at least `tasks`, excluding "Free" when
+    multi_step is True. Return the name of the cheapest, or None."""
+    # TODO Step 2
+    return None
+
+
+# ---------------------------------------------------------------- Step 3
+def formatter(value, operation):
+    """Operations: "trim", "lowercase", "titlecase" (capitalise each whitespace-separated word, joined
+    by single spaces), "extract_email" (first EMAIL match, or ""), "first_word" (or ""),
+    "default:X" (value if it is not blank, else X). Anything else raises ValueError."""
+    # TODO Step 3
+    return None
+
+
+# ---------------------------------------------------------------- Step 4
+def find_or_create(table, key_field, record):
+    """Normalise the key: str(record[key_field]).strip().lower(). If a row's key, normalised the same
+    way, matches, return (that row, False). Otherwise append a copy of the record with the normalised
+    key stored, and return (the new row, True)."""
+    # TODO Step 4
+    return None
+
+
+# ---------------------------------------------------------------- Step 5
+def compare_units(runs, actions, checks):
+    """Return {"zapier_tasks": runs * actions, "make_credits": checks + runs * actions,
+    "n8n_executions": checks}."""
+    # TODO Step 5
+    return None
+
+
+if __name__ == "__main__":
+    print("run  :", run_zap(ZAP, {"amount": 400, "country": "GB"}))
+    print("tier :", cheapest_tier(1400, TIERS))
+    print("fmt  :", formatter("  priya SHAH ", "titlecase"))
+    print("table:", find_or_create([], "email", {"email": "A@B.com"}))
+    print("units:", compare_units(300, 4, 2880))
+
+@@solution
+"""
+Lab solution: Task Counting, Plan Choice, Formatter, Tables Lookups, and Tool Comparison
+Standard library only.
+"""
+import re
+
+FREE_STEPS = {"trigger", "filter", "formatter", "path", "delay", "digest", "tables", "storage"}
+TIERS = [("Free", 0, 100), ("Professional 750", 19.99, 750), ("Professional 2K", 49, 2000), ("Professional 10K", 129, 10000)]
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+
+ZAP = [("trigger",), ("filter", lambda r: r["amount"] >= 100), ("formatter",), ("action", "crm"),
+       ("paths", [(lambda r: r["amount"] >= 1000, [("action", "slack"), ("action", "email_manager")]),
+                  (lambda r: r["country"] == "GB", [("action", "vat_sheet")])]),
+       ("action", "thank_you")]
+
+
+# ---------------------------------------------------------------- Step 1
+def run_zap(steps, record, failing=frozenset()):
+    """A task is one successful action. Triggers, filters, formatters, and paths are free,
+    and a failed action is not counted but stops the run."""
+    tasks = 0
+    for step in steps:
+        kind = step[0]
+        if kind == "filter":
+            if not step[1](record):
+                return tasks, "filtered"
+        elif kind == "paths":
+            for condition, branch in step[1]:
+                if condition(record):
+                    used, status = run_zap(branch, record, failing)
+                    tasks += used
+                    if status == "error":
+                        return tasks, "error"
+        elif kind == "action":
+            if step[1] in failing:
+                return tasks, "error"
+            tasks += 1
+        elif kind not in FREE_STEPS:
+            raise ValueError("unknown step: " + kind)
+    return tasks, "success"
+
+
+# ---------------------------------------------------------------- Step 2
+def monthly_tasks(steps, records):
+    """Tasks add up run by run; filtered runs add little or nothing."""
+    return sum(run_zap(steps, record)[0] for record in records)
+
+
+def cheapest_tier(tasks, tiers, multi_step=True):
+    """The Free plan allows only two-step Zaps, so a multi-step Zap rules it out."""
+    fitting = [tier for tier in tiers if tier[2] >= tasks and not (multi_step and tier[0] == "Free")]
+    return min(fitting, key=lambda tier: tier[1])[0] if fitting else None
+
+
+# ---------------------------------------------------------------- Step 3
+def formatter(value, operation):
+    """Formatter steps are free, so there is no reason to send messy data onward."""
+    if operation == "trim":
+        return value.strip()
+    if operation == "lowercase":
+        return value.lower()
+    if operation == "titlecase":
+        return " ".join(word.capitalize() for word in value.split())
+    if operation == "extract_email":
+        found = EMAIL.search(value)
+        return found.group(0) if found else ""
+    if operation == "first_word":
+        words = value.split()
+        return words[0] if words else ""
+    if operation.startswith("default:"):
+        return value if value.strip() else operation[len("default:"):]
+    raise ValueError("unknown operation: " + operation)
+
+
+# ---------------------------------------------------------------- Step 4
+def find_or_create(table, key_field, record):
+    """Compare normalised keys, and store them normalised, so capitals and spaces never
+    create a duplicate. Tables steps are free in Zapier."""
+    key = str(record[key_field]).strip().lower()
+    for row in table:
+        if str(row[key_field]).strip().lower() == key:
+            return row, False
+    row = dict(record)
+    row[key_field] = key
+    table.append(row)
+    return row, True
+
+
+# ---------------------------------------------------------------- Step 5
+def compare_units(runs, actions, checks):
+    """Units, not money: tasks per action, credits per module run including checks,
+    executions per run regardless of steps."""
+    return {"zapier_tasks": runs * actions, "make_credits": checks + runs * actions, "n8n_executions": checks}
+
+
+if __name__ == "__main__":
+    for order in ({"amount": 50, "country": "GB"}, {"amount": 400, "country": "US"},
+                  {"amount": 400, "country": "GB"}, {"amount": 2500, "country": "GB"}):
+        print(order, run_zap(ZAP, order))
+    print(run_zap(ZAP, {"amount": 2500, "country": "GB"}, failing={"slack"}))
+    month = ([{"amount": 50, "country": "GB"}] * 400 + [{"amount": 400, "country": "US"}] * 300
+             + [{"amount": 400, "country": "GB"}] * 200 + [{"amount": 2500, "country": "GB"}] * 40)
+    print(monthly_tasks(ZAP, month), cheapest_tier(monthly_tasks(ZAP, month), TIERS))
+    print(formatter("  hello from PRIYA shah <Priya.Shah+news@Example.co.uk> thanks ", "extract_email"))
+    contacts = []
+    print(find_or_create(contacts, "email", {"email": "Priya@Example.com", "name": "Priya"}))
+    print(find_or_create(contacts, "email", {"email": " priya@example.com", "name": "P. Shah"}), len(contacts))
+    print(compare_units(300, 4, 2880), compare_units(300, 4, 300), compare_units(2000, 8, 2000))
+    print(compare_units(500, 3, 21600), compare_units(3000, 12, 3000))
+
+@@step
+{
+  "stepNumber": 1,
+  "title": "Count the tasks a Zap run uses",
+  "instruction": "Implement run_zap(steps, record, failing). Walk the steps, counting tasks. A filter step whose condition is false for the record ends the run with status 'filtered'. A paths step runs every branch whose condition holds, recursively, adding its tasks; if a branch ends in 'error', the whole run ends with 'error', while a branch that ends 'filtered' just stops that branch. An action step whose name is in failing ends the run with 'error' without counting; otherwise it adds one task. Kinds in FREE_STEPS cost nothing; any other kind raises ValueError. At the end return the tasks and 'success'. Run four orders through ZAP, then a large order with Slack failing. This is task counting from Section 2. [MOD-7.9]",
+  "hintConceptual": "A till receipt that only charges for things actually delivered. The doorman, the label printer, and the signposts are free; a door that turns you away ends the visit; and a delivery that fails is not charged but ends the trip.",
+  "hintSyntax": "tasks = 0\nfor step in steps:\n    kind = step[0]\n    if kind == \"filter\":\n        if not step[1](record):\n            return tasks, \"filtered\"\n    elif kind == \"paths\":\n        for condition, branch in step[1]:\n            if condition(record):\n                used, status = run_zap(branch, record, failing)\n                tasks += used\n                if status == \"error\":\n                    return tasks, \"error\"\n    elif kind == \"action\":\n        if step[1] in failing:\n            return tasks, \"error\"\n        tasks += 1\n    elif kind not in FREE_STEPS:\n        raise ValueError(\"unknown step: \" + kind)\nreturn tasks, \"success\""
+}
+@@assert
+assert run_zap(ZAP, {"amount": 50, "country": "GB"}) == (0, "filtered"), f"A small order stops at the filter for free, got {run_zap(ZAP, {'amount': 50, 'country': 'GB'})}"
+assert run_zap(ZAP, {"amount": 400, "country": "US"}) == (2, "success") and run_zap(ZAP, {"amount": 400, "country": "GB"}) == (3, "success"), "CRM and thank-you, plus the VAT path for GB"
+assert run_zap(ZAP, {"amount": 2500, "country": "GB"}) == (5, "success"), "A large GB order takes both paths"
+assert run_zap(ZAP, {"amount": 2500, "country": "GB"}, failing={"slack"}) == (1, "error"), "A failed action is not counted and stops the run"
+assert run_zap(ZAP, {"amount": 400, "country": "US"}, failing={"thank_you"}) == (1, "error"), "Tasks before the failure still count"
+_nested = [("trigger",), ("paths", [(lambda r: True, [("filter", lambda r: False), ("action", "x")]), (lambda r: True, [("action", "y")])]), ("action", "z")]
+assert run_zap(_nested, {}) == (2, "success"), "A filtered branch ends only that branch"
+try:
+    run_zap([("trigger",), ("webhook_post",)], {})
+    raise AssertionError("An unknown step must raise ValueError")
+except ValueError:
+    pass
+print("Step 1 passed: 0, 2, 3, and 5 tasks, and a failed Slack step stops the run at 1.")
+
+@@step
+{
+  "stepNumber": 2,
+  "title": "Estimate a month and pick a plan",
+  "instruction": "Implement monthly_tasks(steps, records), the sum of the tasks run_zap reports for each record. Then implement cheapest_tier(tasks, tiers, multi_step=True): each tier is a name, a price, and the tasks included; keep tiers that include at least that many tasks, leaving out the one named 'Free' when multi_step is true, since Free allows only two-step Zaps; return the name of the cheapest, or None if none fits. Estimate a month of 940 orders and choose a tier from TIERS, the published annual Professional prices in Section 2. [MOD-7.9]",
+  "hintConceptual": "Add up the till receipts for the month, then choose the cheapest phone plan whose allowance covers the total, remembering that the free plan cannot make the kind of call you need.",
+  "hintSyntax": "return sum(run_zap(steps, record)[0] for record in records)\n\n# cheapest_tier\nfitting = [tier for tier in tiers if tier[2] >= tasks and not (multi_step and tier[0] == \"Free\")]\nreturn min(fitting, key=lambda tier: tier[1])[0] if fitting else None"
+}
+@@assert
+_month = ([{"amount": 50, "country": "GB"}] * 400 + [{"amount": 400, "country": "US"}] * 300 + [{"amount": 400, "country": "GB"}] * 200 + [{"amount": 2500, "country": "GB"}] * 40)
+assert monthly_tasks(ZAP, _month) == 1400, f"940 orders use 1,400 tasks, got {monthly_tasks(ZAP, _month)}"
+assert cheapest_tier(1400, TIERS) == "Professional 2K" and cheapest_tier(2200, TIERS) == "Professional 10K", "1,400 fits the 2K tier; 2,200 does not"
+assert cheapest_tier(80, TIERS) == "Professional 750" and cheapest_tier(80, TIERS, multi_step=False) == "Free", "Free only for two-step Zaps"
+assert cheapest_tier(750, TIERS) == "Professional 750" and cheapest_tier(20000, TIERS) is None, "Exactly 750 fits; 20,000 fits nothing listed"
+assert monthly_tasks(ZAP, []) == 0, "No runs, no tasks"
+print("Step 2 passed: 940 orders use 1,400 tasks, which needs the 2,000-task tier.")
+
+@@step
+{
+  "stepNumber": 3,
+  "title": "Clean values like a Formatter step",
+  "instruction": "Implement formatter(value, operation). Support 'trim', 'lowercase', 'titlecase', which capitalises each whitespace-separated word and joins them with single spaces, 'extract_email', the first match of EMAIL or an empty string, 'first_word', or an empty string if there are no words, and 'default:X', which returns the value unless it is blank, in which case it returns X. Raise ValueError for anything else. Extract an email from a messy sentence, tidy a name, and fill an empty greeting. These are the free Formatter transformations from Section 2. [MOD-7.9]",
+  "hintConceptual": "A copy editor's set of small stamps: one tidies spaces, one fixes capitals, one circles the email address in a paragraph, one picks the first name, and one writes 'there' on an empty line.",
+  "hintSyntax": "if operation == \"trim\":\n    return value.strip()\nif operation == \"lowercase\":\n    return value.lower()\nif operation == \"titlecase\":\n    return \" \".join(word.capitalize() for word in value.split())\nif operation == \"extract_email\":\n    found = EMAIL.search(value)\n    return found.group(0) if found else \"\"\nif operation == \"first_word\":\n    words = value.split()\n    return words[0] if words else \"\"\nif operation.startswith(\"default:\"):\n    return value if value.strip() else operation[len(\"default:\"):]\nraise ValueError(\"unknown operation: \" + operation)"
+}
+@@assert
+_raw = "  hello from PRIYA shah <Priya.Shah+news@Example.co.uk> thanks "
+assert formatter(_raw, "extract_email") == "Priya.Shah+news@Example.co.uk", f"The address is found inside text, got {formatter(_raw, 'extract_email')}"
+assert formatter("  priya   SHAH ", "titlecase") == "Priya Shah" and formatter("  A b ", "trim") == "A b", "Title case collapses spaces; trim only strips the ends"
+assert formatter("Priya Shah", "first_word") == "Priya" and formatter("   ", "first_word") == "", "First word, or empty"
+assert formatter("  ", "default:there") == "there" and formatter("Sam", "default:there") == "Sam", "A default fills only blank values"
+assert formatter("No address here", "extract_email") == "" and formatter("MiXeD", "lowercase") == "mixed", "No match gives an empty string"
+try:
+    formatter("x", "reverse")
+    raise AssertionError("An unknown operation must raise ValueError")
+except ValueError:
+    pass
+print("Step 3 passed: the email is extracted, the name tidied, and the empty greeting becomes 'there'.")
+
+@@step
+{
+  "stepNumber": 4,
+  "title": "Find or create without duplicates",
+  "instruction": "Implement find_or_create(table, key_field, record). Normalise the record's key by converting it to text, trimming it, and lower-casing it. If any row's key, normalised the same way, matches, return that row and False. Otherwise append a copy of the record with its key field replaced by the normalised key, and return the new row and True. Add Priya twice with different capitals and spaces, and check that the table holds one row. This is the Tables find-or-create pattern from Section 2. [MOD-7.9]",
+  "hintConceptual": "A guest list at the door: write every name in the same tidy way, check the list before adding anyone, and if they are already on it, wave them through instead of writing them down twice.",
+  "hintSyntax": "key = str(record[key_field]).strip().lower()\nfor row in table:\n    if str(row[key_field]).strip().lower() == key:\n        return row, False\nrow = dict(record)\nrow[key_field] = key\ntable.append(row)\nreturn row, True"
+}
+@@assert
+_table = []
+_first = find_or_create(_table, "email", {"email": "Priya@Example.com", "name": "Priya"})
+assert _first == ({"email": "priya@example.com", "name": "Priya"}, True), f"A new contact is created with a normalised key, got {_first}"
+_second = find_or_create(_table, "email", {"email": " priya@example.com", "name": "P. Shah"})
+assert _second == ({"email": "priya@example.com", "name": "Priya"}, False) and len(_table) == 1, "The same person, differently typed, is found, not duplicated"
+_input = {"email": "SAM@GYM.COM", "name": "Sam"}
+find_or_create(_table, "email", _input)
+assert _input == {"email": "SAM@GYM.COM", "name": "Sam"} and len(_table) == 2, "The record passed in is not modified"
+assert find_or_create(_table, "email", {"email": "sam@gmial.com"})[1] is True, "A different address is a different contact"
+assert find_or_create([{"id": 7}], "id", {"id": " 7 "})[1] is False, "Keys are compared as trimmed text"
+print("Step 4 passed: Priya is found the second time, and the table holds one row for her.")
+
+@@step
+{
+  "stepNumber": 5,
+  "title": "Compare the three pricing models",
+  "instruction": "Implement compare_units(runs, actions, checks), returning a dict with 'zapier_tasks' equal to runs times actions, 'make_credits' equal to checks plus runs times actions, and 'n8n_executions' equal to checks. Compare a polled workload, the same workload with a webhook, a long workflow, and the two cases in the second recall question. These are the three formulas from Section 2. [MOD-7.9]",
+  "hintConceptual": "Three taxi firms: one charges per drop-off, one charges per drop-off plus every time it drives by to check if you are ready, and one charges per trip however many stops it makes.",
+  "hintSyntax": "return {\"zapier_tasks\": runs * actions, \"make_credits\": checks + runs * actions, \"n8n_executions\": checks}"
+}
+@@assert
+assert compare_units(300, 4, 2880) == {"zapier_tasks": 1200, "make_credits": 4080, "n8n_executions": 2880}, f"A polled workload, got {compare_units(300, 4, 2880)}"
+assert compare_units(300, 4, 300) == {"zapier_tasks": 1200, "make_credits": 1500, "n8n_executions": 300}, "With a webhook, checks equal runs"
+assert compare_units(2000, 8, 2000) == {"zapier_tasks": 16000, "make_credits": 18000, "n8n_executions": 2000}, "Long workflows favour execution pricing"
+assert compare_units(500, 3, 21600) == {"zapier_tasks": 1500, "make_credits": 23100, "n8n_executions": 21600}, "Question 2(a): polling every 2 minutes"
+assert compare_units(3000, 12, 3000) == {"zapier_tasks": 36000, "make_credits": 39000, "n8n_executions": 3000}, "Question 2(b): a 12-action webhook workflow"
+print("Step 5 passed: Zapier wins on polling, n8n on long workflows, and Make sits in between when checks are few.")

@@ -1,0 +1,937 @@
+@@meta
+{
+  "moduleId": "MOD-5.9",
+  "slug": "mod-5-9",
+  "unitId": "UNIT-5",
+  "unitTitle": "Unit 5: Complete Prompt Engineering Master Class",
+  "title": "Prompt Optimization",
+  "difficulty": "Advanced",
+  "estimatedMinutes": 100,
+  "citations": [
+    { "title": "Develop test cases", "source": "Anthropic Docs", "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" },
+    { "title": "Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations", "source": "arXiv", "url": "https://arxiv.org/abs/2411.00640" },
+    { "title": "Large Language Models as Optimizers", "source": "arXiv", "url": "https://arxiv.org/abs/2309.03409" },
+    { "title": "DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines", "source": "arXiv", "url": "https://arxiv.org/abs/2310.03714" },
+    { "title": "Large Language Models Are Human-Level Prompt Engineers", "source": "arXiv", "url": "https://arxiv.org/abs/2211.01910" },
+    { "title": "Prompt caching", "source": "Anthropic Docs", "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching" },
+    { "title": "Prompt caching", "source": "OpenAI Docs", "url": "https://developers.openai.com/api/docs/guides/prompt-caching" }
+  ],
+  "videoLibrary": [
+    {
+      "id": "VID-5.9-1",
+      "title": "Techniques for Automatic Prompt Optimization in LLMs.",
+      "creator": "Byte Goose AI.",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=B82F557HYjc",
+      "timingInstruction": "Watch after reading Section 1, listening for how the speakers iterate: read the outputs, find the failure, change the prompt, read again",
+      "keyTakeaway": "An overview of automatic prompt optimisation methods."
+    },
+    {
+      "id": "VID-5.9-2",
+      "title": "Building with the Claude API",
+      "creator": "Anthropic",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/building-with-the-claude-api",
+      "timingInstruction": "Take the lessons on prompt evaluation and on prompt caching after completing the lab",
+      "keyTakeaway": "Builds an evaluation pipeline with code and model graders, and shows prompt caching applied to a real request."
+    },
+    {
+      "id": "VID-5.9-3",
+      "title": "Google Prompting Essentials",
+      "creator": "Google",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/google-prompting-essentials",
+      "timingInstruction": "Take the module on evaluating and iterating after reading Section 2",
+      "keyTakeaway": "Practises the evaluate-then-iterate habit on everyday tasks, the informal version of the test loop in this chapter."
+    },
+    {
+      "id": "VID-5.9-4",
+      "title": "Prompt Engineering for ChatGPT",
+      "creator": "Vanderbilt University",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/prompt-engineering",
+      "timingInstruction": "Take the lessons on refining prompts after reading Section 4",
+      "keyTakeaway": "Shows systematic refinement of a prompt across several versions, with the reasoning behind each change."
+    }
+  ],
+  "lab": {
+    "labTitle": "Hands-On Lab: Test, Optimise, Compare, and Cost a Prompt",
+    "context": "A support team wants to improve the prompt that routes customer messages and has been changing it by feel. You will build the harness that scores a prompt on a test set, a simple automatic optimiser, a paired comparison with a margin of error, a regression gate, and a calculator for what a request costs and how long it takes.",
+    "language": "python"
+  }
+}
+
+@@reading
+# Prompt Optimization
+
+A prompt is rarely right the first time. Someone edits it, tries an example, likes the result, and ships it. A week later a different kind of input fails, another edit is made, and something that used to work quietly stops working. This is how most prompts are maintained, and it is why so many get worse over time.
+
+Optimising a prompt means improving it against a measure, with evidence. This chapter covers the three parts of that work. First, treating a prompt like code: a test set, a metric, and a check that nothing has regressed. Second, the methods for finding a better prompt, by hand and by algorithm. Third, the other things a prompt can be optimised for besides quality: cost, speed, and the number of tokens it uses.
+
+## 1. First-Principles Mental Model & Intuition
+
+### The cook who never tastes
+
+Imagine a cook who adjusts a recipe by reading it. More salt would surely help, so salt is added. The dish is never tasted, or it is tasted once, on a day when the cook was hungry.
+
+That is prompt editing without a test set. Each change is plausible. None is checked. The cook cannot tell an improvement from a mistake.
+
+A kitchen that improves a recipe does three things. It decides what "better" means: less salty, cooked through, ready in 20 minutes. It cooks the old and new versions side by side and has the same people taste both. And when the new version wins, it checks that the dish did not lose something it used to have.
+
+Those three things are a metric, a comparison on the same test cases, and a regression check.
+
+### The loop
+
+```text
+             +--------------------------------------------------+
+             |                                                  |
+             v                                                  |
+   1. DEFINE     what does a good answer look like?             |
+   2. COLLECT    a test set of real inputs, each with a check   |
+   3. MEASURE    run the current prompt: this is the baseline   |
+   4. DIAGNOSE   read the failures and group them by cause      |
+   5. CHANGE     one thing                                      |
+   6. MEASURE    on the same cases                              |
+   7. COMPARE    better by more than chance? anything broken?   |
+   8. KEEP or DISCARD ---------------------------------------- -+
+
+   then, once it is right:   make it cheaper, then make it faster,
+                             measuring quality again after each economy
+```
+
+Everything in this chapter is a step in that loop, or a way of running the loop automatically.
+
+## 2. Core Theory, Mathematical Foundations & Architecture Internals
+
+### Prompts as code
+
+Software teams do not ship a change because it looked fine when the author tried it. They have tests that run on every change. A prompt deserves the same treatment, for the same reason: it is logic that a product depends on, and an edit in one place has effects elsewhere.
+
+| Software practice | For a prompt |
+|---|---|
+| Source control | The prompt is a file in the repository, with a history |
+| Unit tests | A test set: inputs, each with a check |
+| A passing build | A pass rate at or above the agreed level |
+| Regression tests | Every failure found in use becomes a permanent test case |
+| Code review | Someone else reads the change and the test results |
+| Release notes | A record of why each change was made |
+
+Module 5.7 covered the first row and the versioning that goes with it. This chapter is about the tests.
+
+### Building a test set
+
+Anthropic's guidance on test cases starts with success criteria that are specific and measurable, and then asks for a set of cases that covers the task. Four kinds of case belong in it.
+
+| Kind | Source | Purpose |
+|---|---|---|
+| Typical | Real inputs, sampled from logs | The main job |
+| Edge | Empty, very long, misspelt, in another language | Robustness |
+| Adversarial | Attempts to break the rules | Rules hold under pressure |
+| Past failures | Every bug reported | It stays fixed |
+
+Each case needs a way of deciding whether the output is right. There are three kinds of grader, and the guidance ranks them.
+
+| Grader | How it decides | Strength | Weakness |
+|---|---|---|---|
+| **Code** | Exact match, a substring, a pattern, a schema, a calculation | Fast, free, identical every time | Only works where the answer can be checked mechanically |
+| **Model** | Another model call with a rubric | Handles open-ended answers | Costs money, can be wrong, must itself be checked against human judgement |
+| **Human** | A person reads it | The standard the others are measured against | Slow, costly, inconsistent between people |
+
+Use code where you can, a model where you must, and people to check the model. The same guidance advises preferring volume to perfection: more cases with automatic grading tell you more than a few cases graded carefully by hand. Module 5.7 showed why. The margin of error on a pass rate shrinks with the square root of the number of cases, so 50 cases cannot separate two prompts that 500 can.
+
+### Two sets, not one
+
+A prompt improved against a test set gets better at that test set. Whether it got better at the task is a separate question.
+
+The defence is to split the cases in two. The **development set** is the one you look at, tune against, and read failures from. The **held-out set** is never looked at while tuning. It is run once at the end, to find out whether the improvement is real.
+
+If the development score rises and the held-out score does not, the prompt has learned the examples and not the task. This is **overfitting**, and Section 3 produces it on purpose.
+
+### Comparing two prompts properly
+
+Suppose the old prompt passes 70 percent of 200 cases and the new one passes 80 percent. Is the new one better?
+
+Module 5.7 gave the margin of error for one pass rate. Applying it to each prompt separately and combining the two gives a margin on the difference of
+
+$$
+1.96 \sqrt{\frac{p_{1}(1 - p_{1})}{n} + \frac{p_{2}(1 - p_{2})}{n}}
+$$
+
+which here is 0.084. The difference of 0.10 is just outside it.
+
+This wastes information. Both prompts ran on the **same** cases. Most cases are easy for both or hard for both, and tell you nothing about the difference. What matters is the cases where the two disagree. Count them:
+
+- $b$, the cases the old prompt failed and the new one passes: **fixed**
+- $c$, the cases the old prompt passed and the new one fails: **broken**
+
+The difference in pass rate is $(b - c) / n$, and its margin of error, at the 95 percent level, is
+
+$$
+\text{margin} = \frac{1.96}{n} \sqrt{b + c - \frac{(b - c)^{2}}{n}}
+$$
+
+If the 200 cases contain 30 fixed and 10 broken, the difference is 0.10 and the margin is 0.060. The same data, analysed as pairs, gives a tighter answer: 0.10 give or take 0.06, comfortably above zero. A 2024 paper from Anthropic, "Adding Error Bars to Evals", recommends exactly this: when two versions answer the same questions, analyse the paired differences, and report a margin with every score.
+
+The pair of counts also says something the single number hides. A net gain of 20 cases made of 30 fixed and 10 broken is a different change from one made of 20 fixed and none broken. The broken cases should be read, one by one, before the change ships.
+
+### Regression checks
+
+A regression is something that used to work and no longer does. The check has two parts.
+
+- **Critical cases** must pass in every version. These are the cases where a failure is unacceptable whatever the average does: a safety rule, a legal disclaimer, a format that downstream code depends on.
+- **The rest** are compared in aggregate, with the broken cases listed for a person to read.
+
+The check runs on every change to the prompt and on every change of model. A model update with an unchanged prompt is a change to the system, and has broken many prompts that were never touched.
+
+### Manual optimisation
+
+Most improvement comes from reading failures. The method is called error analysis.
+
+1. Run the development set and collect the failures.
+2. Read them, and write beside each one why it failed, in a few words.
+3. Group the reasons. Usually two or three causes account for most failures.
+4. Fix the largest group with one change.
+5. Measure again, and check what broke.
+
+The changes available are the techniques of this unit.
+
+| Symptom | Likely change |
+|---|---|
+| The answer misses the point | State the goal and the audience (Module 5.1) |
+| Lacks facts it needed | Add context (Module 5.3) |
+| Wrong style or format | Add examples (Module 5.4) or a schema (Module 5.5) |
+| Skips part of the task | Number the steps and ask for a result per step (Module 5.8) |
+| One prompt doing too much | Split it into a chain (Module 5.6) |
+| A rule is ignored | Say it once, plainly, with the reason (Module 5.7) |
+
+Two rules of method matter more than any technique. **Change one thing at a time**, or you will not know what helped. And **read the outputs**, not only the score. A score tells you that something changed. The outputs tell you what.
+
+### Automatic optimisation
+
+If improvement is a loop of proposing a change and measuring it, a program can run the loop. Several research lines do this.
+
+| Method | Year | Idea |
+|---|---|---|
+| **APE** | 2022 | A model is shown examples of inputs and outputs, proposes instructions that would produce them, and the best-scoring instruction is kept |
+| **OPRO** | 2023 | A model is shown earlier prompts with their scores and asked to write a better one, repeatedly |
+| **DSPy** | 2023 | You declare what each step takes and returns. An optimiser writes the instructions and selects the examples to maximise your metric |
+| **TextGrad** | 2024 | A model's written criticism of an output is passed back through the steps, like a gradient in words |
+| **GEPA** | 2025 | Prompts are evolved by a model that reflects on failures, keeping a varied set of the best candidates |
+
+The OPRO paper produced a well-known result. Among the instructions its optimiser found for a set of maths word problems was "Take a deep breath and work on this problem step-by-step", which the paper reports as scoring about 80 percent, around eight points above the standard "Let's think step by step". No person would have thought to try it. The result is also a warning: the phrase was found for one model on one dataset, and nothing says it helps elsewhere.
+
+The major providers also offer tools that rewrite a prompt for you from a description or from failing examples. They are a useful first draft.
+
+Every automatic method needs the two things this chapter began with: a metric and test data. It also needs a held-out set more than manual work does, because an optimiser will exploit any quirk of the development set that raises the score. And its output is tuned to one model. When the model changes, the optimisation should be run again.
+
+### Cost
+
+A request's cost is its tokens times their prices:
+
+$$
+\text{cost} = \frac{t_{\text{in}} \, P_{\text{in}} + t_{\text{out}} \, P_{\text{out}}}{10^{6}}
+$$
+
+with prices per million tokens. Output tokens typically cost several times what input tokens do: on the mid-tier prices used in this course, USD 2 and USD 10. Five levers follow.
+
+**Prompt caching.** Module 3.2 worked through the arithmetic. A stable block at the start of the prompt is stored after the first request, and later requests read it at a fraction of the price. At the time of writing (November 2026), Anthropic charges 1.25 times the input price to write a cache entry that lives five minutes, twice the price for one that lives an hour, and a tenth of the price to read one. OpenAI caches automatically for prompts with a shared prefix of at least 1,024 tokens, and charges about a tenth for cached input on most models. Both require the cached part to be identical and to come first, and both have a minimum length, which on Anthropic's models ranges from 512 to 4,096 tokens. The design consequence is simple: put everything that does not change at the top, and everything that does at the bottom.
+
+**Shorter output.** Because output is the expensive side, a limit on length is often the largest saving. Ask for the answer and not the essay.
+
+**A shorter prompt.** Every instruction and example is paid for on every request. Remove what the tests show is not needed.
+
+**A cheaper model.** Module 5.6's routing sends easy inputs to a small model and hard ones to a large one.
+
+**Batch processing.** Module 3.1 noted that work which can wait is processed at half price.
+
+### Latency
+
+The time a request takes is approximately
+
+$$
+\text{seconds} = T_{\text{first}} + \frac{t_{\text{out}}}{r}
+$$
+
+where $T_{\text{first}}$ is the wait for the first token and $r$ is the speed of generation in tokens per second. For any substantial answer the second term dominates. A reply of 600 tokens at 60 tokens per second takes ten seconds to write, whatever the prompt.
+
+So the main lever on speed is, again, output length. The others: a smaller model generates faster; caching shortens the wait for the first token as well as the bill; streaming shows the user the words as they arrive, which does not shorten the request but shortens the wait before something appears; and independent calls can be made at the same time instead of in sequence.
+
+### The order of work
+
+Make it right, then make it cheap, then make it fast. Each economy is a change to the prompt or the model, and each one can lower quality. Run the tests after every one.
+
+### Complexity
+
+Running a test set costs one model call per case, per prompt version. An optimiser that tries $k$ candidates on $n$ cases makes $k \times n$ calls, which is where automatic methods spend their money. The comparisons and the gate are linear in the number of cases.
+
+## 3. Production-Grade Implementation & Annotated Walkthrough
+
+The lab needs a model whose behaviour depends on its prompt and never changes between runs. The stand-in below reads rules of a fixed form from the prompt and applies the first that matches. It is a toy. What matters is that editing the prompt changes its answers, so a prompt can be tested and improved.
+
+```python
+import math
+import re
+
+RULE = re.compile(r'If the message mentions "([^"]+)", answer (\w+)\.')
+
+def toy_model(prompt, text):
+    lowered = text.lower()
+    for keyword, label in RULE.findall(prompt):
+        if keyword.lower() in lowered:
+            return label
+    default = re.search(r"Otherwise answer (\w+)\.", prompt)
+    return default.group(1) if default else "other"
+
+BASE_PROMPT = "\n".join([
+    "Classify the customer's message as billing, shipping, account, or other.",
+    'If the message mentions "refund", answer billing.',
+    'If the message mentions "deliver", answer shipping.',
+    'If the message mentions "password", answer account.',
+    "Otherwise answer other.",
+])
+
+DEV_SET = [
+    ("I want a refund for my last invoice", "billing"), ("When will my parcel be delivered?", "shipping"),
+    ("I forgot my password", "account"), ("You charged me twice this month", "billing"),
+    ("My parcel has not arrived", "shipping"), ("Do you sell gift cards?", "other"),
+    ("My order total is wrong", "billing"), ("How do I reset my password?", "account"),
+    ("The delivery driver left it in the rain", "shipping"), ("Please refund the duplicate payment", "billing"),
+    ("I cannot log in to my account", "account"), ("What are your opening hours?", "other"),
+]
+HELD_OUT_SET = [
+    ("Can I get a refund on a damaged item?", "billing"), ("Has my delivery been sent yet?", "shipping"),
+    ("I need to change my password", "account"), ("There is a charge I do not recognise", "billing"),
+    ("The parcel was left with a neighbour", "shipping"),
+    ("Do you have a shop in Leeds? I would like to order in person", "other"),
+    ("Can I change the name on my order?", "account"), ("I was billed after cancelling", "billing"),
+    ("How do I order a catalogue?", "other"), ("I cannot log in on my phone", "account"),
+    ("My tracking number does not work", "shipping"), ("Is there a student discount?", "other"),
+]
+
+def run_eval(model, prompt, cases):
+    results = []
+    for text, expected in cases:
+        try:
+            results.append(model(prompt, text).strip().lower() == expected.lower())
+        except Exception:
+            results.append(False)
+    return results
+
+def accuracy(prompt, cases):
+    results = run_eval(toy_model, prompt, cases)
+    return sum(results) / len(results)
+
+print(run_eval(toy_model, BASE_PROMPT, DEV_SET))
+print(round(accuracy(BASE_PROMPT, DEV_SET), 3), round(accuracy(BASE_PROMPT, HELD_OUT_SET), 3))
+```
+
+- **`toy_model` stands in for a real model.** It finds every rule in the prompt, applies the first whose keyword appears in the message, and falls back to the default. The same prompt and message always give the same answer, so every number in this chapter can be reproduced.
+- **There are two sets of twelve cases.** The development set is for tuning. The held-out set is put aside. Twelve is far too few for real work, and Section 2 explained why. It is enough to see the mechanics.
+- **`run_eval` returns one result per case, not a score.** A list of passes and failures can be compared case by case with another version's list. A bare percentage cannot.
+- **The grader is code.** The answer is compared with the expected label after trimming spaces and ignoring case. Nothing about it varies between runs.
+- **A case whose model call raises an error is a failure.** A test that cannot run has not passed.
+- **The baseline is 0.667 on the development set and 0.5 on the held-out set.** Eight of twelve, and six of twelve. These are the numbers every change will be measured against.
+
+Next, a small automatic optimiser, and what it does to the two sets.
+
+```python
+CANDIDATES = [
+    'If the message mentions "charge", answer billing.',
+    'If the message mentions "parcel", answer shipping.',
+    'If the message mentions "order", answer billing.',
+    'If the message mentions "hours", answer other.',
+    'If the message mentions "log in", answer account.',
+    'If the message mentions "rain", answer shipping.',
+]
+
+def add_rule(prompt, rule):
+    lines = prompt.split("\n")
+    return "\n".join(lines[:-1] + [rule, lines[-1]])
+
+def hill_climb(base_prompt, candidates, score):
+    prompt, best, kept = base_prompt, score(base_prompt), []
+    for rule in candidates:
+        trial = add_rule(prompt, rule)
+        trial_score = score(trial)
+        if trial_score > best:
+            prompt, best, kept = trial, trial_score, kept + [rule]
+    return prompt, kept
+
+optimised, kept = hill_climb(BASE_PROMPT, CANDIDATES, lambda prompt: accuracy(prompt, DEV_SET))
+print(kept)
+print("optimised:", round(accuracy(optimised, DEV_SET), 3), round(accuracy(optimised, HELD_OUT_SET), 3))
+
+careful = BASE_PROMPT
+for rule in (CANDIDATES[0], CANDIDATES[1], CANDIDATES[4]):
+    careful = add_rule(careful, rule)
+print("careful  :", round(accuracy(careful, DEV_SET), 3), round(accuracy(careful, HELD_OUT_SET), 3))
+```
+
+- **`add_rule` inserts a line before the final "Otherwise" line.** New rules go after the existing ones, so they apply only to messages the earlier rules did not catch.
+- **`hill_climb` tries each candidate in turn.** It adds the candidate to the current prompt, scores the result, and keeps the candidate only if the score rose. This is the simplest possible optimiser, and the published methods in Section 2 are elaborations of the same loop.
+- **It takes the scoring function as an argument.** The optimiser does not know what a prompt is for. It only knows that a higher score is better, which is both its power and its danger.
+- **Four candidates are kept.** The rules for "charge", "parcel", "order", and "log in" each fix one development case. The rules for "hours" and "rain" change nothing and are dropped.
+- **The development score reaches 1.0, and the held-out score reaches 0.583.** The optimiser reports a perfect prompt. On cases it never saw, the prompt went from six of twelve to seven.
+- **One rule did the damage.** "If the message mentions order, answer billing" fixed "My order total is wrong". It also sends "How do I order a catalogue?" and a question about ordering in a shop to billing. The rule fits one example and is wrong about the word in general.
+- **The careful prompt leaves that rule out.** It scores 0.917 on the development set, lower than the optimiser's, and 0.75 on the held-out set, higher. The prompt that looks worse on the cases you tuned on is the better prompt. Only the held-out set could show it.
+
+Then, comparing two versions and deciding whether to ship.
+
+```python
+def paired_compare(old, new):
+    count = len(old)
+    if count == 0:
+        return {"old": 0.0, "new": 0.0, "fixed": 0, "broken": 0, "difference": 0.0, "margin": 0.0}
+    fixed = sum(1 for before, after in zip(old, new) if not before and after)
+    broken = sum(1 for before, after in zip(old, new) if before and not after)
+    spread = math.sqrt(fixed + broken - (fixed - broken) ** 2 / count) / count
+    return {"old": round(sum(old) / count, 3), "new": round(sum(new) / count, 3), "fixed": fixed, "broken": broken,
+            "difference": round((fixed - broken) / count, 3), "margin": round(1.96 * spread, 3)}
+
+def regression_gate(old, new, critical):
+    broken = [index for index, (before, after) in enumerate(zip(old, new)) if before and not after]
+    critical_failed = [index for index in critical if not new[index]]
+    return {"ship": not critical_failed and sum(new) >= sum(old), "broken": broken, "critical_failed": critical_failed}
+
+before = run_eval(toy_model, BASE_PROMPT, HELD_OUT_SET)
+after = run_eval(toy_model, optimised, HELD_OUT_SET)
+print(paired_compare(before, after))
+print(regression_gate(before, after, critical=[0, 1, 2]))
+print(regression_gate(before, after, critical=[0, 5]))
+
+large_old = [True] * 130 + [False] * 30 + [True] * 10 + [False] * 30
+large_new = [True] * 130 + [True] * 30 + [False] * 10 + [False] * 30
+print(paired_compare(large_old, large_new))
+print(round(1.96 * math.sqrt(0.7 * 0.3 / 200 + 0.8 * 0.2 / 200), 3))
+```
+
+- **`paired_compare` counts the cases where the two versions disagree.** Fixed means failed before and passes now. Broken means passed before and fails now. Cases where both agree do not enter the calculation.
+- **On the held-out set the optimised prompt fixed three cases and broke two.** The difference is 0.083 and the margin is 0.362. The true difference could be anywhere from a large loss to a large gain. Twelve cases have established nothing.
+- **`regression_gate` lists what broke and checks the critical cases.** It allows shipping only if no critical case fails and the new version passes at least as many cases as the old.
+- **With the three basic cases marked critical, the gate allows the change.** It still reports that cases 5 and 8 broke, counting from zero. Those are the two "order" questions. A person reading that list would catch the bad rule that the totals hide.
+- **With case 5 marked critical, the gate blocks it.** The same change, judged against a different statement of what must never fail.
+- **The 200-case example shows why pairing matters.** With 30 fixed and 10 broken, the pass rate moves from 0.7 to 0.8, and the paired margin is 0.06. Treating the two runs as unrelated gives a margin of 0.084. The paired analysis is tighter because it uses the fact that both prompts faced the same cases.
+
+Finally, what a request costs and how long it takes.
+
+```python
+def cost_and_latency(input_tokens, output_tokens, cached_tokens=0, price_in=2.0, price_out=10.0,
+                     read_mult=0.1, tokens_per_second=60, first_token_seconds=0.5):
+    fresh = input_tokens - cached_tokens
+    cost = (fresh * price_in + cached_tokens * price_in * read_mult + output_tokens * price_out) / 1e6
+    return round(cost, 6), round(first_token_seconds + output_tokens / tokens_per_second, 2)
+
+print("baseline       :", cost_and_latency(4000, 600))
+print("cached prefix  :", cost_and_latency(4000, 600, cached_tokens=3000))
+print("shorter prompt :", cost_and_latency(3000, 600))
+print("shorter output :", cost_and_latency(4000, 200))
+print("cache + output :", cost_and_latency(4000, 200, cached_tokens=3000))
+```
+
+- **The cost has three terms.** Fresh input at the full input price, cached input at a tenth of it, and output at the output price. The prices are per million tokens.
+- **The latency has two terms.** The wait for the first token, and the time to write the output at a given speed. The speed and the wait here are illustrative values, and real ones depend on the model and the load.
+- **The baseline costs USD 0.014 and takes 10.5 seconds.** It has 4,000 tokens of input and 600 of output.
+- **Caching a 3,000-token prefix cuts the cost to USD 0.0086 and leaves the time unchanged in this model.** In practice caching also shortens the wait for the first token. The function ignores the one-off cost of writing the cache, which Module 3.2 covered.
+- **Removing 1,000 tokens from the prompt saves less.** The cost falls to USD 0.012. Input is the cheap side.
+- **Cutting the output from 600 tokens to 200 cuts the cost to USD 0.010 and the time to 3.83 seconds.** Of the single changes, it is the only one that makes the request faster, and it makes it nearly three times faster.
+- **Together, caching and a shorter output give USD 0.0046 and 3.83 seconds.** A third of the cost and about a third of the time, from two changes that did not touch the model.
+
+**Complexity.** `run_eval` makes one model call per case. `hill_climb` makes one evaluation per candidate, so candidates times cases model calls in all. `paired_compare` and `regression_gate` are linear in the number of cases. `cost_and_latency` is constant time.
+
+### A record for each change
+
+```text
+Prompt version:  [hash]            Model: [exact model version]
+Change:          [one sentence: what was changed]
+Reason:          [the group of failures it was meant to fix]
+Development set: [old rate] to [new rate]   fixed [b]   broken [c]
+Held-out set:    [old rate] to [new rate]   margin [m]
+Critical cases:  [all pass, or which failed]
+Broken cases read by: [name]
+Cost per request: [old] to [new]    Latency: [old] to [new]
+Decision:        [ship, or discard, and why]
+```
+
+### Choosing what to optimise
+
+| If the problem is | Start with |
+|---|---|
+| Wrong answers | Error analysis on the development set |
+| Right on your examples, wrong in use | A larger test set drawn from real inputs, and a held-out set |
+| Worked last month, fails now | The regression suite, and a check of whether the model changed |
+| Too expensive | Output length, then caching, then a cheaper model for easy inputs |
+| Too slow | Output length, then a smaller model, then streaming |
+| Inconsistent | Run each case several times and measure agreement, as in Module 5.1 |
+
+## 4. Practitioner Wisdom & Edge Cases (Reddit / HN / Stack Overflow Synthesis)
+
+**Tuning on three examples.** The commonest practice, and the one this chapter exists to replace. A prompt adjusted until three examples look good has been fitted to three examples.
+
+**No baseline.** People build a test set after changing the prompt and so have nothing to compare with. Measure the current version first, however bad it is.
+
+**Testing on the cases you tuned on.** The development score always rises, because that is what tuning does. The lab's optimiser reached a perfect score on its own cases and gained one case of twelve on the others. Keep a set you do not look at.
+
+**Looking at the held-out set "just once".** Each look, followed by a change, turns the held-out set into a development set. When it has been used to make decisions several times, replace it with fresh cases.
+
+**Trusting a model grader unchecked.** A model that grades answers is another prompt, with its own errors. Before relying on it, have a person grade 50 of the same answers and measure how often the two agree.
+
+**Reading the score and not the outputs.** A pass rate went from 82 to 85 percent. Which cases changed? Reading the fixed and the broken cases takes ten minutes and regularly reveals that the grader, and not the prompt, was at fault.
+
+**Changing several things at once.** A new example, a reworded rule, and a different model in one step, followed by a better score, teaches nothing about which helped. One of them may have hurt.
+
+**Celebrating noise.** A gain of two points on 100 cases is well inside the margin of error. Compute the margin before telling anyone.
+
+**Magic phrases.** A sentence discovered by an optimiser, or passed around online, helped one model on one benchmark. Test it on your task and your model before believing it. Most do nothing, and some do harm.
+
+**An optimised prompt nobody can read.** Automatic methods can produce prompts that score well and make no sense to a person. When they fail, nobody can repair them. Prefer a readable prompt that scores slightly lower, or keep the optimiser and its data so that the prompt can be regenerated.
+
+**A cache that never hits.** A timestamp, a user's name, or a request number placed at the top of the prompt changes the prefix on every request, and nothing is ever read from the cache. Put changing content last, and check the usage figures the provider returns to confirm the cache is being read.
+
+**Saving money by cutting the wrong thing.** Removing the examples from a prompt saves input tokens, the cheap kind, and may lower quality. Capping the output saves the expensive kind. Measure quality after every economy.
+
+**Optimising cost before correctness.** A fast, cheap, wrong answer is not an optimisation. Get the pass rate where it needs to be, then economise, re-running the tests each time.
+
+**A model upgrade treated as a non-event.** The provider retires a model, the new one reads the same prompt differently, and nothing in the repository changed. Pin the model version, and run the full suite before switching.
+
+## 5. Active Recall Check & Synthesis Summary
+
+**Summary.** Optimising a prompt means improving it against a measure, in a loop: define success, collect a test set, measure a baseline, read the failures, change one thing, measure again, and keep the change only if it is better by more than chance and has broken nothing important. A test set mixes typical, edge, adversarial, and past-failure cases, graded by code where possible, by a model where necessary, and by people to check the model. It is split into a development set for tuning and a held-out set that reveals overfitting. Two versions run on the same cases should be compared as pairs: with $b$ cases fixed and $c$ broken out of $n$, the difference is $(b - c)/n$ and its margin is $\frac{1.96}{n}\sqrt{b + c - (b - c)^{2}/n}$. Critical cases must pass in every version, and the suite runs on every change of prompt or model. Improvement can be done by hand, through error analysis, or by algorithms such as OPRO and DSPy that propose and score candidates, and that need a held-out set even more. Once the prompt is right it can be made cheaper and faster, chiefly by shortening the output, caching a stable prefix, and routing easy inputs to a smaller model, with the tests run again after each economy.
+
+**Question 1.** Two versions of a prompt are run on the same 150 test cases. Compared with the old version, the new one fixes 21 cases and breaks 9. Compute the change in pass rate and its margin of error, and say whether the improvement is established. Then say what should be done before the new version ships.
+
+<details>
+<summary>View Answer</summary>
+
+The change in pass rate is 21 minus 9, which is 12, divided by 150, which is 0.08: eight percentage points. For the margin, the quantity under the square root is 21 plus 9, which is 30, minus 12 squared divided by 150, which is 144 divided by 150, or 0.96. That leaves 29.04, whose square root is about 5.389. Divided by 150 that is about 0.0359, and multiplied by 1.96 it is about 0.070. So the improvement is 0.08 give or take 0.07, a range from about 0.01 to 0.15. The range lies above zero, so the new version is probably better, though the lower end is close to no improvement at all, and the claim would be more secure with more cases. Before shipping, three things should be done. The nine broken cases should be read one by one: nine regressions in 150 is six percent of the set, and they may share a cause that can be fixed without losing the gains, or they may include something that must not fail. The critical cases should be confirmed to pass. And if the 150 cases were used for tuning, the comparison should be repeated on a held-out set, because an improvement measured on the cases a prompt was tuned against overstates the real one.
+
+</details>
+
+**Question 2.** A team runs an automatic prompt optimiser overnight. The pass rate on their 40 test cases rises from 70 percent to 95 percent. In production the following week, the proportion of answers that users rate as helpful does not change. Give the most likely explanations and say how the team should have run the experiment.
+
+<details>
+<summary>View Answer</summary>
+
+The most likely explanation is overfitting. An optimiser keeps whatever raises the score on the cases it is given, and with only 40 cases there are many quirks to exploit: a phrase that happens to suit several of those inputs, or a rule that fits one example and is wrong in general, as the "order" rule was in the lab. The prompt learned the 40 cases and not the task. A second explanation is that the test set does not resemble production. If the cases were written by the team and not sampled from real inputs, a prompt can be excellent on them and unchanged on what users send. A third is that the metric differs from what users value: the grader may check a format or a keyword, while users judge whether their question was answered. A fourth is noise in the production measure, though a move from 70 to 95 percent, if real, should have been visible. The experiment should have been run with the cases split into a development set given to the optimiser and a held-out set it never saw, with the held-out score reported as the result. The cases should have been drawn from real inputs, and there should have been more of them: on 40 cases the margin of error on a single pass rate near 70 percent is about 14 points. The grader should have been checked against human ratings on a sample. And the fixed and broken cases should have been read, since a readable rule that fits one example is usually obvious to a person in a way that no score reveals.
+
+</details>
+
+**Question 3.** An assistant's requests have 6,000 input tokens, of which 5,000 are a stable prefix, and 800 output tokens. It handles 50,000 requests a month at USD 2 per million input tokens and USD 10 per million output tokens, with cached input read at a tenth of the input price. Generation runs at 60 tokens per second after a 0.5 second wait. Compute the monthly cost and the time per request. Then compute both after caching the prefix, after halving the output, and after doing both, ignoring the cost of writing the cache. What should be done first?
+
+<details>
+<summary>View Answer</summary>
+
+At present each request costs 6,000 times 2 plus 800 times 10, which is 12,000 plus 8,000, or 20,000, divided by a million: USD 0.020. Over 50,000 requests that is USD 1,000 a month. Each takes 0.5 seconds plus 800 divided by 60, about 13.3 seconds, which is about 13.8 seconds. With the prefix cached, the input side becomes 1,000 fresh tokens at 2 and 5,000 cached tokens at 0.2: 2,000 plus 1,000, or 3,000, and with the output's 8,000 the total is 11,000, so USD 0.011 a request and USD 550 a month. The time is unchanged in this calculation. With the output halved to 400 tokens and no caching, the cost is 12,000 plus 4,000, or USD 0.016 a request and USD 800 a month, and the time is 0.5 plus 400 divided by 60, about 7.2 seconds. With both, the cost is 3,000 plus 4,000, or USD 0.007 a request and USD 350 a month, at about 7.2 seconds. Caching should be done first: it saves USD 450 a month, the larger saving, and it does not change what the model writes, so it carries no risk to quality. It needs only that the stable 5,000 tokens come first and are identical on every request. Halving the output saves a further USD 200 and nearly halves the time, which matters more if users are waiting, and it is a change to the answers themselves. It should be made as a prompt change like any other, with the test set run before and after to confirm that the shorter answers still pass.
+
+</details>
+
+@@starter
+"""
+Lab: Test, Optimise, Compare, and Cost a Prompt
+Standard library only. Complete the TODO in each step, then press "Run & Verify Step".
+"""
+import math
+import re
+
+RULE = re.compile(r'If the message mentions "([^"]+)", answer (\w+)\.')
+
+
+def toy_model(prompt, text):
+    """Provided stand-in for a model. It reads rules of the form
+        If the message mentions "keyword", answer label.
+    from the prompt, applies the first whose keyword appears in the text, and otherwise
+    gives the label on the line "Otherwise answer label." (or "other")."""
+    lowered = text.lower()
+    for keyword, label in RULE.findall(prompt):
+        if keyword.lower() in lowered:
+            return label
+    default = re.search(r"Otherwise answer (\w+)\.", prompt)
+    return default.group(1) if default else "other"
+
+
+BASE_PROMPT = "\n".join([
+    "Classify the customer's message as billing, shipping, account, or other.",
+    'If the message mentions "refund", answer billing.',
+    'If the message mentions "deliver", answer shipping.',
+    'If the message mentions "password", answer account.',
+    "Otherwise answer other.",
+])
+
+DEV_SET = [
+    ("I want a refund for my last invoice", "billing"), ("When will my parcel be delivered?", "shipping"),
+    ("I forgot my password", "account"), ("You charged me twice this month", "billing"),
+    ("My parcel has not arrived", "shipping"), ("Do you sell gift cards?", "other"),
+    ("My order total is wrong", "billing"), ("How do I reset my password?", "account"),
+    ("The delivery driver left it in the rain", "shipping"), ("Please refund the duplicate payment", "billing"),
+    ("I cannot log in to my account", "account"), ("What are your opening hours?", "other"),
+]
+
+HELD_OUT_SET = [
+    ("Can I get a refund on a damaged item?", "billing"), ("Has my delivery been sent yet?", "shipping"),
+    ("I need to change my password", "account"), ("There is a charge I do not recognise", "billing"),
+    ("The parcel was left with a neighbour", "shipping"),
+    ("Do you have a shop in Leeds? I would like to order in person", "other"),
+    ("Can I change the name on my order?", "account"), ("I was billed after cancelling", "billing"),
+    ("How do I order a catalogue?", "other"), ("I cannot log in on my phone", "account"),
+    ("My tracking number does not work", "shipping"), ("Is there a student discount?", "other"),
+]
+
+CANDIDATES = [
+    'If the message mentions "charge", answer billing.',
+    'If the message mentions "parcel", answer shipping.',
+    'If the message mentions "order", answer billing.',
+    'If the message mentions "hours", answer other.',
+    'If the message mentions "log in", answer account.',
+    'If the message mentions "rain", answer shipping.',
+]
+
+
+def add_rule(prompt, rule):
+    """Provided helper: insert a rule line just before the prompt's last line."""
+    lines = prompt.split("\n")
+    return "\n".join(lines[:-1] + [rule, lines[-1]])
+
+
+def accuracy(prompt, cases):
+    """Provided helper: the share of cases the toy model gets right with this prompt.
+    It compares the answer directly, without the stripping and lowercasing that run_eval does.
+    On these sets the two give the same results."""
+    return sum(1 for text, expected in cases if toy_model(prompt, text) == expected) / len(cases)
+
+
+# ---------------------------------------------------------------- Step 1
+def run_eval(model, prompt, cases):
+    """cases is a list of (text, expected). For each, call model(prompt, text).
+    The case passes if the answer, stripped and lowercased, equals expected lowercased.
+    If the call raises any exception, the case fails.
+    Return a list of True/False, one per case, in order."""
+    # TODO Step 1
+    return None
+
+
+# ---------------------------------------------------------------- Step 2
+def hill_climb(base_prompt, candidates, score):
+    """A greedy optimiser. score(prompt) returns a number, higher is better.
+    Start with prompt = base_prompt and best = score(base_prompt).
+    For each candidate rule in order: trial = add_rule(prompt, rule). If score(trial) is
+    strictly greater than best, keep it: prompt = trial, best = that score, and remember the rule.
+    Return (final prompt, list of the rules kept, in order)."""
+    # TODO Step 2
+    return None
+
+
+# ---------------------------------------------------------------- Step 3
+def paired_compare(old, new):
+    """old and new are equal-length lists of True/False for the same cases, in the same order.
+    With n = number of cases:
+        fixed  = cases False in old and True in new
+        broken = cases True in old and False in new
+        difference = (fixed - broken) / n
+        margin     = 1.96 * sqrt(fixed + broken - (fixed - broken) ** 2 / n) / n
+    Return {"old": old pass rate, "new": new pass rate, "fixed": fixed, "broken": broken,
+            "difference": difference, "margin": margin} with the four rates rounded to 3 places.
+    If there are no cases, return the same keys with 0.0 for the rates and 0 for the counts."""
+    # TODO Step 3
+    return None
+
+
+# ---------------------------------------------------------------- Step 4
+def regression_gate(old, new, critical):
+    """critical is a list of case indices that must pass in the new version.
+    Return {"ship": S, "broken": B, "critical_failed": C} where
+        B = indices of cases True in old and False in new, ascending
+        C = the indices in critical (in the order given) whose new result is False
+        S = True only if C is empty and new passes at least as many cases as old"""
+    # TODO Step 4
+    return None
+
+
+# ---------------------------------------------------------------- Step 5
+def cost_and_latency(input_tokens, output_tokens, cached_tokens=0, price_in=2.0, price_out=10.0,
+                     read_mult=0.1, tokens_per_second=60, first_token_seconds=0.5):
+    """Prices are USD per million tokens. cached_tokens is the part of the input read from a cache.
+        cost    = ((input_tokens - cached_tokens) * price_in
+                   + cached_tokens * price_in * read_mult
+                   + output_tokens * price_out) / 1e6
+        seconds = first_token_seconds + output_tokens / tokens_per_second
+    Return (cost rounded to 6 places, seconds rounded to 2 places)."""
+    # TODO Step 5
+    return None
+
+
+if __name__ == "__main__":
+    print("baseline :", run_eval(toy_model, BASE_PROMPT, DEV_SET))
+    print("optimiser:", hill_climb(BASE_PROMPT, CANDIDATES, lambda prompt: accuracy(prompt, DEV_SET)))
+    print("compare  :", paired_compare([True, False, False, True], [True, True, True, False]))
+    print("gate     :", regression_gate([True, False, False, True], [True, True, True, False], [0]))
+    print("cost     :", cost_and_latency(4000, 600))
+
+@@solution
+"""
+Lab solution: Test, Optimise, Compare, and Cost a Prompt
+Standard library only.
+"""
+import math
+import re
+
+RULE = re.compile(r'If the message mentions "([^"]+)", answer (\w+)\.')
+
+
+def toy_model(prompt, text):
+    """Provided stand-in for a model. It reads rules of the form
+        If the message mentions "keyword", answer label.
+    from the prompt, applies the first whose keyword appears in the text, and otherwise
+    gives the label on the line "Otherwise answer label." (or "other")."""
+    lowered = text.lower()
+    for keyword, label in RULE.findall(prompt):
+        if keyword.lower() in lowered:
+            return label
+    default = re.search(r"Otherwise answer (\w+)\.", prompt)
+    return default.group(1) if default else "other"
+
+
+BASE_PROMPT = "\n".join([
+    "Classify the customer's message as billing, shipping, account, or other.",
+    'If the message mentions "refund", answer billing.',
+    'If the message mentions "deliver", answer shipping.',
+    'If the message mentions "password", answer account.',
+    "Otherwise answer other.",
+])
+
+DEV_SET = [
+    ("I want a refund for my last invoice", "billing"), ("When will my parcel be delivered?", "shipping"),
+    ("I forgot my password", "account"), ("You charged me twice this month", "billing"),
+    ("My parcel has not arrived", "shipping"), ("Do you sell gift cards?", "other"),
+    ("My order total is wrong", "billing"), ("How do I reset my password?", "account"),
+    ("The delivery driver left it in the rain", "shipping"), ("Please refund the duplicate payment", "billing"),
+    ("I cannot log in to my account", "account"), ("What are your opening hours?", "other"),
+]
+
+HELD_OUT_SET = [
+    ("Can I get a refund on a damaged item?", "billing"), ("Has my delivery been sent yet?", "shipping"),
+    ("I need to change my password", "account"), ("There is a charge I do not recognise", "billing"),
+    ("The parcel was left with a neighbour", "shipping"),
+    ("Do you have a shop in Leeds? I would like to order in person", "other"),
+    ("Can I change the name on my order?", "account"), ("I was billed after cancelling", "billing"),
+    ("How do I order a catalogue?", "other"), ("I cannot log in on my phone", "account"),
+    ("My tracking number does not work", "shipping"), ("Is there a student discount?", "other"),
+]
+
+CANDIDATES = [
+    'If the message mentions "charge", answer billing.',
+    'If the message mentions "parcel", answer shipping.',
+    'If the message mentions "order", answer billing.',
+    'If the message mentions "hours", answer other.',
+    'If the message mentions "log in", answer account.',
+    'If the message mentions "rain", answer shipping.',
+]
+
+
+def add_rule(prompt, rule):
+    """Provided helper: insert a rule line just before the prompt's last line."""
+    lines = prompt.split("\n")
+    return "\n".join(lines[:-1] + [rule, lines[-1]])
+
+
+def accuracy(prompt, cases):
+    """Provided helper: the share of cases the toy model gets right with this prompt.
+    It compares the answer directly, without the stripping and lowercasing that run_eval does.
+    On these sets the two give the same results."""
+    return sum(1 for text, expected in cases if toy_model(prompt, text) == expected) / len(cases)
+
+
+# ---------------------------------------------------------------- Step 1
+def run_eval(model, prompt, cases):
+    """One result per case, not a score: a list can be compared case by case with another
+    version's list. A case that cannot run has not passed."""
+    results = []
+    for text, expected in cases:
+        try:
+            results.append(model(prompt, text).strip().lower() == expected.lower())
+        except Exception:
+            results.append(False)
+    return results
+
+
+# ---------------------------------------------------------------- Step 2
+def hill_climb(base_prompt, candidates, score):
+    """The optimiser knows only that a higher score is better. It will keep a rule that fits
+    one example and is wrong in general, which is why its result is judged on held-out cases."""
+    prompt, best, kept = base_prompt, score(base_prompt), []
+    for rule in candidates:
+        trial = add_rule(prompt, rule)
+        trial_score = score(trial)
+        if trial_score > best:
+            prompt, best, kept = trial, trial_score, kept + [rule]
+    return prompt, kept
+
+
+# ---------------------------------------------------------------- Step 3
+def paired_compare(old, new):
+    """Both versions faced the same cases, so only the cases where they disagree carry
+    information about the difference. The margin says how far to trust it."""
+    count = len(old)
+    if count == 0:
+        return {"old": 0.0, "new": 0.0, "fixed": 0, "broken": 0, "difference": 0.0, "margin": 0.0}
+    fixed = sum(1 for before, after in zip(old, new) if not before and after)
+    broken = sum(1 for before, after in zip(old, new) if before and not after)
+    spread = math.sqrt(fixed + broken - (fixed - broken) ** 2 / count) / count
+    return {"old": round(sum(old) / count, 3), "new": round(sum(new) / count, 3), "fixed": fixed, "broken": broken,
+            "difference": round((fixed - broken) / count, 3), "margin": round(1.96 * spread, 3)}
+
+
+# ---------------------------------------------------------------- Step 4
+def regression_gate(old, new, critical):
+    """A better average does not excuse a failure on a case that must never fail, and the
+    list of broken cases is for a person to read before anything ships."""
+    broken = [index for index, (before, after) in enumerate(zip(old, new)) if before and not after]
+    critical_failed = [index for index in critical if not new[index]]
+    return {"ship": not critical_failed and sum(new) >= sum(old), "broken": broken, "critical_failed": critical_failed}
+
+
+# ---------------------------------------------------------------- Step 5
+def cost_and_latency(input_tokens, output_tokens, cached_tokens=0, price_in=2.0, price_out=10.0,
+                     read_mult=0.1, tokens_per_second=60, first_token_seconds=0.5):
+    """Output is the expensive side of the bill and the slow side of the clock. The prices
+    and speeds are dated, illustrative values."""
+    fresh = input_tokens - cached_tokens
+    cost = (fresh * price_in + cached_tokens * price_in * read_mult + output_tokens * price_out) / 1e6
+    return round(cost, 6), round(first_token_seconds + output_tokens / tokens_per_second, 2)
+
+
+if __name__ == "__main__":
+    print(run_eval(toy_model, BASE_PROMPT, DEV_SET))
+    print(round(accuracy(BASE_PROMPT, DEV_SET), 3), round(accuracy(BASE_PROMPT, HELD_OUT_SET), 3))
+
+    optimised, kept = hill_climb(BASE_PROMPT, CANDIDATES, lambda prompt: accuracy(prompt, DEV_SET))
+    print(kept)
+    print("optimised:", round(accuracy(optimised, DEV_SET), 3), round(accuracy(optimised, HELD_OUT_SET), 3))
+    careful = BASE_PROMPT
+    for rule in (CANDIDATES[0], CANDIDATES[1], CANDIDATES[4]):
+        careful = add_rule(careful, rule)
+    print("careful  :", round(accuracy(careful, DEV_SET), 3), round(accuracy(careful, HELD_OUT_SET), 3))
+
+    before = run_eval(toy_model, BASE_PROMPT, HELD_OUT_SET)
+    after = run_eval(toy_model, optimised, HELD_OUT_SET)
+    print(paired_compare(before, after))
+    print(regression_gate(before, after, critical=[0, 1, 2]))
+    print(regression_gate(before, after, critical=[0, 5]))
+    large_old = [True] * 130 + [False] * 30 + [True] * 10 + [False] * 30
+    large_new = [True] * 130 + [True] * 30 + [False] * 10 + [False] * 30
+    print(paired_compare(large_old, large_new), round(1.96 * math.sqrt(0.7 * 0.3 / 200 + 0.8 * 0.2 / 200), 3))
+    print(paired_compare([True] * 100 + [False] * 21 + [True] * 9 + [False] * 20, [True] * 100 + [True] * 21 + [False] * 9 + [False] * 20))
+    print(round(1.96 * math.sqrt(0.7 * 0.3 / 40), 3))
+
+    for label, arguments in (("baseline", (4000, 600, 0)), ("cached prefix", (4000, 600, 3000)), ("shorter prompt", (3000, 600, 0)),
+                             ("shorter output", (4000, 200, 0)), ("cache + output", (4000, 200, 3000))):
+        print(f"{label:<15}", cost_and_latency(*arguments))
+    print(cost_and_latency(6000, 800), cost_and_latency(6000, 800, 5000), cost_and_latency(6000, 400), cost_and_latency(6000, 400, 5000))
+
+@@step
+{
+  "stepNumber": 1,
+  "title": "Score a prompt on a test set",
+  "instruction": "Implement run_eval(model, prompt, cases). Each case is a pair of a text and an expected answer. For each case, call model(prompt, text). The case passes if the answer, with surrounding spaces removed and in lowercase, equals the expected answer in lowercase. If the call raises any exception, the case fails. Return a list of True and False values, one per case, in the order of the cases. Run it with toy_model and BASE_PROMPT on DEV_SET to get the baseline that every later change is measured against. Returning one result per case, and not only a score, is what makes the paired comparison of Section 2 possible. [MOD-5.9]",
+  "hintConceptual": "A teacher marking a test writes a tick or a cross beside each question before adding them up. The ticks and crosses are worth keeping: they show which questions were wrong, not only how many.",
+  "hintSyntax": "results = []\nfor text, expected in cases:\n    try:\n        results.append(model(prompt, text).strip().lower() == expected.lower())\n    except Exception:\n        results.append(False)\nreturn results"
+}
+@@assert
+_base = run_eval(toy_model, BASE_PROMPT, DEV_SET)
+assert _base == [True, True, True, False, False, True, False, True, True, True, False, True], f"The base prompt passes 8 of the 12 development cases, got {_base}"
+assert sum(run_eval(toy_model, BASE_PROMPT, HELD_OUT_SET)) == 6, "The base prompt passes 6 of the 12 held-out cases"
+assert run_eval(lambda prompt, text: "  Billing \n", "p", [("x", "billing"), ("y", "BILLING"), ("z", "shipping")]) == [True, True, False], "Answers are stripped and compared without regard to case"
+def _broken_model(prompt, text):
+    if "crash" in text:
+        raise RuntimeError("model unavailable")
+    return "other"
+assert run_eval(_broken_model, "p", [("fine", "other"), ("crash now", "other")]) == [True, False], "A case whose model call raises an exception is a failure"
+assert run_eval(lambda prompt, text: prompt, "other", [("x", "other")]) == [True], "The prompt is passed to the model as its first argument"
+assert run_eval(toy_model, BASE_PROMPT, []) == [], "No cases, no results"
+assert all(isinstance(result, bool) for result in _base), "Each result is True or False"
+print("Step 1 passed: the base prompt scores 8 of 12 on the development set and 6 of 12 on the held-out set.")
+
+@@step
+{
+  "stepNumber": 2,
+  "title": "A greedy prompt optimiser",
+  "instruction": "Implement hill_climb(base_prompt, candidates, score). The score argument is a function that takes a prompt and returns a number, where higher is better. Start with the base prompt and its score. For each candidate rule in order, build a trial prompt with the provided add_rule(prompt, rule). If the trial's score is strictly greater than the best score so far, keep it: the trial becomes the current prompt, its score becomes the best, and the rule is added to the list of kept rules. Otherwise discard the trial. Return a tuple of the final prompt and the list of kept rules. Run it with a score of accuracy on DEV_SET, then measure the result on HELD_OUT_SET, and see the overfitting described in Section 2. [MOD-5.9]",
+  "hintConceptual": "Walking uphill in fog: take a step, and if you are higher than before, stay there. If not, step back. You will climb, though you cannot see whether the hill you are climbing is the one you wanted.",
+  "hintSyntax": "prompt, best, kept = base_prompt, score(base_prompt), []\nfor rule in candidates:\n    trial = add_rule(prompt, rule)\n    trial_score = score(trial)\n    if trial_score > best:\n        prompt, best, kept = trial, trial_score, kept + [rule]\nreturn prompt, kept"
+}
+@@assert
+_optimised, _kept = hill_climb(BASE_PROMPT, CANDIDATES, lambda prompt: accuracy(prompt, DEV_SET))
+assert _kept == [CANDIDATES[0], CANDIDATES[1], CANDIDATES[2], CANDIDATES[4]], f"Four rules raise the development score and are kept, got {_kept}"
+assert accuracy(_optimised, DEV_SET) == 1.0, "The optimised prompt is perfect on the development set"
+assert round(accuracy(_optimised, HELD_OUT_SET), 3) == 0.583, "On the held-out set it passes only 7 of 12: the optimiser overfitted"
+assert _optimised.split("\n")[-1] == "Otherwise answer other." and _optimised.split("\n")[4:8] == _kept, "Kept rules are inserted before the last line, in the order they were kept"
+assert hill_climb(BASE_PROMPT, [], lambda prompt: accuracy(prompt, DEV_SET)) == (BASE_PROMPT, []), "With no candidates the base prompt is returned unchanged"
+assert hill_climb(BASE_PROMPT, CANDIDATES, lambda prompt: 1.0) == (BASE_PROMPT, []), "A candidate that does not raise the score is not kept: the comparison is strict"
+assert hill_climb("a\nz", ["b", "cc", "d"], len) == ("a\nb\ncc\nd\nz", ["b", "cc", "d"]), "The score function is whatever is passed in, and each kept trial becomes the new current prompt"
+assert hill_climb("a\nz", ["b", "cc", "d"], lambda prompt: -len(prompt)) == ("a\nz", []), "When every candidate lowers the score, nothing is kept"
+print("Step 2 passed: the optimiser reaches 12 of 12 on its own cases and 7 of 12 on cases it never saw.")
+
+@@step
+{
+  "stepNumber": 3,
+  "title": "Compare two versions as pairs",
+  "instruction": "Implement paired_compare(old, new). Both arguments are lists of True and False for the same cases in the same order. Count fixed, the cases that are False in old and True in new, and broken, the cases that are True in old and False in new. With n cases, the difference is (fixed - broken) / n, and the margin is 1.96 times the square root of (fixed + broken - (fixed - broken) squared / n), divided by n. Return a dict with the keys 'old' and 'new' for the two pass rates, 'fixed' and 'broken' for the counts, and 'difference' and 'margin', with the four rates rounded to 3 decimal places. If there are no cases, return 0.0 for the rates and 0 for the counts. This is the paired formula from Section 2. [MOD-5.9]",
+  "hintConceptual": "Two students sit the same exam. Questions both got right, or both got wrong, say nothing about which student is better. Only the questions where one succeeded and the other failed can separate them.",
+  "hintSyntax": "count = len(old)\nif count == 0:\n    return {\"old\": 0.0, \"new\": 0.0, \"fixed\": 0, \"broken\": 0, \"difference\": 0.0, \"margin\": 0.0}\nfixed = sum(1 for before, after in zip(old, new) if not before and after)\nbroken = sum(1 for before, after in zip(old, new) if before and not after)\nspread = math.sqrt(fixed + broken - (fixed - broken) ** 2 / count) / count\nreturn {\"old\": round(sum(old) / count, 3), \"new\": round(sum(new) / count, 3), \"fixed\": fixed, \"broken\": broken,\n        \"difference\": round((fixed - broken) / count, 3), \"margin\": round(1.96 * spread, 3)}"
+}
+@@assert
+_old = [True, True, True, False, False, True, False, False, True, False, False, True]
+_new = [True, True, True, True, True, False, False, False, False, True, False, True]
+assert paired_compare(_old, _new) == {"old": 0.5, "new": 0.583, "fixed": 3, "broken": 2, "difference": 0.083, "margin": 0.362}, f"Three fixed and two broken of twelve: 0.083 give or take 0.362, got {paired_compare(_old, _new)}"
+_large_old = [True] * 130 + [False] * 30 + [True] * 10 + [False] * 30
+_large_new = [True] * 130 + [True] * 30 + [False] * 10 + [False] * 30
+assert paired_compare(_large_old, _large_new) == {"old": 0.7, "new": 0.8, "fixed": 30, "broken": 10, "difference": 0.1, "margin": 0.06}, "Thirty fixed and ten broken of 200: 0.1 give or take 0.06"
+assert paired_compare([True, False], [True, False]) == {"old": 0.5, "new": 0.5, "fixed": 0, "broken": 0, "difference": 0.0, "margin": 0.0}, "Identical results have no difference and no margin"
+assert paired_compare([True, True, False, False], [False, True, True, True]) == {"old": 0.5, "new": 0.75, "fixed": 2, "broken": 1, "difference": 0.25, "margin": 0.813}, "Two fixed and one broken of four: a margin far larger than the difference"
+assert paired_compare(_new, _old)["difference"] == -0.083 and paired_compare(_new, _old)["fixed"] == 2, "Swapping the versions swaps fixed and broken and reverses the sign"
+assert paired_compare([], []) == {"old": 0.0, "new": 0.0, "fixed": 0, "broken": 0, "difference": 0.0, "margin": 0.0}, "No cases gives zeros and no division by zero"
+assert paired_compare(_large_old, _large_new)["margin"] < round(1.96 * math.sqrt(0.7 * 0.3 / 200 + 0.8 * 0.2 / 200), 3), "The paired margin is tighter than the margin from treating the runs as unrelated"
+print("Step 3 passed: on twelve cases the difference is lost in its margin, and on 200 it is not.")
+
+@@step
+{
+  "stepNumber": 4,
+  "title": "A regression gate",
+  "instruction": "Implement regression_gate(old, new, critical). The first two arguments are lists of True and False for the same cases. The third is a list of case indices that must pass in the new version. Compute 'broken', the ascending list of indices where old is True and new is False. Compute 'critical_failed', the indices from critical, in the order given, whose result in new is False. Compute 'ship', which is True only if critical_failed is empty and new passes at least as many cases as old. Return a dict with those three keys. This is the regression check from Section 2: a better average does not excuse a failure on a case that must never fail. [MOD-5.9]",
+  "hintConceptual": "A building inspector has a short list of things that close the site whatever else is right, and a longer list of things to note. Pass the short list, do no worse overall, and hand over the notes.",
+  "hintSyntax": "broken = [index for index, (before, after) in enumerate(zip(old, new)) if before and not after]\ncritical_failed = [index for index in critical if not new[index]]\nreturn {\"ship\": not critical_failed and sum(new) >= sum(old), \"broken\": broken, \"critical_failed\": critical_failed}"
+}
+@@assert
+_old = [True, True, True, False, False, True, False, False, True, False, False, True]
+_new = [True, True, True, True, True, False, False, False, False, True, False, True]
+assert regression_gate(_old, _new, [0, 1, 2]) == {"ship": True, "broken": [5, 8], "critical_failed": []}, f"The critical cases pass and the total rose, so the change may ship, with two broken cases to read, got {regression_gate(_old, _new, [0, 1, 2])}"
+assert regression_gate(_old, _new, [0, 5]) == {"ship": False, "broken": [5, 8], "critical_failed": [5]}, "A failed critical case blocks the change, whatever the total"
+assert regression_gate([True, True, False], [True, False, False], []) == {"ship": False, "broken": [1], "critical_failed": []}, "Passing fewer cases than before blocks the change"
+assert regression_gate([True, False], [False, True], []) == {"ship": True, "broken": [0], "critical_failed": []}, "An equal total may ship, and the broken case is still reported"
+assert regression_gate([False, False], [False, False], [1, 0])["critical_failed"] == [1, 0], "Critical failures are listed in the order the critical cases were given"
+assert regression_gate([False, False], [False, False], [1, 0])["ship"] is False, "A critical case that failed before and still fails also blocks"
+assert regression_gate([True, True], [True, True], [0, 1]) == {"ship": True, "broken": [], "critical_failed": []}, "Nothing broken and nothing critical failed"
+assert regression_gate([], [], []) == {"ship": True, "broken": [], "critical_failed": []}, "No cases, nothing to block"
+print("Step 4 passed: the gate lists what broke and blocks any change that fails a critical case.")
+
+@@step
+{
+  "stepNumber": 5,
+  "title": "What a request costs and how long it takes",
+  "instruction": "Implement cost_and_latency(input_tokens, output_tokens, cached_tokens, price_in, price_out, read_mult, tokens_per_second, first_token_seconds). Prices are in USD per million tokens. The cost is the fresh input, which is input_tokens minus cached_tokens, at price_in, plus the cached input at price_in times read_mult, plus the output at price_out, all divided by one million. The time in seconds is first_token_seconds plus output_tokens divided by tokens_per_second. Return a tuple of the cost rounded to 6 decimal places and the seconds rounded to 2. Compare a baseline of 4,000 input and 600 output tokens with a cached prefix of 3,000 tokens, with a prompt shortened to 3,000, and with an output shortened to 200. These are the cost and latency formulas from Section 2. [MOD-5.9]",
+  "hintConceptual": "A taxi fare has a rate per mile and a rate per minute waiting. Here input and output are charged at different rates, input that was seen before is charged at a discount, and the journey time depends almost entirely on how much has to be written.",
+  "hintSyntax": "fresh = input_tokens - cached_tokens\ncost = (fresh * price_in + cached_tokens * price_in * read_mult + output_tokens * price_out) / 1e6\nreturn round(cost, 6), round(first_token_seconds + output_tokens / tokens_per_second, 2)"
+}
+@@assert
+assert cost_and_latency(4000, 600) == (0.014, 10.5), f"The baseline costs USD 0.014 and takes 10.5 seconds, got {cost_and_latency(4000, 600)}"
+assert cost_and_latency(4000, 600, cached_tokens=3000) == (0.0086, 10.5), "Caching 3,000 tokens of the input cuts the cost to USD 0.0086 and leaves the time unchanged"
+assert cost_and_latency(3000, 600) == (0.012, 10.5), "A prompt 1,000 tokens shorter saves USD 0.002"
+assert cost_and_latency(4000, 200) == (0.01, 3.83), "A shorter output cuts both the cost and the time"
+assert cost_and_latency(4000, 200, cached_tokens=3000) == (0.0046, 3.83), "Caching and a shorter output together"
+assert cost_and_latency(1_000_000, 0) == (2.0, 0.5) and cost_and_latency(0, 1_000_000)[0] == 10.0, "The default prices are USD 2 and USD 10 per million tokens"
+assert cost_and_latency(1000, 100, cached_tokens=1000) == (0.0012, 2.17), "Fully cached input is charged at a tenth"
+assert cost_and_latency(2000, 120, price_in=1.0, price_out=4.0, tokens_per_second=30, first_token_seconds=1.0) == (0.00248, 5.0), "Prices, speed, and the first-token wait are all arguments"
+assert cost_and_latency(1000, 0, cached_tokens=1000, read_mult=0.5)[0] == 0.001, "The cached-read multiplier is an argument"
+print("Step 5 passed: shortening the output is the one change that cuts both the cost and the wait.")

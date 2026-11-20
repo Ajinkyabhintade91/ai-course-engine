@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-200 antialiased;
+}
+
+/* Thin, quiet scrollbars for the three panes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 8px;
+}
+
+/* ---------- Reference Book typography ---------- */
+.book {
+  @apply prose prose-invert prose-zinc max-w-none;
+  font-size: 0.975rem;
+  line-height: 1.75;
+}
+.book h1 {
+  @apply text-zinc-50;
+}
+.book h2 {
+  @apply mt-12 border-b border-zinc-800 pb-2 text-[1.35rem] text-zinc-50;
+  text-wrap: balance;
+}
+.book h3 {
+  @apply text-zinc-100;
+}
+.book a {
+  @apply text-sky-400 no-underline hover:underline;
+}
+.book strong {
+  @apply text-zinc-50;
+}
+.book :not(pre) > code {
+  @apply rounded bg-zinc-800 px-1.5 py-0.5 text-[0.85em] font-normal text-amber-200;
+}
+.book :not(pre) > code::before,
+.book :not(pre) > code::after {
+  content: none;
+}
+.book pre {
+  @apply overflow-x-auto rounded-lg border border-zinc-800 bg-[#0d1117] p-4 text-[0.82rem] leading-relaxed;
+}
+.book pre code.hljs {
+  background: transparent;
+  padding: 0;
+}
+.book blockquote {
+  @apply border-l-sky-500 font-normal not-italic text-zinc-300;
+}
+.book table {
+  @apply my-0 text-sm;
+  font-variant-numeric: tabular-nums;
+}
+.book thead th {
+  @apply border-b border-zinc-700 bg-zinc-900 px-3 py-2 text-left text-zinc-200;
+}
+.book tbody td {
+  @apply border-b border-zinc-800 px-3 py-2 align-top;
+}
+.book .katex-display {
+  @apply overflow-x-auto overflow-y-hidden py-1;
+}
+
+/* Collapsible active-recall answers */
+.book details {
+  @apply my-4 rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-1;
+}
+.book details summary {
+  @apply cursor-pointer select-none py-2 text-sm font-semibold text-emerald-400;
+}
+.book details[open] summary {
+  @apply mb-1 border-b border-zinc-800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

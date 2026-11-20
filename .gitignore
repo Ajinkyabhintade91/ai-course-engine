@@ -1,0 +1,11 @@
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.env*
+
+# Local-only Claude Code settings
+.claude/settings.local.json
+
+# Stray browser download from QA testing
+/3.pdf

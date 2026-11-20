@@ -1,0 +1,716 @@
+@@meta
+{
+  "moduleId": "MOD-2.8",
+  "slug": "mod-2-8",
+  "unitId": "UNIT-2",
+  "unitTitle": "Unit 2: Mastering ChatGPT",
+  "title": "Data Analysis",
+  "difficulty": "Intermediate",
+  "estimatedMinutes": 100,
+  "citations": [
+    { "title": "Code Interpreter guide (containers, expiry, memory tiers)", "source": "OpenAI Docs", "url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter" },
+    { "title": "Improvements to data analysis in ChatGPT", "source": "OpenAI", "url": "https://openai.com/index/improvements-to-data-analysis-in-chatgpt" },
+    { "title": "File uploads FAQ", "source": "OpenAI Help Center", "url": "https://help.openai.com/en/articles/8555545-file-uploads-faq-advanced-data-analysis" },
+    { "title": "Data analysis with ChatGPT", "source": "OpenAI Help Center", "url": "https://help.openai.com/en/articles/8437071-advanced-data-analysis-with-chatgpt" },
+    { "title": "Gene name errors are widespread in the scientific literature (Ziemann et al., 2016)", "source": "Genome Biology", "url": "https://genomebiology.biomedcentral.com/track/pdf/10.1186/s13059-016-1044-7" },
+    { "title": "I asked ChatGPT to analyze 3 datasets. It made the same mistakes every time", "source": "KDnuggets", "url": "https://kdnuggets.com/i-asked-chatgpt-to-analyze-3-datasets-it-made-the-same-mistakes-every-time" },
+    { "title": "California has 576 million drivers", "source": "Dave Friedman's Substack", "url": "https://davefriedman.substack.com/p/california-has-576-million-drivers" }
+  ],
+  "videoLibrary": [
+    {
+      "id": "VID-2.8-1",
+      "title": "Simpson's Paradox",
+      "creator": "minutephysics",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=ebEkn-BiW5k",
+      "timingInstruction": "Watch after reading Section 2 (Simpson's paradox)",
+      "keyTakeaway": "A five-minute visual explanation of how a trend in every subgroup can reverse when the groups are combined, the trap most likely to mislead a quick AI analysis."
+    },
+    {
+      "id": "VID-2.8-2",
+      "title": "I Quit Coding - How I use ChatGPT instead as Data Analyst",
+      "creator": "Sven Bosau",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=IAWMMi_VFOI",
+      "timingInstruction": "Watch the advanced data analysis section after reading Section 1",
+      "keyTakeaway": "A data analyst's real workflow for analysing data with ChatGPT."
+    },
+    {
+      "id": "VID-2.8-3",
+      "title": "ChatGPT Advanced Data Analysis",
+      "creator": "Vanderbilt University",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/chatgpt-advanced-data-analysis",
+      "timingInstruction": "Take after this module for guided practice with real files",
+      "keyTakeaway": "A beginner course devoted to this feature: uploading files, automating document and spreadsheet work, and checking what the tool produces."
+    },
+    {
+      "id": "VID-2.8-4",
+      "title": "Google Data Analytics Professional Certificate",
+      "creator": "Google",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+      "timingInstruction": "Optional longer study if you want the underlying analysis skills",
+      "keyTakeaway": "Teaches the ask, prepare, process, analyse, share workflow that lets you judge whether an AI-produced analysis is sound."
+    }
+  ],
+  "lab": {
+    "labTitle": "Hands-On Lab: Audit an Analysis Before You Trust It",
+    "context": "A shop owner uploads a month of orders and asks an AI assistant for average order value by region, and the answer for one region looks absurd. You will rebuild the analysis by hand with the standard library: load the file, profile it, clean it while recording every dropped row, summarise by group, and write validation checks that expose the silent errors.",
+    "language": "python"
+  }
+}
+
+@@reading
+# Data Analysis
+
+Upload a spreadsheet to ChatGPT, ask "what are the main trends?", and within a minute you have charts, tables, and a confident paragraph of findings. For anyone who has wrestled with spreadsheet formulas this feels like magic. It is also the feature where a wrong answer is hardest to spot, because the output is numbers, and numbers look authoritative. This chapter explains what happens behind the scenes, gives you a workflow for directing an analysis, and, most importantly, teaches you how to check the result.
+
+## 1. First-Principles Mental Model & Intuition
+
+### The model does not do the arithmetic
+
+Unit 1 established that language models are unreliable at exact calculation. So how can ChatGPT analyse fifty thousand rows? The answer is that it does not. It **writes a program**, and a computer runs the program.
+
+The feature, launched in July 2023 as Code Interpreter and later renamed, gives the model a private computing environment with the Python language and standard data libraries installed. When you upload a file and ask a question:
+
+```text
+ you: "average order value by region?"
+              |
+              v
+ +--------------------------+      +-------------------------------+
+ | THE MODEL                |      | THE SANDBOX                   |
+ | writes Python code       | ---> | a real computer runs the code |
+ | (using the pandas        |      | on your actual file           |
+ |  data library)           | <--- | returns numbers, tables,      |
+ | reads the result         |      | charts, or an error message   |
+ +--------------------------+      +-------------------------------+
+              |
+              v
+ the model writes a sentence describing the result
+```
+
+This division of labour matters enormously for trust. The **numbers** come from real computation and are exactly what the code produces. The **code** was written by the model and may embody a wrong assumption. The **sentence** describing the result was also written by the model and may not match the numbers. Three things, three different levels of reliability.
+
+### The intern in a locked room
+
+Picture a fast, confident intern working in a locked room. The room contains a laptop with Python and the files you passed under the door. There is no internet connection. The intern writes code, runs it, and slides a report back out.
+
+Three properties of this arrangement shape everything.
+
+- **The room has no window.** The sandbox cannot browse the web or call outside services. It can use only what you upload.
+- **The room is demolished after a while.** The environment is temporary. After a period of inactivity it is discarded, along with every variable and every generated file. Coming back to an old conversation and asking for "one more chart" may fail or quietly start again from scratch.
+- **The intern wants to hand you a finished report.** If the code fails, a good intern says so. Occasionally this one describes what the result *would* have been, as if the code had worked.
+
+The governing rule of this chapter follows: **the code is the evidence, and the prose is a claim about the evidence.** Always look at the code.
+
+## 2. Core Theory, Mathematical Foundations & Architecture Internals
+
+### The sandbox
+
+At the time of writing, the environment has these documented characteristics.
+
+| Property | Detail |
+|---|---|
+| Language | Python, with common libraries for data and charts |
+| Internet access | None from inside the sandbox |
+| Lifetime | Temporary; discarded after inactivity. OpenAI's developer documentation gives 20 minutes idle for the equivalent API feature, after which data is unrecoverable |
+| File types | Spreadsheets and CSV, text and JSON, PDFs and documents, images, archives |
+| File size | A hard cap of about 512 MB per file, with spreadsheets practically limited to roughly 50 MB |
+| Output | Tables and charts in the chat, some interactive, plus downloadable files |
+
+Limits vary by plan and change over time. The structural facts, no internet, temporary state, a size ceiling, have been stable.
+
+### An analysis workflow
+
+Do not ask for "insights" and accept what arrives. Direct the work in five stages, checking at each.
+
+```text
+ PROFILE  -->  CLEAN  -->  EXPLORE  -->  MODEL  -->  REPORT
+ what is      fix or      summaries,    compare,     findings,
+ in the       remove      groups,       test,        caveats,
+ file?        bad rows    charts        forecast     the code
+    |            |            |            |            |
+    v            v            v            v            v
+ row count,   how many     do totals    is the       can someone
+ columns,     rows were    reconcile?   method       else rerun it?
+ missing      dropped,                  appropriate?
+ values       and why?
+```
+
+**1. Profile.** Before any analysis, ask: how many rows and columns, what type is each column, how many values are missing in each, how many duplicate rows. This takes one prompt and prevents most later surprises.
+
+**2. Clean.** Decide, explicitly, what happens to missing values, duplicates, and impossible entries. Require a count of what was removed and why.
+
+**3. Explore.** Summaries and charts by group. This is where findings appear.
+
+**4. Model.** Comparisons, trends, forecasts. Most everyday questions never need this stage.
+
+**5. Report.** Findings stated with their caveats, the assumptions made, and the code.
+
+### The statistics you need to check a result
+
+**Mean and median.** For values $x_1, \dots, x_n$, the mean is
+
+$$
+\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+$$
+
+The **median** is the middle value when the data is sorted. The difference between them is the single most useful diagnostic in everyday analysis. Take order values of 95, 105, 110, 120, and 9,999, where the last is a typing error. The median is 110. The mean is
+
+$$
+\frac{95 + 105 + 110 + 120 + 9999}{5} = 2085.8
+$$
+
+One bad value moved the mean by a factor of nineteen and left the median untouched. When a mean and a median disagree sharply, an outlier or a skewed distribution is present, and the mean alone is misleading.
+
+**Standard deviation.** A measure of spread, the typical distance of values from the mean:
+
+$$
+s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^{2}}
+$$
+
+A standard deviation that is large relative to the mean is another flag that an average is hiding something.
+
+### Simpson's paradox
+
+The most dangerous trap in grouped data has a name. **Simpson's paradox** occurs when a trend that holds in every subgroup reverses when the subgroups are combined.
+
+The classic example comes from a medical study comparing two treatments for kidney stones.
+
+| | Treatment A | Treatment B |
+|---|---|---|
+| Small stones | 81 of 87 succeeded (93%) | 234 of 270 succeeded (87%) |
+| Large stones | 192 of 263 succeeded (73%) | 55 of 80 succeeded (69%) |
+| **All patients** | **273 of 350 succeeded (78%)** | **289 of 350 succeeded (83%)** |
+
+Treatment A is better for small stones and better for large stones. Yet Treatment B looks better overall. How?
+
+Treatment A was given mostly to patients with large stones, the hard cases. Treatment B was given mostly to patients with small stones, the easy cases. The overall figures compare a group of mostly hard cases with a group of mostly easy ones. Stone size is a **confounding variable**: it affects both which treatment was chosen and how likely success was.
+
+The lesson for AI-assisted analysis is direct. A request for "the overall success rate by treatment" will be answered correctly and will be misleading. No error message appears. Whenever groups differ in composition, ask for the breakdown as well as the total.
+
+### Silent data errors
+
+A program that crashes is easy to deal with. The dangerous errors produce a plausible number and no warning.
+
+| Error | What happens | How to catch it |
+|---|---|---|
+| Missing values skipped | Averages are computed over fewer rows than you think | Ask for the count used in every average |
+| Missing values as text | "N/A" or "-" makes a numeric column text, or is silently dropped | Profile column types first |
+| Duplicated rows | Totals and counts are inflated | Count duplicates before summing |
+| Join multiplies rows | Combining two tables on a non-unique key creates extra rows | Compare row counts before and after |
+| Date ambiguity | 03/04/2024 is 3 April in most of the world and March 4 in the United States | State the format explicitly |
+| Type coercion | Identifiers lose leading zeros; codes become dates | Inspect a sample of raw values |
+| Partial read | Only the first sheet, or a sample of rows, is analysed | Confirm the row count matches the file |
+
+The type-coercion problem has a famous real-world case. Spreadsheet software automatically converts certain text to dates. In genetics, gene names such as SEPT2 and MARCH1 were silently turned into dates like 2-Sep and 1-Mar. A 2016 study that screened the supplementary spreadsheets of published papers found such errors in about one fifth of papers that included gene lists. The problem was eventually addressed partly by renaming the genes. Experts publishing in leading journals were caught by a silent conversion for years, which is a fair measure of how easy these errors are to miss.
+
+### The validation checklist
+
+Run these checks on any analysis that matters.
+
+1. **Read the code.** Expand it. Check which file and which columns it used, and what it did with missing values.
+2. **Reconcile the row count.** Rows in the file should equal rows analysed plus rows dropped, each with a reason.
+3. **Reconcile the totals.** Group counts should add up to the total count. Group sums should add up to the grand total.
+4. **Compare mean and median.** A large gap means outliers.
+5. **Spot-check by hand.** Pick one group and compute its figure yourself from a few rows.
+6. **Ask for the assumptions.** "List every assumption you made about this data."
+7. **Ask what was excluded.** "How many rows were dropped at each step, and why?"
+
+**Cost.** Profiling, cleaning, and grouped summaries are each a single pass over the data, time proportional to the number of rows $n$. Finding a median requires sorting, on the order of $n \log n$. For the file sizes the sandbox accepts, all of this takes seconds. The expensive resource is your attention, and the checklist is designed to spend it where errors hide.
+
+## 3. Production-Grade Implementation & Annotated Walkthrough
+
+To check an AI analysis you should be able to do a small one by hand. This program runs the first three stages on a tiny order file using only the standard library. The file contains deliberate traps: a blank amount, an "N/A", a duplicated row, and a data-entry error.
+
+```python
+import csv
+import io
+import statistics
+from collections import defaultdict
+
+RAW = """order_id,region,amount
+1001,North,120
+1002,South,95
+1003,North,
+1004,East,N/A
+1005,South,110
+1005,South,110
+1006,North,9999
+1007,East,130
+1008,South,105
+1009,North,125
+1010,East,140
+"""
+MISSING = {"", "n/a", "na", "null"}
+
+rows = list(csv.DictReader(io.StringIO(RAW.strip())))
+
+# PROFILE
+missing = {col: sum(1 for r in rows if r[col].strip().lower() in MISSING) for col in rows[0]}
+seen, duplicates = set(), 0
+for r in rows:
+    key = tuple(r.values())
+    duplicates += key in seen
+    seen.add(key)
+print(f"{len(rows)} rows | missing per column: {missing} | duplicate rows: {duplicates}")
+
+# CLEAN (and record everything that is dropped)
+clean, dropped, seen = [], [], set()
+for r in rows:
+    key = tuple(r.values())
+    if key in seen:
+        dropped.append(("duplicate", r))
+    elif r["amount"].strip().lower() in MISSING:
+        dropped.append(("missing_amount", r))
+    else:
+        clean.append({**r, "amount": float(r["amount"])})
+    seen.add(key)
+print(f"kept {len(clean)}, dropped {len(dropped)}: {[reason for reason, _ in dropped]}")
+
+# EXPLORE
+groups = defaultdict(list)
+for r in clean:
+    groups[r["region"]].append(r["amount"])
+for region, values in sorted(groups.items()):
+    print(f"{region:>5}: n={len(values)}  mean={statistics.mean(values):8.2f}  median={statistics.median(values):6.1f}")
+```
+
+What to notice:
+
+- **`io.StringIO` lets the `csv` module read text as if it were a file.** `csv.DictReader` turns each line into a dictionary keyed by the header row, and every value arrives as a string. Nothing is a number until you convert it. This is true inside the sandbox too, where the conversion is done for you and can be done wrongly.
+- **The profile comes first and costs four lines.** Eleven rows, two missing amounts, one duplicate. You now know what to expect: at most eight rows will survive cleaning.
+- **`MISSING` is explicit.** A blank cell and the text "N/A" both mean "no value". A program that only checks for blanks would crash on "N/A" or, in a more forgiving library, quietly turn the whole column into text.
+- **Every dropped row is recorded with a reason.** The `dropped` list is what makes the analysis auditable. "Kept 8, dropped 3" can be reconciled against the 11 rows in the file. An analysis that cannot say what it discarded cannot be checked.
+- **The duplicate check runs before the missing-value check.** Order matters: a row that is both a duplicate and incomplete should be counted once, under one reason.
+- **The summary exposes the outlier.** North shows a mean of about 3,415 and a median of 125. That gap is the signal. A report giving only "average order value in North: 3,414.67" would be arithmetically correct and wrong in every way that matters.
+
+Now Simpson's paradox, with the kidney-stone figures from Section 2:
+
+```python
+data = {  # treatment -> stone size -> (successes, patients)
+    "A": {"small": (81, 87), "large": (192, 263)},
+    "B": {"small": (234, 270), "large": (55, 80)},
+}
+for size in ("small", "large"):
+    rates = {t: data[t][size][0] / data[t][size][1] for t in data}
+    print(f"{size:>5} stones: A {rates['A']:.0%}  B {rates['B']:.0%}  -> better: {max(rates, key=rates.get)}")
+
+overall = {t: sum(s for s, _ in data[t].values()) / sum(n for _, n in data[t].values()) for t in data}
+print(f"  all stones: A {overall['A']:.0%}  B {overall['B']:.0%}  -> better: {max(overall, key=overall.get)}")
+```
+
+Treatment A wins in both subgroups and loses overall. Every number is correct. The code that computes `overall` is exactly what an assistant would write if asked "which treatment has the higher success rate?", and it would give the misleading answer with no warning. Only a person who asks "are the two groups comparable?" finds the problem.
+
+Finally, the validation checks written as code, which is the habit to build:
+
+```python
+assert len(rows) == len(clean) + len(dropped), "row counts do not reconcile"
+assert sum(len(v) for v in groups.values()) == len(clean), "group counts do not add up"
+for region, values in groups.items():
+    if statistics.mean(values) > 2 * statistics.median(values):
+        print(f"CHECK {region}: mean is more than double the median (outlier likely)")
+```
+
+An `assert` states something that must be true and stops the program if it is not. Two of these checks are bookkeeping identities that hold for any correct analysis. The third is a heuristic that flags North for a human to look at. You can ask ChatGPT to include checks like these in its own code, and you should.
+
+## 4. Practitioner Wisdom & Edge Cases (Reddit / HN / Stack Overflow Synthesis)
+
+**Read the code, every time.** The interface shows a finished answer and hides the code behind a click. Open it. Check which columns were used, how missing values were treated, and whether the whole file was read. This single habit catches most errors.
+
+**The prose can disagree with the output.** There are documented cases of the assistant summarising a failed or partial computation as though it had succeeded, and of confidently stated totals that were nonsense, such as a sum across repeated time periods that multiplied a population many times over. The numbers printed by the code are evidence. The sentence above them is commentary.
+
+**Confident sign-offs mean nothing.** Phrases such as "the data clearly shows" appear regardless of how sound the analysis is. Practitioners who have run the same datasets repeatedly report the same avoidable mistakes each time, delivered with the same assurance.
+
+**Sessions expire.** Return after a break and the environment may be gone. The assistant may re-run everything, possibly with different choices, or refer to variables that no longer exist. For work that spans days, download the cleaned data and the code and keep them yourself.
+
+**State what your columns mean.** The model guesses meanings from column names. A column called "date" might be an order date or a delivery date, and "amount" might include tax or not. A two-line data dictionary in your first message prevents a whole class of errors.
+
+**Averages of averages are wrong.** The average of regional averages is not the overall average unless every region has the same number of rows. Ask for totals and counts and compute the overall figure from those.
+
+**Charts can mislead as easily as numbers.** A truncated axis exaggerates differences. A chart of totals hides a change in the number of items. Ask for axes starting at zero where that is meaningful, and for the underlying table alongside any chart.
+
+**Do not upload what you should not share.** A spreadsheet of customers is personal data. Check the data controls and your obligations before uploading, remove columns the analysis does not need, and prefer a business workspace for client data.
+
+**Big files and messy spreadsheets fail quietly.** Files near the size limit, workbooks with several sheets, merged cells, and header rows that are not on the first line all cause partial or incorrect reads. Export the sheet you care about to a clean CSV first.
+
+**Use it as a guide as well as an analyst.** Some experienced users report the best results from asking the assistant how to approach an analysis and to write the code, then running that code themselves in an environment they control. You keep the speed and gain reproducibility.
+
+**Fabricated data looks real.** Researchers have shown that the tool can generate a convincing fake dataset on request. A file's plausibility is no evidence of its origin, which matters if you receive data from someone else.
+
+## 5. Active Recall Check & Synthesis Summary
+
+**Summary.** ChatGPT analyses data by writing code that runs in a temporary, offline sandbox. The computed numbers are reliable outputs of that code; the code and the description of the results are written by the model and can be wrong. Good practice is to direct the work through profiling, cleaning, exploring, modelling, and reporting, and to check at each stage. The mean and median together reveal outliers, grouped results can reverse when combined (Simpson's paradox), and the worst errors are silent: skipped missing values, duplicates, row-multiplying joins, ambiguous dates, and type coercion. The defences are a fixed checklist: read the code, reconcile row counts and totals, compare mean with median, spot-check by hand, and ask what was assumed and what was dropped.
+
+**Question 1.** ChatGPT reports "average order value in the North region: 3,414.67" from the data in Section 3. The arithmetic is correct. Explain why the figure is still wrong to report, and which two checks from the validation checklist would have caught it.
+
+<details>
+<summary>View Answer</summary>
+
+The North region contains one order of 9,999, almost certainly a data-entry error, alongside orders of about 120 to 125. The mean of 120, 9,999, and 125 is 3,414.67, so the calculation is right, but the figure describes no real order: it is dominated by a single bad value. Reporting it would mislead anyone using it to understand typical order size. The check "compare mean and median" would catch it immediately, since the median is 125, a factor of about 27 lower. A hand spot-check would also catch it, because looking at the three North rows shows the 9,999 at once. The right response is to investigate the outlier, correct or exclude it with a recorded reason, and report the median or the corrected mean.
+
+</details>
+
+**Question 2.** Using the kidney-stone table, explain how Treatment A can have the higher success rate for both small and large stones and still have the lower overall rate. What should you ask an assistant to do whenever you compare groups?
+
+<details>
+<summary>View Answer</summary>
+
+The two treatments were given to very different mixes of patients. Treatment A was used mainly on large stones, 263 of its 350 patients, where success is harder. Treatment B was used mainly on small stones, 270 of its 350 patients, where success is easier. The overall rate for each treatment is a weighted average of its two subgroup rates, weighted by how many patients were in each. A's overall rate is pulled toward its large-stone rate of 73 percent, and B's toward its small-stone rate of 87 percent, so B appears better overall despite being worse in each subgroup. Stone size is a confounding variable. When comparing groups, ask the assistant to show the breakdown by any variable that could differ between the groups, to report the size of each subgroup, and to flag any case where the subgroup trend and the overall trend disagree.
+
+</details>
+
+**Question 3.** You upload a 40,000-row sales file and receive a chart and the sentence "Sales grew 12 percent year on year." List four specific things you would check before sending this to a client.
+
+<details>
+<summary>View Answer</summary>
+
+First, open the code and confirm it read all 40,000 rows from the correct sheet and used the intended columns, in particular which date and amount columns. Second, reconcile the row count: rows analysed plus rows dropped should equal 40,000, with a stated reason for each dropped group, and check how missing values and duplicates were treated. Third, check the date handling, since an ambiguous format such as day/month versus month/day can assign sales to the wrong period and change a year-on-year comparison. Fourth, verify the 12 percent yourself from the totals the code printed for each year, and confirm that those totals match the sentence. Further useful checks are whether both years cover the same months, whether a few very large orders drive the result, and whether the chart's axis exaggerates the change.
+
+</details>
+
+@@starter
+"""
+Lab: Audit an Analysis Before You Trust It
+Standard library only. Complete the TODO in each step, then press "Run & Verify Step".
+
+RAW_CSV is a small order file with deliberate problems hidden in it.
+"""
+import csv
+import io
+import statistics
+from collections import defaultdict
+
+RAW_CSV = """order_id,region,amount
+1001,North,120
+1002,South,95
+1003,North,
+1004,East,N/A
+1005,South,110
+1005,South,110
+1006,North,9999
+1007,East,130
+1008,South,105
+1009,North,125
+1010,East,140
+"""
+
+MISSING = {"", "n/a", "na", "null"}
+
+
+def is_missing(value):
+    """True if a cell holds no real value. (Provided.)"""
+    return value.strip().lower() in MISSING
+
+
+# ---------------------------------------------------------------- Step 1
+def load_rows(csv_text):
+    """Parse CSV text into a list of dicts, one per data row, keyed by the header.
+    Use csv.DictReader on io.StringIO(csv_text.strip()). All values stay strings."""
+    # TODO Step 1
+    return None
+
+
+# ---------------------------------------------------------------- Step 2
+def profile(rows):
+    """Return a dict describing the data:
+         "rows":       number of rows
+         "missing":    dict mapping each column name to its count of missing values
+                       (use is_missing)
+         "duplicates": number of rows that exactly repeat an EARLIER row
+    For an empty list return {"rows": 0, "missing": {}, "duplicates": 0}."""
+    # TODO Step 2
+    return None
+
+
+# ---------------------------------------------------------------- Step 3
+def clean(rows):
+    """Return a tuple (clean_rows, dropped).
+
+    Go through the rows in order:
+      * a row that exactly repeats an earlier row   -> dropped.append(("duplicate", row))
+      * otherwise, a row whose "amount" is missing  -> dropped.append(("missing_amount", row))
+      * otherwise                                   -> add a COPY of the row to clean_rows
+                                                       with "amount" converted to float
+    """
+    # TODO Step 3
+    return None
+
+
+# ---------------------------------------------------------------- Step 4
+def summarise(clean_rows):
+    """Group by "region". Return a dict mapping each region to
+         {"count": n, "mean": mean of amounts, "median": median of amounts}
+    using statistics.mean and statistics.median."""
+    # TODO Step 4
+    return None
+
+
+# ---------------------------------------------------------------- Step 5
+def validate(raw_rows, clean_rows, dropped, summary):
+    """Return a SORTED list of failed checks (an empty list means all passed):
+         "row_count"          if len(raw_rows) != len(clean_rows) + len(dropped)
+         "group_total"        if the counts in summary do not add up to len(clean_rows)
+         "outlier:<region>"   for each region whose mean is more than 2 * its median
+    """
+    # TODO Step 5
+    return None
+
+
+if __name__ == "__main__":
+    rows = load_rows(RAW_CSV)
+    print("rows     :", rows)
+    print("profile  :", profile(rows or []))
+    print("clean    :", clean(rows or []))
+    print("summary  :", summarise([]))
+    print("validate :", validate([], [], [], {}))
+
+@@solution
+"""
+Lab solution: Audit an Analysis Before You Trust It
+Standard library only.
+
+RAW_CSV is a small order file with deliberate problems hidden in it.
+"""
+import csv
+import io
+import statistics
+from collections import defaultdict
+
+RAW_CSV = """order_id,region,amount
+1001,North,120
+1002,South,95
+1003,North,
+1004,East,N/A
+1005,South,110
+1005,South,110
+1006,North,9999
+1007,East,130
+1008,South,105
+1009,North,125
+1010,East,140
+"""
+
+MISSING = {"", "n/a", "na", "null"}
+
+
+def is_missing(value):
+    """True if a cell holds no real value."""
+    return value.strip().lower() in MISSING
+
+
+# ---------------------------------------------------------------- Step 1
+def load_rows(csv_text):
+    """Every value arrives as a string. Nothing is a number until you convert it,
+    and that conversion is where silent errors begin."""
+    return list(csv.DictReader(io.StringIO(csv_text.strip())))
+
+
+# ---------------------------------------------------------------- Step 2
+def profile(rows):
+    """PROFILE first: four facts that tell you what to expect from every later step."""
+    if not rows:
+        return {"rows": 0, "missing": {}, "duplicates": 0}
+    missing = {column: sum(1 for row in rows if is_missing(row[column])) for column in rows[0]}
+    seen = set()
+    duplicates = 0
+    for row in rows:
+        key = tuple(row.values())
+        if key in seen:
+            duplicates += 1
+        seen.add(key)
+    return {"rows": len(rows), "missing": missing, "duplicates": duplicates}
+
+
+# ---------------------------------------------------------------- Step 3
+def clean(rows):
+    """CLEAN, recording every dropped row with a reason.
+
+    An analysis that cannot say what it discarded cannot be checked. Duplicates are
+    tested before missing values so that each dropped row gets exactly one reason.
+    """
+    clean_rows, dropped = [], []
+    seen = set()
+    for row in rows:
+        key = tuple(row.values())
+        if key in seen:
+            dropped.append(("duplicate", row))
+        elif is_missing(row["amount"]):
+            dropped.append(("missing_amount", row))
+        else:
+            clean_rows.append({**row, "amount": float(row["amount"])})
+        seen.add(key)
+    return clean_rows, dropped
+
+
+# ---------------------------------------------------------------- Step 4
+def summarise(clean_rows):
+    """EXPLORE. Mean and median together: a large gap between them means an outlier."""
+    groups = defaultdict(list)
+    for row in clean_rows:
+        groups[row["region"]].append(row["amount"])
+    return {region: {"count": len(values),
+                     "mean": statistics.mean(values),
+                     "median": statistics.median(values)}
+            for region, values in groups.items()}
+
+
+# ---------------------------------------------------------------- Step 5
+def validate(raw_rows, clean_rows, dropped, summary):
+    """Two bookkeeping identities that hold for any correct analysis, plus one heuristic
+    that flags a group for a human to look at."""
+    failed = []
+    if len(raw_rows) != len(clean_rows) + len(dropped):
+        failed.append("row_count")
+    if sum(stats["count"] for stats in summary.values()) != len(clean_rows):
+        failed.append("group_total")
+    for region, stats in summary.items():
+        if stats["mean"] > 2 * stats["median"]:
+            failed.append(f"outlier:{region}")
+    return sorted(failed)
+
+
+if __name__ == "__main__":
+    rows = load_rows(RAW_CSV)
+    print("profile :", profile(rows))
+
+    clean_rows, dropped = clean(rows)
+    print(f"kept {len(clean_rows)}, dropped {len(dropped)}:")
+    for reason, row in dropped:
+        print(f"   {reason:>15}: order {row['order_id']}")
+
+    summary = summarise(clean_rows)
+    for region, stats in sorted(summary.items()):
+        print(f"{region:>5}: n={stats['count']}  mean={stats['mean']:8.2f}  median={stats['median']:6.1f}")
+
+    print("failed checks:", validate(rows, clean_rows, dropped, summary))
+
+    # A naive analysis that silently loses rows fails the bookkeeping check.
+    print("naive version:", validate(rows, clean_rows, [], summary))
+
+    # Simpson's paradox with the kidney-stone data.
+    data = {"A": {"small": (81, 87), "large": (192, 263)}, "B": {"small": (234, 270), "large": (55, 80)}}
+    for size in ("small", "large"):
+        rates = {t: data[t][size][0] / data[t][size][1] for t in data}
+        print(f"{size:>5} stones: A {rates['A']:.0%}  B {rates['B']:.0%}")
+    overall = {t: sum(s for s, _ in data[t].values()) / sum(n for _, n in data[t].values()) for t in data}
+    print(f"  all stones: A {overall['A']:.0%}  B {overall['B']:.0%}")
+
+@@step
+{
+  "stepNumber": 1,
+  "title": "Load the file",
+  "instruction": "Implement load_rows(csv_text). Strip the text, wrap it in io.StringIO so it can be read like a file, pass that to csv.DictReader, and return the result as a list. Each row becomes a dict keyed by the column names in the header line, and every value is a string, including the numbers. This is what the sandbox does first with any file you upload, and it is worth seeing that nothing is numeric until it is converted. [MOD-2.8]",
+  "hintConceptual": "A CSV file is text. The first line names the columns and each later line is one record. Reading it gives you labelled text values, and deciding which of them are numbers is a separate step.",
+  "hintSyntax": "return list(csv.DictReader(io.StringIO(csv_text.strip())))"
+}
+@@assert
+_r = load_rows("name,score\nAsha,90\nRavi,\n")
+assert isinstance(_r, list) and len(_r) == 2, "Two data rows should give a list of two dicts"
+assert _r[0] == {"name": "Asha", "score": "90"}, f"The first row should be a dict keyed by the header, with string values, got {_r[0]}"
+assert _r[1] == {"name": "Ravi", "score": ""}, "An empty cell should be an empty string"
+assert isinstance(_r[0]["score"], str), "Values must stay strings at this stage"
+_all = load_rows(RAW_CSV)
+assert len(_all) == 11, f"RAW_CSV has 11 data rows, got {len(_all)}"
+assert _all[0] == {"order_id": "1001", "region": "North", "amount": "120"}, "Check the first row of RAW_CSV"
+assert load_rows("a,b\n") == [], "A file with only a header has no data rows"
+print("Step 1 passed: 11 rows loaded, every value a string.")
+
+@@step
+{
+  "stepNumber": 2,
+  "title": "Profile the data",
+  "instruction": "Implement profile(rows). Return a dict with three keys. 'rows' is the number of rows. 'missing' maps each column name to how many of its values are missing, using the provided is_missing function. 'duplicates' is the number of rows that exactly repeat an earlier row, which you can find by turning each row's values into a tuple and remembering the ones already seen. For an empty list return zero rows, an empty missing dict, and zero duplicates. Profiling first is stage one of the workflow in Section 2. [MOD-2.8]",
+  "hintConceptual": "Before analysing anything, find out what is in the file: how much of it there is, where the gaps are, and whether anything is repeated. Those facts tell you what every later number should add up to.",
+  "hintSyntax": "if not rows:\n    return {\"rows\": 0, \"missing\": {}, \"duplicates\": 0}\nmissing = {column: sum(1 for row in rows if is_missing(row[column])) for column in rows[0]}\nseen = set()\nduplicates = 0\nfor row in rows:\n    key = tuple(row.values())\n    if key in seen:\n        duplicates += 1\n    seen.add(key)\nreturn {\"rows\": len(rows), \"missing\": missing, \"duplicates\": duplicates}"
+}
+@@assert
+_rows = list(csv.DictReader(io.StringIO(RAW_CSV.strip())))
+_p = profile(_rows)
+assert _p == {"rows": 11, "missing": {"order_id": 0, "region": 0, "amount": 2}, "duplicates": 1}, f"Unexpected profile: {_p}"
+assert profile([]) == {"rows": 0, "missing": {}, "duplicates": 0}, "An empty list gives an empty profile"
+_d = [{"a": "1"}, {"a": "1"}, {"a": "1"}, {"a": "2"}]
+assert profile(_d)["duplicates"] == 2, "Three identical rows contain two duplicates (the repeats after the first)"
+_m = [{"x": "NULL", "y": " n/a "}, {"x": "5", "y": "na"}]
+assert profile(_m)["missing"] == {"x": 1, "y": 2}, "Missing-value markers are matched ignoring case and surrounding spaces"
+print("Step 2 passed: 11 rows, 2 missing amounts, 1 duplicate. Now you know what to expect.")
+
+@@step
+{
+  "stepNumber": 3,
+  "title": "Clean, and record what you drop",
+  "instruction": "Implement clean(rows). Go through the rows in order, remembering each row's values as a tuple. If a row repeats an earlier one, append ('duplicate', row) to the dropped list. Otherwise, if its amount is missing, append ('missing_amount', row). Otherwise add a copy of the row to the clean list with its amount converted to a float. Return the tuple (clean_rows, dropped). Keeping a record of every discarded row, with a reason, is what makes an analysis checkable. [MOD-2.8]",
+  "hintConceptual": "Cleaning means deciding what to do with each bad row, and the decision should leave a trace. If you cannot say how many rows were removed and why, you cannot reconcile the result with the original file.",
+  "hintSyntax": "clean_rows, dropped = [], []\nseen = set()\nfor row in rows:\n    key = tuple(row.values())\n    if key in seen:\n        dropped.append((\"duplicate\", row))\n    elif is_missing(row[\"amount\"]):\n        dropped.append((\"missing_amount\", row))\n    else:\n        clean_rows.append({**row, \"amount\": float(row[\"amount\"])})\n    seen.add(key)\nreturn clean_rows, dropped"
+}
+@@assert
+_rows = list(csv.DictReader(io.StringIO(RAW_CSV.strip())))
+_result = clean(_rows)
+assert isinstance(_result, tuple) and len(_result) == 2, "clean must return a tuple (clean_rows, dropped)"
+_c, _dr = _result
+assert len(_c) == 8 and len(_dr) == 3, f"8 rows should be kept and 3 dropped, got {len(_c)} and {len(_dr)}"
+assert [reason for reason, _ in _dr] == ["missing_amount", "missing_amount", "duplicate"], f"Dropped reasons, in file order, got {[reason for reason, _ in _dr]}"
+assert [row["order_id"] for _, row in _dr] == ["1003", "1004", "1005"], "Orders 1003 and 1004 have no amount; the second 1005 is a duplicate"
+assert all(isinstance(row["amount"], float) for row in _c), "Every kept amount must be a float"
+assert _c[0] == {"order_id": "1001", "region": "North", "amount": 120.0}, "Kept rows keep their other fields unchanged"
+assert _rows[0]["amount"] == "120", "The original rows must not be modified (add a COPY to clean_rows)"
+assert len(_rows) == len(_c) + len(_dr), "Rows kept plus rows dropped must equal rows read"
+_twice = [{"amount": ""}, {"amount": ""}]
+assert [reason for reason, _ in clean(_twice)[1]] == ["missing_amount", "duplicate"], "A repeated row is a duplicate even if its amount is also missing"
+print("Step 3 passed: kept 8, dropped 3, and every dropped row has a reason.")
+
+@@step
+{
+  "stepNumber": 4,
+  "title": "Summarise by group",
+  "instruction": "Implement summarise(clean_rows). Group the rows by their 'region' value, collecting the amounts for each region. Return a dict mapping each region to a dict with 'count' (how many amounts), 'mean' (statistics.mean), and 'median' (statistics.median). Then compare the mean and median for each region in the output: one of them will look very wrong, which is the diagnostic from Section 2. [MOD-2.8]",
+  "hintConceptual": "A grouped summary is the heart of most business analysis. Reporting the mean and the median side by side costs nothing and reveals whether a few extreme values are distorting the average.",
+  "hintSyntax": "groups = defaultdict(list)\nfor row in clean_rows:\n    groups[row[\"region\"]].append(row[\"amount\"])\nreturn {region: {\"count\": len(values),\n                 \"mean\": statistics.mean(values),\n                 \"median\": statistics.median(values)}\n        for region, values in groups.items()}"
+}
+@@assert
+_data = [
+    {"region": "North", "amount": 120.0}, {"region": "North", "amount": 9999.0}, {"region": "North", "amount": 125.0},
+    {"region": "South", "amount": 95.0}, {"region": "South", "amount": 110.0}, {"region": "South", "amount": 105.0},
+    {"region": "East", "amount": 130.0}, {"region": "East", "amount": 140.0},
+]
+_s = summarise(_data)
+assert set(_s) == {"North", "South", "East"}, f"There should be one entry per region, got {set(_s) if _s else _s}"
+assert _s["East"] == {"count": 2, "mean": 135.0, "median": 135.0}, f"East: two amounts averaging 135, got {_s['East']}"
+assert _s["South"]["count"] == 3 and abs(_s["South"]["mean"] - 103.3333333) < 1e-6 and _s["South"]["median"] == 105.0, "South: mean 103.33, median 105"
+assert _s["North"]["count"] == 3 and abs(_s["North"]["mean"] - 3414.6666667) < 1e-6 and _s["North"]["median"] == 125.0, "North: mean 3414.67, median 125"
+assert summarise([]) == {}, "No rows gives an empty summary"
+assert sum(stats["count"] for stats in _s.values()) == len(_data), "Group counts must add up to the number of rows"
+print(f"Step 4 passed: North has mean {_s['North']['mean']:.2f} and median {_s['North']['median']:.0f}. Something is wrong in North.")
+
+@@step
+{
+  "stepNumber": 5,
+  "title": "Validate the analysis",
+  "instruction": "Implement validate(raw_rows, clean_rows, dropped, summary). Return a sorted list of failed checks. Add 'row_count' if the number of raw rows does not equal the number of clean rows plus the number of dropped rows. Add 'group_total' if the counts in the summary do not add up to the number of clean rows. Add 'outlier:' followed by the region name for every region whose mean is more than twice its median. An empty list means every check passed. These are checks 2, 3, and 4 from the validation checklist in Section 2, written so a program can run them. [MOD-2.8]",
+  "hintConceptual": "Two of these are bookkeeping: nothing may vanish unaccounted for, and the parts must add up to the whole. The third is a warning sign that an average is being distorted and needs a human look.",
+  "hintSyntax": "failed = []\nif len(raw_rows) != len(clean_rows) + len(dropped):\n    failed.append(\"row_count\")\nif sum(stats[\"count\"] for stats in summary.values()) != len(clean_rows):\n    failed.append(\"group_total\")\nfor region, stats in summary.items():\n    if stats[\"mean\"] > 2 * stats[\"median\"]:\n        failed.append(f\"outlier:{region}\")\nreturn sorted(failed)"
+}
+@@assert
+_raw = [{"id": str(i)} for i in range(11)]
+_cl = [{"id": str(i)} for i in range(8)]
+_dp = [("duplicate", {}), ("missing_amount", {}), ("missing_amount", {})]
+_sm = {
+    "North": {"count": 3, "mean": 3414.67, "median": 125.0},
+    "South": {"count": 3, "mean": 103.33, "median": 105.0},
+    "East": {"count": 2, "mean": 135.0, "median": 135.0},
+}
+assert validate(_raw, _cl, _dp, _sm) == ["outlier:North"], f"Only the North outlier should be flagged, got {validate(_raw, _cl, _dp, _sm)}"
+assert validate(_raw, _cl, [], _sm) == ["outlier:North", "row_count"], "If dropped rows are not recorded the row counts do not reconcile"
+_short = dict(_sm, East={"count": 1, "mean": 135.0, "median": 135.0})
+assert validate(_raw, _cl, _dp, _short) == ["group_total", "outlier:North"], "Group counts that do not add up must be flagged"
+_fine = {"A": {"count": 8, "mean": 100.0, "median": 99.0}}
+assert validate(_raw, _cl, _dp, _fine) == [], "When every check passes the list is empty"
+_edge = {"A": {"count": 8, "mean": 200.0, "median": 100.0}}
+assert validate(_raw, _cl, _dp, _edge) == [], "A mean exactly twice the median is not MORE than twice"
+assert validate([], [], [], {}) == [], "Empty inputs pass trivially"
+print("Step 5 passed: the audit flags North and would flag any analysis that loses rows silently.")

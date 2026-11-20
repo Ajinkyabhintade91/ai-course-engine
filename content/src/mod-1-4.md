@@ -1,0 +1,605 @@
+@@meta
+{
+  "moduleId": "MOD-1.4",
+  "slug": "mod-1-4",
+  "unitId": "UNIT-1",
+  "unitTitle": "Unit 1: Understanding AI from Basics",
+  "title": "How ChatGPT, Claude and Gemini work?",
+  "difficulty": "Foundational",
+  "estimatedMinutes": 105,
+  "citations": [
+    { "title": "Attention Is All You Need (Vaswani et al., 2017)", "source": "arXiv", "url": "https://arxiv.org/abs/1706.03762" },
+    { "title": "The Curious Case of Neural Text Degeneration (nucleus sampling)", "source": "arXiv", "url": "https://ar5iv.labs.arxiv.org/html/1904.09751" },
+    { "title": "Constitutional AI: Harmlessness from AI Feedback", "source": "arXiv", "url": "https://arxiv.org/abs/2212.08073v1" },
+    { "title": "Training language models to follow instructions with human feedback (InstructGPT)", "source": "arXiv", "url": "https://arxiv.org/pdf/2203.02155" },
+    { "title": "The Illustrated Transformer (Jay Alammar)", "source": "Blog", "url": "https://jalammar.github.io/illustrated-transformer/" },
+    { "title": "Claude models overview", "source": "Anthropic Docs", "url": "https://platform.claude.com/docs/en/models/overview" },
+    { "title": "OpenAI models", "source": "OpenAI Docs", "url": "https://developers.openai.com/api/docs/models" },
+    { "title": "Why the API output is inconsistent even after temperature is set to 0", "source": "OpenAI Community", "url": "https://community.openai.com/t/why-the-api-output-is-inconsistent-even-after-the-temperature-is-set-to-0/329541" }
+  ],
+  "videoLibrary": [
+    {
+      "id": "VID-1.4-1",
+      "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+      "creator": "3Blue1Brown",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+      "timingInstruction": "Watch after reading Section 1",
+      "keyTakeaway": "The best visual overview of the full pipeline: tokens, embeddings, repeated transformer blocks, and the final next-token distribution."
+    },
+    {
+      "id": "VID-1.4-2",
+      "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+      "creator": "3Blue1Brown",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+      "timingInstruction": "Watch after reading Section 2 (the attention equation)",
+      "keyTakeaway": "Works through queries, keys, values, and masking with pictures, matching the attention formula in this chapter line for line."
+    },
+    {
+      "id": "VID-1.4-3",
+      "title": "Deep Dive into LLMs like ChatGPT",
+      "creator": "Andrej Karpathy",
+      "platform": "YouTube",
+      "tier": "Free",
+      "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+      "timingInstruction": "Watch in parts after the lab; it is long",
+      "keyTakeaway": "A complete walk through pre-training, post-training, sampling, tools, and the psychology of model failures, from someone who has built these systems."
+    },
+    {
+      "id": "VID-1.4-4",
+      "title": "Generative AI for Everyone",
+      "creator": "DeepLearning.AI (Andrew Ng)",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/generative-ai-for-everyone",
+      "timingInstruction": "Take after this module for the non-technical big picture",
+      "keyTakeaway": "About six hours on what generative models can and cannot do and how they are applied at work, with no mathematics required."
+    },
+    {
+      "id": "VID-1.4-5",
+      "title": "Introduction to Generative AI",
+      "creator": "Google Cloud",
+      "platform": "Coursera Plus",
+      "tier": "Paid",
+      "url": "https://www.coursera.org/learn/introduction-to-generative-ai",
+      "timingInstruction": "Optional one-hour review",
+      "keyTakeaway": "A short vendor-authored overview of model types and Google's tooling, useful for seeing how one provider frames its own products."
+    }
+  ],
+  "lab": {
+    "labTitle": "Hands-On Lab: Build the Sampling Controls of a Chatbot",
+    "context": "Your product team wants a 'creativity' slider in its chat app and nobody on the team can explain what temperature and top-p actually do. You will implement softmax with temperature, top-p filtering, scaled dot-product attention weights, and a complete next-token sampler so you can demonstrate each control on real numbers.",
+    "language": "python"
+  }
+}
+
+@@reading
+# How ChatGPT, Claude and Gemini work?
+
+Three companies, three products, one underlying design. ChatGPT (OpenAI), Claude (Anthropic), and Gemini (Google) are all built on the same kind of neural network, the transformer, and all produce text the same way: one token at a time. This chapter opens the box. You will see what happens between pressing Enter and reading a reply, what the "temperature" setting really changes, and where the three products do differ.
+
+## 1. First-Principles Mental Model & Intuition
+
+### A loop around a function
+
+The previous module established that a language model is a function from text to a probability distribution over the next token. A chat product is a loop around that function.
+
+```text
+ your message
+      |
+      v
++-------------+    +-------------+    +----------------+    +-----------+
+| 1. TOKENIZE | -> | 2. FORWARD  | -> | 3. SAMPLE one  | -> | 4. APPEND |
+| text -> IDs |    |    PASS     |    |    token from  |    | token to  |
++-------------+    | IDs -> a    |    |    the         |    | the text  |
+                   | probability |    |    distribution|    +-----+-----+
+                   | per token   |    +----------------+          |
+                   +------^------+                                |
+                          |                                       |
+                          +------- repeat until a stop token -----+
+```
+
+A 300-word answer is that loop run about 400 times. Each pass reads the entire conversation so far, including the tokens the model itself just wrote. Nothing in the loop plans the whole answer in advance and then prints it. The answer is built step by step, each token conditioned on everything before it. This is called **autoregressive** generation.
+
+### Attention as a meeting
+
+The central mechanism inside the forward pass is **self-attention**. Here is the intuition. Take the sentence "The bank raised interest rates." The word "bank" alone is ambiguous: a river bank or a financial institution? To settle it, "bank" needs information from "interest" and "rates".
+
+Picture every word in the sentence sitting in a meeting. Each word does three things.
+
+- It asks a **question** about what it needs. This is its *query*. "Bank" might ask, "Is anything here about money or about rivers?"
+- It holds up a **label** describing what it can offer. This is its *key*. "Interest" holds up something like "financial concept".
+- It carries a **payload** of information to hand over. This is its *value*.
+
+Each word compares its question with every other word's label. Where question and label match well, the word takes in a large share of that word's payload. After the meeting, the vector for "bank" has absorbed meaning from "interest" and "rates" and now represents a financial bank. Run the meeting dozens of times in a row, with different questions each round, and the vectors come to encode syntax, references, facts, and tone.
+
+Nobody writes the questions, labels, or payloads. They are produced by matrices of learned parameters, set during training.
+
+### Sampling as a weighted dice roll
+
+The forward pass ends with a probability for every token in the vocabulary. The model does not "choose" a word. The application rolls a weighted die. Two controls shape that die.
+
+- **Temperature** reshapes the weights. A low temperature exaggerates the favourite, and a high temperature evens the odds.
+- **Top-p** removes the long tail of very unlikely tokens before the roll.
+
+That is why the same prompt can give different answers on different runs, and why turning temperature down makes a model more repeatable.
+
+## 2. Core Theory, Mathematical Foundations & Architecture Internals
+
+### The pipeline in full
+
+```text
+ "The bank raised"
+        |  tokenizer (byte-pair encoding)
+        v
+ token IDs        [ 464, 3331, 4376 ]
+        |  embedding table lookup, plus position information
+        v
+ one vector per token
+        |
+        v
+ +---------------------------------------------+
+ | TRANSFORMER BLOCK   (repeated N times)      |
+ |   1. masked self-attention  (mix context)   |
+ |   2. feed-forward network   (process each   |
+ |      position on its own)                   |
+ |   each step wrapped in a residual           |
+ |   connection and normalisation              |
+ +---------------------------------------------+
+        |  take the vector at the LAST position
+        v
+ logits: one raw score per vocabulary token
+        |  softmax (with temperature)
+        v
+ probabilities  ->  sample  ->  next token
+```
+
+### Scaled dot-product attention
+
+The 2017 paper "Attention Is All You Need" by Vaswani and colleagues defines attention in one formula. Stack the queries into a matrix $Q$, the keys into $K$, and the values into $V$. Let $d_k$ be the length of each key vector. Then:
+
+$$
+\mathrm{Attention}(Q, K, V) = \mathrm{softmax}\!\left(\frac{Q K^{\top}}{\sqrt{d_k}}\right) V
+$$
+
+Take it one piece at a time.
+
+1. **$Q K^{\top}$** computes the dot product of every query with every key. A dot product is large when two vectors point the same way, so this is a table of match scores: how relevant is each token to each other token.
+2. **Dividing by $\sqrt{d_k}$** keeps the scores in a moderate range. Without it, long vectors produce very large scores, the softmax puts nearly all its weight on one token, and learning stalls.
+3. **Softmax** turns each row of scores into weights that are positive and sum to one. These are the **attention weights**.
+4. **Multiplying by $V$** forms, for each token, a weighted average of all the value vectors. That average is the new information the token takes away from the meeting.
+
+In practice the model runs several attention operations in parallel, called **heads**, each with its own learned matrices, and combines their results. One head may track grammatical subject, another may link pronouns to names. This is **multi-head attention**.
+
+### The causal mask
+
+The original transformer had two halves, an encoder and a decoder, and was built for translation. The models behind today's chat assistants are mostly **decoder-only**. Their attention is **masked**: when computing the vector for position $t$, a token may attend to positions $1$ through $t$ and never to later positions. Implementation is simple. Set the match scores for future positions to negative infinity before the softmax, so their weights become exactly zero.
+
+```text
+ attention allowed?      the   bank  raised  rates
+              the         yes   -      -       -
+              bank        yes   yes    -       -
+              raised      yes   yes    yes     -
+              rates       yes   yes    yes     yes
+```
+
+The mask is what makes training efficient. One pass over a sentence produces a next-token prediction at every position at once, and none of them can cheat by looking ahead.
+
+### From logits to a token
+
+The final layer outputs a **logit** $z_i$ for each vocabulary token $i$. The softmax with **temperature** $T$ converts logits to probabilities:
+
+$$
+p_i = \frac{e^{z_i / T}}{\sum_{j} e^{z_j / T}}
+$$
+
+- At $T = 1$ you get the distribution the model learned.
+- As $T$ falls toward $0$, the largest logit dominates and the distribution approaches a one-hot choice of the top token. This limit is called **greedy decoding**.
+- As $T$ rises above $1$, the distribution flattens and unlikely tokens gain probability.
+
+A worked example with three tokens whose logits are 2, 1, and 0:
+
+| Temperature | $p_1$ | $p_2$ | $p_3$ |
+|---|---|---|---|
+| 0.5 | 0.867 | 0.117 | 0.016 |
+| 1.0 | 0.665 | 0.245 | 0.090 |
+| 2.0 | 0.506 | 0.307 | 0.186 |
+
+**Top-p sampling**, also called **nucleus sampling**, was introduced by Holtzman and colleagues in 2019. Sort tokens from most to least probable. Keep the smallest set whose probabilities add up to at least $p$. Discard the rest, rescale what remains so it sums to one, and sample from that. Formally the nucleus $V^{(p)}$ is the smallest set satisfying:
+
+$$
+\sum_{i \in V^{(p)}} p_i \;\ge\; p
+$$
+
+With $p = 0.9$ and the $T = 1$ row above, the first two tokens sum to 0.910, which reaches 0.9, so the third is dropped and the remaining two are rescaled to about 0.731 and 0.269. A related control, **top-k**, keeps a fixed number $k$ of tokens regardless of their probabilities. Top-p adapts: when the model is confident the nucleus is tiny, and when it is uncertain the nucleus is wide.
+
+The same paper explains why sampling is used at all. Always picking the most likely token sounds safest, yet it produces dull, repetitive text that loops on itself. A measured amount of randomness gives more natural language.
+
+### Cost
+
+Self-attention compares every token with every other token, so for a context of $n$ tokens each layer does work proportional to $n^{2}$. During generation, implementations store the keys and values already computed for earlier tokens in a **KV cache**, so producing each new token costs work proportional to $n$, not $n^{2}$. This is one reason output tokens and input tokens are priced differently, and why very long contexts are slow.
+
+### What actually differs between the three
+
+The skeleton is shared. The differences are in everything around it.
+
+| Dimension | What varies | Why it matters to you |
+|---|---|---|
+| Training data | Which text, code, images, and licensed sources were used, and the cutoff date | Affects what the model knows and how recent that knowledge is |
+| Post-training alignment | How the base model is shaped into an assistant | Affects tone, refusals, and how it handles sensitive requests |
+| Hidden instructions | The **system prompt** each product places before your message | Affects personality and default behaviour in the app |
+| Tools | Search, code execution, file handling, connectors | Decides whether it can fetch current facts or run calculations |
+| Context window | How many tokens fit in one request | Decides how much material you can supply at once |
+| Modalities | Text, images, audio, video in and out | Decides what kinds of input and output are possible |
+
+On alignment, two published methods are worth knowing by name.
+
+- **Reinforcement learning from human feedback (RLHF)**, described in OpenAI's 2022 InstructGPT paper. Human raters rank alternative answers, a separate "reward model" is trained to predict those rankings, and the language model is then tuned to produce answers the reward model scores highly.
+- **Constitutional AI**, described by Anthropic in December 2022. The model is given a written list of principles. In one stage it critiques and rewrites its own answers according to those principles. In a second stage, an AI model judges which of two answers better follows the principles, and those AI-generated preferences replace much of the human ranking.
+
+The exact recipes used in current products are proprietary, and every vendor layers further safeguards on top. Treat the published papers as descriptions of the families of method, not as a full account of any shipping model.
+
+On context windows and model names, be careful with anything you read, including this page. Vendors release new models every few months. At the time of writing in late 2026, Anthropic's documentation lists its current Claude models with a context window of one million tokens and up to 128 thousand output tokens, and the OpenAI and Google model pages likewise advertise flagship context windows of around a million tokens. Check the vendor's own model page, linked in the citations, before relying on any specific figure.
+
+## 3. Production-Grade Implementation & Annotated Walkthrough
+
+The sampling stage is small enough to implement completely. This program first reprints the three-token temperature table from Section 2, then applies the same functions to a five-token example and generates tokens with different settings.
+
+```python
+import math
+import random
+
+def softmax(logits, temperature=1.0):
+    """Logits -> probabilities. Temperature 0 means 'always take the top token'."""
+    if temperature == 0:
+        top = logits.index(max(logits))
+        return [1.0 if i == top else 0.0 for i in range(len(logits))]
+    scaled = [z / temperature for z in logits]
+    peak = max(scaled)                                   # numerical stability
+    exps = [math.exp(z - peak) for z in scaled]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def top_p_filter(probs, p):
+    """Keep the smallest set of top tokens whose probability reaches p; renormalise."""
+    order = sorted(range(len(probs)), key=lambda i: -probs[i])
+    kept, running = [], 0.0
+    for i in order:
+        kept.append(i)
+        running += probs[i]
+        if running >= p - 1e-12:                         # tolerance for float rounding
+            break
+    total = sum(probs[i] for i in kept)
+    return [probs[i] / total if i in kept else 0.0 for i in range(len(probs))]
+
+for T in (0.5, 1.0, 2.0):                # the table from Section 2
+    print(f"T={T}:", [round(pr, 3) for pr in softmax([2.0, 1.0, 0.0], T)])
+print("top-p 0.9 at T=1:", [round(pr, 3) for pr in top_p_filter(softmax([2.0, 1.0, 0.0], 1.0), 0.9)])
+
+VOCAB = [" Paris", " Lyon", " France", " the", " banana"]
+LOGITS = [6.0, 3.5, 3.0, 2.0, -2.0]      # what a model might output after "The capital of France is"
+
+for T in (0.2, 1.0, 2.0):
+    probs = softmax(LOGITS, T)
+    print(f"T={T}:", {tok: round(pr, 3) for tok, pr in zip(VOCAB, probs)})
+
+rng = random.Random(0)
+for T, p in ((0.2, 1.0), (1.0, 1.0), (2.0, 1.0), (2.0, 0.9)):
+    probs = top_p_filter(softmax(LOGITS, T), p)
+    draws = rng.choices(VOCAB, weights=probs, k=1000)
+    print(f"T={T}, top_p={p}: banana drawn {draws.count(' banana')} times in 1000")
+```
+
+Commentary:
+
+- **Subtracting `peak` before `math.exp`.** Exponentials overflow quickly: `math.exp(1000)` raises an error. Subtracting the largest scaled logit from all of them leaves the result mathematically unchanged, because the same factor cancels in numerator and denominator, and guarantees the largest exponent is zero. Every production softmax does this.
+- **Temperature zero is a special case.** The formula divides by $T$, so $T = 0$ cannot be computed directly. Code treats it as "return the top token with probability one".
+- **`top_p_filter` sorts indices, not values.** It needs to remember which token each probability belongs to. The `1e-12` tolerance protects against floating-point sums such as 0.8999999999 failing a comparison with 0.9.
+- **The loop always keeps at least one token.** Even with a very small `p`, the top token is appended before the check, so the function can never return an empty distribution.
+- **The experiment at the end is the point.** At temperature 2.0 with no filter, " banana" is drawn about once in every hundred tokens, although it is an absurd completion. Over a 400-token answer that is several nonsense tokens. Adding `top_p=0.9` removes it entirely while keeping the plausible alternatives. This is the practical reason both controls exist: temperature spreads probability around, and top-p stops that spreading from reaching nonsense.
+
+The attention weights for a single query are equally short to compute:
+
+```python
+def attention_weights(query, keys):
+    """How much one token attends to each key: softmax of scaled dot products."""
+    d = len(query)
+    scores = [sum(q * k for q, k in zip(query, key)) / math.sqrt(d) for key in keys]
+    return softmax(scores)
+
+# Toy 2-number vectors: [money-ness, river-ness]
+keys = {"interest": [3.0, 0.0], "rates": [2.0, 0.0], "water": [0.0, 3.0]}
+query_for_bank = [2.0, 0.1]              # "bank" is asking mostly about money
+weights = attention_weights(query_for_bank, list(keys.values()))
+print({word: round(w, 3) for word, w in zip(keys, weights)})
+# interest and rates receive most of the weight; water receives very little
+```
+
+One query, three keys, three weights that sum to one. The full model does this for every token against every earlier token, in many heads, in every layer, with vectors thousands of numbers long. The arithmetic is the same.
+
+**Complexity of the sampler.** Softmax is one pass over the vocabulary, so it costs time proportional to the vocabulary size $V$. Top-p needs a sort, costing on the order of $V \log V$. With vocabularies around a hundred thousand tokens this is negligible next to the forward pass through billions of parameters.
+
+## 4. Practitioner Wisdom & Edge Cases (Reddit / HN / Stack Overflow Synthesis)
+
+**"Temperature 0 makes it deterministic" is not reliably true.** This is the most common surprise reported by developers. Setting temperature to zero removes the sampling randomness, but hosted services can still return different outputs for the same request. The causes discussed by practitioners include floating-point arithmetic that gives slightly different results depending on how operations are ordered across hardware, requests being batched together differently under load, and silent model updates. OpenAI itself describes its API as only "mostly" deterministic even when a seed is supplied. If you need identical outputs, store the output. Do not regenerate and hope.
+
+**Temperature is not a creativity dial or an accuracy dial.** Raising it makes less likely tokens more frequent. Sometimes that reads as creative. Past a point it reads as incoherent, and it raises the rate of factual errors. Lowering it makes output more repeatable, and does nothing to make a wrong top answer right.
+
+**Do not tune every knob at once.** Long-standing provider guidance is to adjust temperature or top-p, not both, because their effects interact and become hard to reason about. Also be aware that sampling parameters are not uniformly available: some newer models, particularly reasoning-focused ones, restrict or ignore them, and the rules change between model versions. Read the current API reference for the specific model before building a feature on a parameter.
+
+**The model does not look things up unless a tool does it.** The transformer predicts tokens from its parameters and its context. When ChatGPT, Claude, or Gemini cites a web page, a separate search tool retrieved that page and placed its text into the context. Whether search ran at all depends on the product and the settings, which is why the same question can get a current answer in one app and a stale one in another.
+
+**The context window is shared and is not uniform.** Your prompt, any attached files, the model's reply, and any hidden reasoning tokens all count against the same limit. A window of a million tokens does not mean the model recalls every part of a million-token input equally well. Attention to material in the middle of a very long context is often weaker than to the beginning and end.
+
+**The system prompt explains many "personality" differences.** The app version of a model runs with a long hidden instruction that the raw API does not include. People comparing "the model" in an app against the same model through the API are often comparing two different prompts.
+
+**Benchmarks of "which is smartest" age in weeks.** The three vendors leapfrog each other constantly. A durable habit is to keep a small set of your own real tasks and re-run them when a new model appears.
+
+**Published alignment methods are not the whole product.** RLHF and Constitutional AI describe training approaches. Deployed systems add system prompts, input and output classifiers, and tool permissions. When a product refuses or reshapes a request, any of those layers may be responsible.
+
+## 5. Active Recall Check & Synthesis Summary
+
+**Summary.** ChatGPT, Claude, and Gemini share one architecture. Text is tokenized, tokens become vectors, and a stack of transformer blocks uses masked self-attention to let each position gather information from all earlier positions. The final vector becomes a score for every vocabulary token, a softmax with temperature turns scores into probabilities, optional top-p filtering trims the unlikely tail, and one token is sampled and appended. The loop repeats until a stop token. The products differ in training data, alignment method, system prompt, tools, context size, and modalities, and those details change frequently enough that the vendor's own documentation is the only reliable source.
+
+**Question 1.** In the attention formula, what would go wrong if the division by $\sqrt{d_k}$ were removed, and what would go wrong if the causal mask were removed from a chat model during training?
+
+<details>
+<summary>View Answer</summary>
+
+Without the scaling, dot products of long vectors become very large, so the softmax output is close to one-hot: nearly all the weight lands on a single token. In that saturated region the gradients are tiny and training becomes slow and unstable. Without the causal mask, each position could attend to later positions, so when the model is trained to predict token t+1 from position t it could simply read the answer. It would score perfectly in training and learn nothing useful for generation, where future tokens do not exist yet.
+
+</details>
+
+**Question 2.** A developer sets temperature to 2.0 to get "more creative" marketing copy and finds occasional nonsense words in the output. Explain mechanically why this happens and how top-p addresses it without lowering the temperature.
+
+<details>
+<summary>View Answer</summary>
+
+Dividing the logits by a temperature above one shrinks the gaps between them, so the softmax spreads probability more evenly and tokens that were extremely unlikely gain a real chance of being drawn. Over hundreds of sampled tokens some of those poor choices will occur. Top-p sorts tokens by probability and keeps only the smallest set whose total reaches p, for example 0.9, then renormalises. The tail of very unlikely tokens is given zero probability, so nonsense cannot be drawn, while the remaining plausible tokens still have the flatter, more varied distribution that the higher temperature produced.
+
+</details>
+
+**Question 3.** The same question is asked in a vendor's chat app and through the same model's raw API, and the two answers differ in tone and in whether current information is included. Name three components outside the transformer itself that could explain the difference.
+
+<details>
+<summary>View Answer</summary>
+
+First, the system prompt: the app prepends a long hidden instruction that sets personality, formatting, and behaviour, and the raw API call has none unless the developer supplies one. Second, tools: the app may have web search or code execution enabled, which inserts retrieved current information into the context, while the bare API call has no tools. Third, sampling and product settings: the app may use different temperature or reasoning settings, and may add memory or personalisation text to the context. Any of these changes the input to, or the sampling from, the same underlying model.
+
+</details>
+
+@@starter
+"""
+Lab: Build the Sampling Controls of a Chatbot
+Standard library only. Complete the TODO in each step, then press "Run & Verify Step".
+
+LOGITS are the raw scores a model might output for the next token after
+"The capital of France is". VOCAB lists the token each score belongs to.
+"""
+import math
+import random
+
+VOCAB = [" Paris", " Lyon", " France", " the", " banana"]
+LOGITS = [6.0, 3.5, 3.0, 2.0, -2.0]
+
+
+# ---------------------------------------------------------------- Step 1
+def softmax(logits, temperature=1.0):
+    """Convert a list of logits into a list of probabilities that sum to 1."""
+    # TODO Step 1:
+    #   * if temperature == 0: return 1.0 for the position of the largest logit and 0.0 elsewhere
+    #   * otherwise divide every logit by temperature, subtract the largest scaled value
+    #     (for numerical stability), apply math.exp, and divide each result by their sum
+    return None
+
+
+# ---------------------------------------------------------------- Step 2
+def top_p_filter(probs, p):
+    """Nucleus filtering. Keep the smallest set of most-probable tokens whose total
+    probability is at least p, set the others to 0.0, and renormalise to sum to 1.
+    Returns a list the same length and order as `probs`."""
+    # TODO Step 2:
+    #   order = indices sorted from highest to lowest probability
+    #   add indices to `kept` one at a time, stopping once the running total >= p - 1e-12
+    #   total = sum of the kept probabilities
+    #   return [probs[i] / total if i in kept else 0.0 for i in range(len(probs))]
+    return None
+
+
+# ---------------------------------------------------------------- Step 3
+def attention_weights(query, keys):
+    """Scaled dot-product attention for ONE query vector against a list of key vectors.
+    Returns one weight per key; the weights sum to 1."""
+    # TODO Step 3:
+    #   d = len(query)
+    #   score for each key = (dot product of query and key) / math.sqrt(d)
+    #   return softmax(scores)
+    return None
+
+
+# ---------------------------------------------------------------- Step 4
+def sample_next(vocab, logits, temperature, top_p, rng):
+    """One step of text generation: logits -> softmax -> top-p filter -> weighted draw.
+    Returns one token from `vocab`."""
+    # TODO Step 4: combine softmax and top_p_filter, then use
+    #   rng.choices(vocab, weights=probs)[0]
+    return None
+
+
+if __name__ == "__main__":
+    print("softmax at T=1      :", softmax(LOGITS, 1.0))
+    print("top-p 0.9           :", top_p_filter([0.5, 0.3, 0.15, 0.05], 0.9))
+    print("attention weights   :", attention_weights([2.0, 0.1], [[3.0, 0.0], [2.0, 0.0], [0.0, 3.0]]))
+    print("one sampled token   :", sample_next(VOCAB, LOGITS, 1.0, 0.9, random.Random(0)))
+
+@@solution
+"""
+Lab solution: Build the Sampling Controls of a Chatbot
+Standard library only.
+
+LOGITS are the raw scores a model might output for the next token after
+"The capital of France is". VOCAB lists the token each score belongs to.
+"""
+import math
+import random
+
+VOCAB = [" Paris", " Lyon", " France", " the", " banana"]
+LOGITS = [6.0, 3.5, 3.0, 2.0, -2.0]
+
+
+# ---------------------------------------------------------------- Step 1
+def softmax(logits, temperature=1.0):
+    """Logits -> probabilities.
+
+    Temperature 0 cannot be computed with the formula (division by zero), so it is
+    defined as greedy decoding: all probability on the top token.
+    Subtracting the peak before exp() prevents overflow and does not change the result,
+    because the same factor cancels in the numerator and the denominator.
+    """
+    if temperature == 0:
+        top = logits.index(max(logits))
+        return [1.0 if i == top else 0.0 for i in range(len(logits))]
+    scaled = [z / temperature for z in logits]
+    peak = max(scaled)
+    exps = [math.exp(z - peak) for z in scaled]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+
+# ---------------------------------------------------------------- Step 2
+def top_p_filter(probs, p):
+    """Nucleus (top-p) filtering.
+
+    The top token is always kept, so the result is never an empty distribution.
+    The small tolerance guards against float sums like 0.8999999999 missing 0.9.
+    """
+    order = sorted(range(len(probs)), key=lambda i: -probs[i])
+    kept = []
+    running = 0.0
+    for i in order:
+        kept.append(i)
+        running += probs[i]
+        if running >= p - 1e-12:
+            break
+    total = sum(probs[i] for i in kept)
+    return [probs[i] / total if i in kept else 0.0 for i in range(len(probs))]
+
+
+# ---------------------------------------------------------------- Step 3
+def attention_weights(query, keys):
+    """softmax( q . k / sqrt(d) ) for one query against every key.
+
+    The dot product is a match score; dividing by sqrt(d) keeps scores moderate so the
+    softmax does not collapse onto a single key as vectors get longer.
+    """
+    d = len(query)
+    scores = [sum(q * k for q, k in zip(query, key)) / math.sqrt(d) for key in keys]
+    return softmax(scores)
+
+
+# ---------------------------------------------------------------- Step 4
+def sample_next(vocab, logits, temperature, top_p, rng):
+    """The sampling stage of every chatbot, in three lines."""
+    probs = softmax(logits, temperature)        # temperature reshapes the distribution
+    probs = top_p_filter(probs, top_p)          # top-p removes the unlikely tail
+    return rng.choices(vocab, weights=probs)[0] # a weighted dice roll
+
+
+if __name__ == "__main__":
+    for T in (0.2, 1.0, 2.0):
+        probs = softmax(LOGITS, T)
+        print(f"T={T}:", {tok: round(pr, 3) for tok, pr in zip(VOCAB, probs)})
+
+    print("top-p 0.9 on [0.5, 0.3, 0.15, 0.05] ->", [round(x, 3) for x in top_p_filter([0.5, 0.3, 0.15, 0.05], 0.9)])
+
+    weights = attention_weights([2.0, 0.1], [[3.0, 0.0], [2.0, 0.0], [0.0, 3.0]])
+    print("attention (interest, rates, water)   ->", [round(w, 3) for w in weights])
+
+    rng = random.Random(0)
+    for T, p in ((0.2, 1.0), (1.0, 1.0), (2.0, 1.0), (2.0, 0.9)):
+        draws = [sample_next(VOCAB, LOGITS, T, p, rng) for _ in range(1000)]
+        print(f"T={T}, top_p={p}: ' banana' drawn {draws.count(' banana')} times in 1000")
+
+@@step
+{
+  "stepNumber": 1,
+  "title": "Softmax with temperature",
+  "instruction": "Implement softmax(logits, temperature). If temperature is 0, return a list with 1.0 at the position of the largest logit and 0.0 everywhere else (greedy decoding). Otherwise divide each logit by the temperature, subtract the largest scaled value from all of them, apply math.exp, and divide each by the sum. This is the formula from Section 2 that turns the model's raw scores into the probabilities it samples from. [MOD-1.4]",
+  "hintConceptual": "Temperature rescales the gaps between scores before they are exponentiated. Small temperature makes gaps bigger so the winner takes almost everything; large temperature shrinks gaps so the distribution flattens.",
+  "hintSyntax": "if temperature == 0:\n    top = logits.index(max(logits))\n    return [1.0 if i == top else 0.0 for i in range(len(logits))]\nscaled = [z / temperature for z in logits]\npeak = max(scaled)\nexps = [math.exp(z - peak) for z in scaled]\ntotal = sum(exps)\nreturn [e / total for e in exps]"
+}
+@@assert
+_p = softmax([2.0, 1.0, 0.0], 1.0)
+assert _p is not None and len(_p) == 3, "softmax must return one probability per logit"
+assert abs(sum(_p) - 1.0) < 1e-9, "Probabilities must sum to 1"
+assert [round(x, 3) for x in _p] == [0.665, 0.245, 0.09], f"At T=1 logits [2,1,0] give about [0.665, 0.245, 0.090], got {[round(x, 3) for x in _p]}"
+assert [round(x, 3) for x in softmax([2.0, 1.0, 0.0], 0.5)] == [0.867, 0.117, 0.016], "At T=0.5 the top token should rise to about 0.867"
+assert [round(x, 3) for x in softmax([2.0, 1.0, 0.0], 2.0)] == [0.506, 0.307, 0.186], "At T=2 the distribution should flatten to about [0.506, 0.307, 0.186]"
+assert softmax([1.0, 5.0, 3.0], 0) == [0.0, 1.0, 0.0], "Temperature 0 must put all probability on the largest logit"
+assert abs(sum(softmax([1000.0, 999.0], 1.0)) - 1.0) < 1e-9, "Large logits must not overflow: subtract the peak before math.exp"
+print("Step 1 passed: temperature now reshapes the distribution.")
+
+@@step
+{
+  "stepNumber": 2,
+  "title": "Top-p (nucleus) filtering",
+  "instruction": "Implement top_p_filter(probs, p). Sort the positions from highest to lowest probability. Add them to a kept set one at a time, keeping a running total, and stop as soon as the total is at least p (use `running >= p - 1e-12` to be safe with floats). Set every position that was not kept to 0.0 and divide the kept probabilities by their sum so the result sums to 1. Return a list in the original order. [MOD-1.4]",
+  "hintConceptual": "You are cutting off the unlikely tail. The cut adapts: if one token already holds most of the probability the nucleus is a single token, and if the model is unsure the nucleus is wide.",
+  "hintSyntax": "order = sorted(range(len(probs)), key=lambda i: -probs[i])\nkept, running = [], 0.0\nfor i in order:\n    kept.append(i)\n    running += probs[i]\n    if running >= p - 1e-12:\n        break\ntotal = sum(probs[i] for i in kept)\nreturn [probs[i] / total if i in kept else 0.0 for i in range(len(probs))]"
+}
+@@assert
+_f = top_p_filter([0.5, 0.3, 0.15, 0.05], 0.9)
+assert _f is not None and len(_f) == 4, "top_p_filter must return a list the same length as probs"
+assert _f[3] == 0.0, "The 0.05 tail token must be removed when p=0.9 (0.5+0.3+0.15 = 0.95 reaches 0.9)"
+assert abs(sum(_f) - 1.0) < 1e-9, "The filtered distribution must be renormalised to sum to 1"
+assert [round(x, 4) for x in _f] == [0.5263, 0.3158, 0.1579, 0.0], f"Expected about [0.5263, 0.3158, 0.1579, 0.0], got {[round(x, 4) for x in _f]}"
+assert top_p_filter([0.1, 0.7, 0.2], 0.5) == [0.0, 1.0, 0.0], "When the top token alone reaches p, only it survives, in its ORIGINAL position"
+assert [round(x, 9) for x in top_p_filter([0.25, 0.25, 0.5], 1.0)] == [0.25, 0.25, 0.5], "p=1.0 must keep every token unchanged"
+assert top_p_filter([0.6, 0.4], 0.0001) == [1.0, 0.0], "Even a tiny p must keep at least the top token"
+print("Step 2 passed: the unlikely tail is gone.")
+
+@@step
+{
+  "stepNumber": 3,
+  "title": "Attention weights for one query",
+  "instruction": "Implement attention_weights(query, keys). For each key vector, compute the dot product with the query and divide by math.sqrt(len(query)). Pass the list of scores to your softmax (temperature 1) and return the result. This is one row of softmax(QK^T / sqrt(d_k)) from Section 2: how strongly one token attends to each of the others. [MOD-1.4]",
+  "hintConceptual": "A dot product is large when two vectors point in the same direction. Attention turns those match scores into shares of attention that add up to one.",
+  "hintSyntax": "d = len(query)\nscores = [sum(q * k for q, k in zip(query, key)) / math.sqrt(d) for key in keys]\nreturn softmax(scores)"
+}
+@@assert
+_w = attention_weights([2.0, 0.1], [[3.0, 0.0], [2.0, 0.0], [0.0, 3.0]])
+assert _w is not None and len(_w) == 3, "attention_weights must return one weight per key"
+assert abs(sum(_w) - 1.0) < 1e-9, "Attention weights must sum to 1"
+assert _w[0] > _w[1] > _w[2], "The key most aligned with the query must receive the most attention"
+_s = [6.0 / math.sqrt(2), 4.0 / math.sqrt(2), 0.3 / math.sqrt(2)]
+_e = [math.exp(x - max(_s)) for x in _s]
+_expected = [x / sum(_e) for x in _e]
+assert all(abs(a - b) < 1e-9 for a, b in zip(_w, _expected)), "Scores must be dot products divided by sqrt(d) BEFORE the softmax"
+_same = attention_weights([1.0, 1.0, 1.0, 1.0], [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0]])
+assert abs(_same[0] - 0.5) < 1e-9, "Two keys that match the query equally must share attention equally"
+print("Step 3 passed: weights ->", [round(x, 3) for x in _w])
+
+@@step
+{
+  "stepNumber": 4,
+  "title": "Sample the next token",
+  "instruction": "Implement sample_next(vocab, logits, temperature, top_p, rng). Compute probabilities with softmax(logits, temperature), filter them with top_p_filter(probs, top_p), then draw one token with rng.choices(vocab, weights=probs)[0] and return it. This is the complete sampling stage a chat product runs once for every token it writes. [MOD-1.4]",
+  "hintConceptual": "The order matters: temperature first reshapes the whole distribution, then top-p trims whatever tail is left, then a weighted random draw picks one token.",
+  "hintSyntax": "probs = softmax(logits, temperature)\nprobs = top_p_filter(probs, top_p)\nreturn rng.choices(vocab, weights=probs)[0]"
+}
+@@assert
+_vocab = ["A", "B", "C", "D"]
+_logits = [3.0, 2.5, 1.0, -4.0]
+_r = random.Random(11)
+assert all(sample_next(_vocab, _logits, 0, 1.0, _r) == "A" for _ in range(50)), "At temperature 0 the top token must be chosen every time"
+assert all(sample_next(_vocab, _logits, 1.0, 0.01, _r) == "A" for _ in range(50)), "With a tiny top_p only the top token can be drawn"
+_wide = [sample_next(_vocab, _logits, 1.5, 1.0, _r) for _ in range(3000)]
+assert set(_wide) == {"A", "B", "C", "D"}, "With high temperature and no filtering every token should appear in 3000 draws"
+_trim = [sample_next(_vocab, _logits, 1.5, 0.9, _r) for _ in range(3000)]
+assert "D" not in _trim, "top_p=0.9 must remove the very unlikely token 'D' even at high temperature"
+assert len(set(_trim)) >= 2, "top_p=0.9 should still leave more than one possible token"
+assert sample_next(_vocab, _logits, 1.0, 1.0, random.Random(3)) == sample_next(_vocab, _logits, 1.0, 1.0, random.Random(3)), "The same seed must give the same token: use the rng that is passed in"
+print("Step 4 passed: you built the sampling stage of a chatbot.")
