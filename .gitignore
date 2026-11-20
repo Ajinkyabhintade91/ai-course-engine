@@ -6,6 +6,3 @@ next-env.d.ts
 
 # Local-only Claude Code settings
 .claude/settings.local.json
-
-# Stray browser download from QA testing
-/3.pdf
